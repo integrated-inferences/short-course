@@ -1,0 +1,365 @@
+---
+format: 
+   revealjs:
+      embed-resources: true
+      theme: serif
+      slide-level: 3
+      slide-number: true
+      toc-depth: 2
+      show-slide-number: all
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+      smaller: true
+title: "Bayes"
+author: "Macartan Humphreys"
+bibliography: assets/bib.bib
+---
+
+
+```{r, include = FALSE}
+
+source("assets/setup.R")
+
+# run <- FALSE
+
+```
+
+# Bayesian approaches {#secbayes}
+
+*Updating on causal quantities*
+
+## Outline
+
+1. Bayesian reasoning
+2.  Bayesian calculations by hand
+
+## Bayes reasoning
+
+
+-   Bayesian methods are just sets of procedures to figure out how to update beliefs in light of new information.
+
+-   We begin with a prior belief about the probability that a hypothesis is true.
+
+-   New data then allow us to form a posterior belief about the probability of the hypothesis.
+
+
+### Bayes Rule {.smaller}
+
+Bayesian inference takes into account:
+
+-   the consistency of the evidence with a hypothesis
+-   the uniqueness of the evidence to that hypothesis
+-   background knowledge about the problem.
+
+### Illustration 1 {.smaller}
+
+I draw a card from a deck and ask *What are the chances it is a Jack of Spades?*
+
+-   Just 1 in 52.
+
+Now I tell you that the card is indeed a spade. What would you guess?
+
+-   1 in 13
+
+What if I told you it was a heart?
+
+-   No chance it is the Jack of Spades
+
+What if I said it was a face card and a spade.
+
+-   1 in 3.
+
+### Illustration 1 {.smaller}
+
+These answers are applications of Bayes' rule.
+
+In each case the answer is derived by assessing what is possible, given the new information, and then assessing how likely the outcome of interest among the states that are possible. In all the cases you calculate:
+
+$$\text{Prob Jack of Spades | Info} = \frac{\text{Is Jack of Spades Consistent w/ Info?}}{\text{How many cards are consistent w/ Info?}} $$
+
+### Illustration 2 **Interpreting Your Test Results** {.smaller}
+
+You take a test to see whether you suffer from a disease that affects 1 in 100 people. The test is good in the following sense:
+
+-   if you have the disease, then with a 99% probability it will say you have the disease
+-   if you do not have it, then with a 99% probability, it will say that you do not have it
+
+The test result says that you have the disease. What are the chances you have it?
+
+### Illustration 2 **Interpreting Your Test Results** {.smaller}
+
+-   It is *not* 99%. 99% is the probability of the result given the disease, but we want the probability of the disease given the result.
+
+-   The right answer is 50%, which you can think of as the share of people that have the disease among all those that test positive. For example
+
+-   e.g. if there were 10,000 people, then 100 would have the disease and 99 of these would test positive. But 9,900 would not have the disease and 99 of these would test positive. So the people with the disease that test positive are half of the total number testing positive.
+
+### Illustration 2. A picture {.smaller}
+
+```{r, out.width="70%", fig.width=12, fig.height=6.5, fig.align='center', echo = FALSE}
+  p=.9    ## power of test and prior prob healthy
+  s=2000  ## population size
+  col5 = "red"
+  col0 = "black"
+
+  par(mfrow=c(1,2))
+  	plot(c(0,1), c(0,1), axes=F, type="n", ann=F)
+  	title(main ="Healthy Circles")
+  	points(.175*rnorm(p*p*s)+.5, .175*rnorm(p*p*s) + .5, col = col5, pch=21, bg = col5) ##Test negative
+  	points(.1*rnorm((1-p)*p*s)+.5, .1*rnorm((1-p)*p*s) + .5, col = col0, pch=21, bg = col0, cex=1.1) ## Test positive
+  	box()
+  
+  	plot(c(0,1), c(0,1), axes=F, type="n", ann=F)
+  	title(main ="Sick squares")
+  	points(.1*rnorm(p*(1-p)*s)+ .5, .1*rnorm(p*(1-p)*s) + .5, col = col0, pch=22, bg = col0)
+  	points(.175*rnorm((1-p)*(1-p)*s)+.5, .175*rnorm((1-p)*(1-p)*s) + .5, col = col5, pch=22, bg = col5) 
+  	box()
+```
+
+What's the probability of being a circle given you are black?
+
+### Illustration 2. More formally. {.smaller}
+
+As an equation this might be written:
+
+$$\text{Prob You have the Disease | Pos} = \frac{\text{How many have the disease and test pos?}}{\text{How many people test pos?}}$$
+
+### Two Child Problem {.smaller}
+
+Consider last an old puzzle described in @gardner1961second.
+
+-   Mr Smith has two children, $A$ and $B$.
+-   At least one of them is a boy.
+-   What are the chances they are both boys?
+
+To be explicit about the puzzle, we will assume that the information that one child is a boy is given as a truthful answer to the question "*is at least one of the children a boy?*"
+
+Assuming also that there is a 50% probability that a given child is a boy.
+
+### Two Child Problem {.smaller}
+
+As an equation:
+
+$$\text{Prob both boys | Not both girls} = \frac{\text{Prob both boys}}{\text{Prob not both girls}} = \frac{\text{1 in 4}}{\text{3 in 4}}$$
+
+### Monty Hall
+
+Can anyone describe the Monty Hall puzzle?
+
+
+### Bayes Rule {.smaller}
+
+Formally, all of these equations are applications of Bayes' rule which is a simple and powerful formula for deriving updated beliefs from new data.
+
+The formula is given as:
+
+$$\Pr(H|\mathcal{D})=\frac{\Pr(\mathcal{D}|H)\Pr(H)}{\Pr(\mathcal{D})}\\
+                  =\frac{\Pr(\mathcal{D}|H)\Pr(H)}{\sum_{H'}\Pr(\mathcal{D}|H')\Pr(H'))}$$
+                
+
+### Bayes Rule
+
+Formally, all of these equations are applications of Bayes' rule which is a simple and powerful formula for deriving updated beliefs from new data.
+
+For continuous distributions and parameter vector $\theta$:
+
+$$p(\theta|\mathcal{D})=\frac{p(\mathcal{D}|\theta)p(\theta)}{\int_{\theta'}p(\mathcal{D|\theta'})p(\theta')d\theta}$$
+
+### Illustration of continuous distributions {.smaller}
+
+Consider **the share of people in a population that voted** or **the share of people for which there is a positive treatment effect* 
+
+* This is a quantity between 0 and 1.
+
+* It can be represented by a continuous distribution: the beta distribution, with parameters that reflect how much data you have observed
+
+### Beta {.smaller}
+
+-   The Beta distribution is a distribution over the $[0,1]$ that is governed by two parameters, $\alpha$ and $\beta$.
+-   In the case in which both $\alpha$ and $\beta$ are 1, the distribution is uniform -- all values are seen as equally likely.
+-   As $\alpha$ rises large outcomes are seen as more likely
+-   As $\beta$ rises, lower outcomes are seen as more likely.
+-   If both rise proportionately the expected outcome does not change but the distribution becomes tighter.
+
+An attractive feature is that if one has a prior Beta($\alpha$, $\beta$) over the probability of some event, and then one observes a positive case, the Bayesian posterior distribution is also a Beta with with parameters $\alpha+1, \beta$. Thus if people start with uniform priors and build up knowledge on seeing outcomes, their posterior beliefs should be Beta.
+
+### Beta {.smaller}
+
+Here is a set of such distributions.
+
+```{r Betas, echo = FALSE, fig.cap="\\label{betas} Beta distributions"}
+par(mfrow = c(2,3))
+
+x <- seq(0,1,.01)
+plot(x, dbeta(x, .5, .5), type = "l", main = expression(paste("Beta distribution: ", alpha, ", ", beta, " = 0.5")))
+plot(x, dbeta(x, 1, 1), type = "l", main = expression(paste("Beta distribution: ", alpha, ", ", beta, " = 1")))
+plot(x, dbeta(x, 1, 2), type = "l", main = expression(paste("Beta distribution: ", alpha, "= 1, ", beta, " = 2")))
+plot(x, dbeta(x, 2, 1), type = "l", main = expression(paste("Beta distribution: ", alpha, "= 2, ", beta, " = 1")))
+plot(x, dbeta(x, 4, 2), type = "l", main = expression(paste("Beta distribution: ", alpha, " =4, ", beta, " = 2")))
+plot(x, dbeta(x, 20, 10), type = "l", main = expression(paste("Beta distribution: ", alpha, "=20, ", beta, " = 10")))
+
+```
+
+
+## Bayes "by hand"
+
+*Bayes on a Grid*
+
+### Bayes by hand 
+
+* The simplest and most intuitive way to do Bayesian estimation is just to apply the formula over a grid of possible values
+* This becomes too hard once your parameter space grows but it is worth working though the logic by hand to get a feel for Bayes
+
+### Bayes by hand 
+
+* Lets say that we want to figure out the share of women in some population. 
+* We start off with a flat prior over all possible numbers
+* We draw a sample from the population: 100 people of which 20 are women
+* What's our posterior?
+
+### Bayes by hand 
+
+```{r, fig.height = 3, fig.width = 8}
+fabricate(N = 100,
+          parameters = seq(.01, .99, length = N),
+          likelihood = dbinom(20, 100, parameters),
+          posterior = likelihood/sum(likelihood)) |>
+  ggplot(aes(parameters, posterior)) + geom_line() + theme_bw()
+  
+
+```
+
+### Bayes by hand 
+
+Now with a strongish prior on 50%:
+
+```{r, fig.height = 3, fig.width = 8}
+fabricate(N = 100,
+          parameters = seq(.01, .99, length = N),
+          prior = dbeta(parameters, 20, 20), 
+          prior = prior/sum(prior),
+          likelihood = dbinom(20, 100, parameters),
+          posterior = likelihood*prior/sum(likelihood*prior)) |>
+  ggplot(aes(parameters, posterior)) + geom_line() + theme_bw() +
+  geom_line(aes(parameters, prior), color = "red")
+  
+  
+
+```
+
+### Causal inference on a grid
+
+Consider this joint distribution with binary X and binary Y from [here](https://macartan.github.io/ci/ci_2025.html#/example-without-identification-2)
+
+|     | Y = 0 | Y = 1 | 
+|-----|-------|-------|
+| **X = 0** | $b/2 + c/2$      |  $a/2 + d/2$     |   
+| **X = 1** | $a/2 + c/2$      |  $b/2 + d/2$     |   
+
+
+reminder: $a$ is share with negative effects, $b$ is share with positive effects...
+
+### Causal inference on a grid: strategy
+
+Say we now had (finite) data filling out this table. What posteriors should we form over $a,b,c,d$?
+
+
+|     | Y = 0 | Y = 1 | 
+|-----|-------|-------|
+| **X = 0** | $n_{00}$      |  $n_{01}$     |   
+| **X = 1** | $n_{10}$      |  $n_{11}$     |   
+
+Lets start with a flat prior over the shares and then update over possible shares based on the data.
+
+This time we will start with a draw of possible shares and put look for posterior weights on each drawn share.
+
+
+### Causal inference on a grid: likelihood {.smaller}
+
+$$
+\Pr(n_{00}, n_{01}, n_{10}, n_{11} \mid a,b,c,d) =
+f_{\text{multinomial}}\left( \alpha_{00}, \alpha_{01}, \alpha_{10}, \alpha_{11} \mid \sum n, w \right)
+$$
+where:
+
+$$w = \left(\frac12(b + c),  \frac12(a+d), \frac12(a+c), \frac12(b+d)\right)$$
+
+why multinomial?
+
+### Causal inference on a grid: execution {.smaller}
+
+prior draw with 10000 possibilities:
+
+```{r}
+
+x <- gtools::rdirichlet(10000, alpha = c(1,1,1,1)) |> as.data.frame()
+names(x) <- letters[1:4]
+
+x |> head() |> kable(digits = 3)
+```
+each row sums to 1; each point (row) lies on a simplex
+
+### Causal inference on a grid: execution {.smaller}
+
+
+Imagine we had data (number of units with given values of X and Y):
+
+$n_{00} = 400, n_{01} = 100, n_{10} = 100, n_{11} = 400$
+
+Difference in means = .6. 
+
+Then:
+
+
+```{r}
+# add likelihood and calculate posterior
+
+x <- x |> 
+  rowwise() |>  # Ensures row-wise operations
+  mutate(
+    likelihood = dmultinom(
+      c(400, 100, 100, 400),
+      prob = c(b + c, a + c, a + d, b + d) / 2
+    )
+  ) |> 
+  ungroup() |>
+  mutate(posterior = likelihood / sum(likelihood))
+
+```
+
+
+### Causal inference on a grid: execution {.smaller}
+
+```{r}
+x |> 
+  mutate(likelihood = formatC(likelihood, format = "e", digits = 2),
+         posterior = formatC(posterior, format = "e", digits = 2)) |> 
+  head() |>
+  kable(digits = 2)
+```
+
+### Causal inference on a grid: inferences
+
+```{r}
+x |> summarize(a = weighted.mean(a, posterior),
+               b = weighted.mean(b, posterior),
+               ATE = b - a) |>
+  kable(digits = 2)
+```
+
+### Causal inference on a grid: inferences
+
+```{r, fig.cap = "Spot the ridge"}
+x |> ggplot(aes(b, a, size = posterior)) + geom_point(alpha = .5) 
+
+```
+
+### Bayes by hand 
+
+* This approach is sound, but if you are dealing with many continuous parameters, the full parameter space can get very large and so the number of calculations you do increases rapidly.
+
+* Luckily other approaches have been developed.
+
+
+

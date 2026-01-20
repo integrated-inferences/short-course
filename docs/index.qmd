@@ -1,0 +1,76 @@
+---
+title: "Causal models for qualitative inference and mixed methods"
+author: Macartan Humphreys and Alan Jacobs
+format: 
+  html:
+    embed-resources: true
+---
+
+::: panel-tabset
+## Outline
+
+Materials for a two day introduction for causal models for process tracing and mixed methods
+
+Day 1:
+
+* [Lecture 1: Causality and Causal Models]("L1.html")
+* [Exercises 1: Make some causal models]("E1.html")
+* [Lecture 2: Queries and inferences]("L2.html")
+* [Exercises 2: Defining questions, Bayesian updating]("E2.html")
+
+Day 2:
+
+* [Lecture 3: Process tracing]("L3.html")
+* [Exercises 3]("E3.html")
+* [Lecture 4: Mixed methods]("L4.html")
+* [Exercises 4]("E4.html")
+
+## Resources
+
+* [All resources](https://integrated-inferences.github.io/)
+* [Book](https://integrated-inferences.github.io/book/)
+* [Videos](https://integrated-inferences.github.io/videos.html)
+* [GESIS course description](https://training.gesis.org/?site=pDetails&child=full&pID=0x3C86637E0A0145B2858B47F204C50FAC&lang=en_US&lang=de_DE&lang=en_US)
+
+* Shiny app
+
+## About
+
+### Advance watching and reading
+
+The causal models approach we’ll be teaching is fairly complex, and you will get much more out of the course if you prepare in advance by engaging with our book, *Integrated Inferences*.
+
+First, watch these four introductory videos to get the general idea - they will make the reading a bit easier: https://integrated-inferences.github.io/videos.html 
+
+Then, read the following chapters from the open access pre-print: https://integrated-inferences.github.io/book/ 
+
+Chapters 2, 4, 5, 7, 9
+
+The text is fairly dense, so don’t let yourself get bogged down if there are things you don’t understand. Just keep going. There will be plenty of time for questions and further explanation in class, but it’s critical that you come in with this overview.
+
+
+### Software installation
+
+In class, we will be doing hands-on exercises with the software package through which the approach can be implemented, CausalQueries. You will thus need to have all necessary software installed before the start of class on the first day.
+
+Make sure you have an up to date installation of R
+Make sure you have an up to date installation of RStudio
+Install CausalQueries from CRAN, e.g. in Rstudio. e.g. via install.packages("CausalQueries")
+To check the package is working try to make and  update a model like this:
+model <- make_model() |> update_model()
+
+### Identify data (Optional)
+
+During the class we will practice forming causal models and drawing inferences from them. We will work with simulated examples and some real examples that we used in our book. However if you have an application in mind we encourage you to identify data, even if imperfect, that you can try this all out on. Good data for this would have the following features:
+
+A key outcome variable you particularly care about
+
+One or two possible causes that you care about
+
+Data on at least some of the cases that capture either relevant features of context, or aspects of processes connecting causes and outcomes
+
+All variables can be plausibly dichotomized (measured as 0 or 1)
+Keep things simple: use a setting where each observation is independent – so avoid data with complex hierarchical, clustering, or time dependence features. 
+
+
+:::

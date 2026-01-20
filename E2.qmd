@@ -1,0 +1,130 @@
+---
+format: 
+   html:
+      embed-resources: true
+      theme: serif
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+title: "Causal models for qualitative and mixed methods inference"
+subtitle: "Exercise 2: Bayes"
+author: "Macartan Humphreys and Alan Jacobs"
+bibliography: assets/bib.bib
+---
+
+```{r, include = FALSE}
+
+options(future.globals.maxSize = 3 * 1024^3)  # 2GB
+set.seed(1)
+library(knitr)
+source("assets/setup.R")
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# Queries
+
+In `CausalQueries` we distinguish between controlled interventions and simple conditioning:
+
+$Y[A==1] :|: B == 1$ means the value for $Y$ when $A$ is "set" to 1 and $B$ happens to be 1.
+
+Then the effect of $A$ given $B$ might be written:
+
+$(Y[A=1] - Y[A=0]) :|: B == 1$ 
+
+For your model: 
+
+* describe a query that depends on an controlled change in some variable 
+* describe a query that depends on a natural (observational) change in some variable 
+* describe a query that depends on both 
+
+
+# Bayesian sequencing and posterior variance
+
+Say you knew the probability of $Y$ given $X_1$ and $X_2$:
+
+|         | X_1 = 0 | X1 = 1  |
+|---------|---------|---------|
+|X_2 = 0	|  .2     | .5      | 
+|X_2 = 1	|  .8     | .9      |
+
+
+In addition you know that $X_1 = 1$ with probability 0.5, and  $X_2 = 1$ with probability 0.5, independently.
+
+1. Say you do not know $X_1$ or $X_2$. What is your prior that $Y = 1$?
+2. How uncertain are you? (You can use variance as a measure, where the variance in beliefs about a bernoulli event that arises with probability $p$ is just $p(1-p)$)
+3.  Say you now learn $X_1 = 0$: what is your posterior belief now? 
+4. What is your uncertainty now? (Again use variance, but now you should look at the posterior variance). Has it gone up or down with the additional information?
+5. Say in addition you now learn  $X_2 = 1$: what now is your posterior? What now is your uncertainty?
+<!-- 6. There are two ways in which you could have answered the last question: one is to use your prior from (1) and update based on the joint observation of $X_1, X_2$ using the likelihood: $\Pr(X_1 = 0, X_2=1 | Y = 1)$. The other is to use the posterior from (3) as your new prior and update using only the new information, given the existing data: $\Pr(X_2=1 | Y = 1, X_1 = 0)$. Show, analytically, that these are equivalent. -->
+7. Ex ante you cannot tell what you would observe if you looked for $X_1$ or $X_2$. Thinking through all the patterns you might see, what is the *expected* estimate you would get if you just looked for $X_1$ or  just looked for $X_2$? What is the *expected posterior variance*? If you had to choose just one of $X_1$ or $X_2$ to look for, which would be more informative?
+
+**Bonus**: Think through how things might change if X1 and X2 were not independent?
+
+
+```{r, include = FALSE, eval = FALSE}
+
+
+df <- expand_grid(X1 = 0:1, X2= 0:1) |> mutate(pr_Y = c(.2, .8, .5, .9))  
+prior = df |> pull(pr_Y) |> mean()
+prior_var <- prior*(1-prior)
+
+posterior_1 = df |> filter(X1 == 0) |> pull(pr_Y) |> mean()
+posterior_var_1 =  posterior_1*(1-posterior_1)
+
+posterior_3 = df |> filter(X1 == 0, X2 == 1) |> pull(pr_Y) |> mean()
+
+just_X1 <- c(
+  posterior_0x = df |> filter(X1 == 0) |> pull(pr_Y) |> mean(),
+  posterior_1x = df |> filter(X1 == 1) |> pull(pr_Y) |> mean())
+
+
+just_X2 <- c(
+  posterior_x0 = df |> filter(X2 == 0) |> pull(pr_Y) |> mean(),
+  posterior_x1 = df |> filter(X2 == 1) |> pull(pr_Y) |> mean()
+)
+
+c(
+  E_just_X1 = mean(just_X1),
+  E_var_just_X1 = mean(just_X1*(1-just_X1)),
+  E_just_X2 = mean(just_X2),
+  E_var_just_X2 = mean(just_X2*(1-just_X2)))
+
+
+# equiv: Pr( Y = 1 | X1=0, X2=1)  = Pr(X1=0, X2=1 | Y = 1)Pr(Y=1)/Pr(X1=0, X2=1)
+
+# equiv: Pr( Y = 1 | X1=0, X2=1)  = Pr(X2=1 | Y = 1, X1=0) Pr(Y=1 | X1 = 0)/Pr( X2=1 | X1=0)
+
+# Pr(X1=0, X2=1 | Y = 1)Pr(Y=1)/Pr(X1=0, X2=1)  =  Pr(X2=1 | Y = 1, X1=0) Pr(Y=1 | X1 = 0)/Pr( X2=1 | X1=0)
+# Pr(X1=0, X2=1,  Y = 1)/Pr(X1=0, X2=1)  =  Pr(X2=1 , Y = 1 | X1=0) Pr(X1 = 0) /(Pr( X2=1 | X1=0)Pr(X1 = 0))  = =  Pr(X2=1 , Y = 1,  X1=0) /(Pr( X2=1,  X1=0)) 
+
+```  
+
+
+# A causal chain
+
+Imagine a causal chain: $A$ causes $B$ and $B$ causes $C$
+
+Say you knew for the $A$, $B$ relationship:
+
+* there is a 50% chance that $A$ causes $B$ for a given unit.
+* there is a 25% chance that $B=0$ regardless of $A$
+* there is a 25% chance that $B=1$ regardless of $A$
+
+Independently there is 50% chance that $B$ causes $C$ for a given unit.
+
+Say you knew for the $B$, $C$ relationship:
+
+* there is a 50% chance that $B$ causes $C$ for a given unit.
+* there is a 25% chance that $C=0$ regardless of $B$
+* there is a 25% chance that $C=1$ regardless of $B$
+
+
+Now:
+
+* What is the probability that $A$ causes $C$?
+* What is the probability that $A$ causes $C$ for a case in which $A=1$ and $C=1$, when $B$ is not observed$?
+* What is the probability that $A$ causes $C$ for a case in which $A=1$ and $B=1$ and $C=1$?
+* What is the probability that $A$ causes $C$ for a case in which $A=1$ and $B=0$ and $C=1$?
+
+

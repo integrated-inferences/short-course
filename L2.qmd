@@ -1,0 +1,84 @@
+---
+format: 
+   revealjs:
+      embed-resources: true
+      theme: serif
+      slide-level: 3
+      slide-number: true
+      toc-depth: 2
+      show-slide-number: all
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+      smaller: true
+title: "Causal models for qualitative and mixed methods inference"
+subtitle: "Lecture 2: Queries and inferences"
+author: "Macartan Humphreys and Alan Jacobs"
+bibliography: assets/bib.bib
+---
+
+
+
+
+
+```{css}
+##| echo: false
+##| include: false
+
+.reveal table {
+  font-size: medium;
+}
+
+```
+  
+```{r, include = FALSE}
+
+options(future.globals.maxSize = 3 * 1024^3)  # 2GB
+set.seed(1)
+library(knitr)
+source("assets/setup.R")
+knitr::opts_chunk$set(echo = TRUE)
+
+## also: smaller, small
+
+library(CausalQueries)
+library(dplyr)
+library(knitr)
+library(ggplot2)
+
+```
+
+
+
+# Queries, updating
+
+```{r, child = "modules/2.1_queries.qmd"}
+
+```
+
+## Updating
+
+
+```{r, child = "modules/2.2_bayesbasics.qmd"}
+
+```
+
+## Conditional independence
+
+*Figuring out when A tells you something about B*
+
+```{r, child = "modules/2.3_conditional_independence.qmd"}
+
+```
+
+## Updating in `CausalQueries`
+
+*`CausalQueries` brings these elements together*
+
+
+```{r, child = "modules/2.4_CQ.qmd"}
+
+```
+
+
+

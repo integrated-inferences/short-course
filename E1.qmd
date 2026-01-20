@@ -1,0 +1,65 @@
+---
+format: 
+   html:
+      embed-resources: true
+      theme: serif
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+title: "Causal models for qualitative and mixed methods inference"
+subtitle: "Exercise 1: Causality"
+author: "Macartan Humphreys and Alan Jacobs"
+bibliography: assets/bib.bib
+---
+
+
+
+```{r, include = FALSE}
+
+options(future.globals.maxSize = 3 * 1024^3)  # 2GB
+set.seed(1)
+library(knitr)
+source("assets/setup.R")
+knitr::opts_chunk$set(echo = TRUE)
+
+## also: smaller, small
+
+library(CausalQueries)
+library(dplyr)
+library(knitr)
+library(ggplot2)
+
+```
+
+## Exercise 1: Make your own model in CausalQueries
+
+Select an outcome variable of interest.
+
+Decide on 2–3 causal variables that might influence the outcome (causes of primary theoretical interest, moderators, additional causes in the literature, etc.).
+
+In `CausalQueries`, create a model that connects the causal variables to the outcome variable.
+
+Consider also including:
+
+- a key mediating variable that should be represented in your model
+- a key moderating variable that should be represented in your model
+- any indications of unmeasured confounding between nodes in your model
+
+Now plot the model (`plot_model(model)`) and save your code in a `.qmd` file.
+
+Email the `.qmd` file to alan.jacobs@ubc.ca.
+
+Be prepared to talk the class through the choices you made in building the model. What assumptions did you intend to build in or leave out, and why, given background knowledge of the domain?
+
+### Keep in mind
+
+- Missing arrows make the strongest statements.
+- Are there direct effects you are unintentionally excluding?
+- Is there potential confounding that you are excluding?
+- You are representing background beliefs about a domain, not just a specific argument.
+- There may be causal connections outside a given argument that need representing (e.g., potential confounding, direct effects).
+- You do not need all the complexity.
+- Possible causes can be left out as long as they do not affect more than one node included on the graph.
+- Mediating steps can be left out or collapsed.
+
+

@@ -1,0 +1,122 @@
+---
+title: "solution"
+format: html
+---
+
+
+```{r, include = FALSE}
+
+library(CausalQueries)
+library(tidyverse)
+library(knitr)
+```
+
+```{r}
+model <- 
+  
+  make_model("S -> C -> Y <- R <- X; X -> C -> R") |>
+  
+  set_restrictions(labels = list(
+    C = c("1110", "1111"), 
+    R = c("0001", "0000"), 
+    Y = c("0001")),
+    keep = TRUE)
+
+
+model <- 
+  
+  make_model("S -> C -> Y <- R <- X; X -> C -> R") |>
+  
+  set_restrictions(labels = list(C = c("1110", "1111")), keep = TRUE) |>
+  set_restrictions(labels = list(R = c("0001", "0000")), keep = TRUE) |>
+  set_restrictions(labels = list(Y = c("0001")), keep = TRUE) 
+  
+
+```
+
+
+
+# Causal types consistent with a query
+
+```{r}
+get_query_types(model, "Y[S=1] < Y[S=0]")
+
+```
+
+# Mapping from causal types to consistent data types
+
+```{r}
+inspect(model, what = "ambiguities_matrix") 
+```
+
+# Prior probabilities of each causal type
+
+```{r}
+CausalQueries:::get_type_prob(model)
+
+```
+
+# Put it all together
+
+```{r}
+worksheet <-
+  inspect(model, what = "ambiguities_matrix") |>
+  data.frame() |>
+  mutate(
+    in_query = get_query_types(model, "Y[S=1] < Y[S=0]")$types,
+    priors  = CausalQueries:::get_type_prob(model))
+
+worksheet |>
+  kable()
+```
+
+
+# Helper
+
+```{r}
+
+by_hand <- function(model, data, query){
+  
+  data_type <- CausalQueries:::data_type_names(model, data)
+
+  grab(model, what = "ambiguities_matrix") |>
+    data.frame() |>
+    select(all_of(data_type)) |>
+    mutate(
+      in_query = get_query_types(model, query)$types,
+      priors   = CausalQueries:::get_type_prob(model)
+    ) |>
+    filter(.data[[data_type]] == 1) |>
+    mutate(rescaled_priors = priors / sum(priors)) |>
+    {\(df) {
+      posterior <- sum(df$rescaled_priors[df$in_query])
+      cat(
+        "Posterior is the sum of rescaled priors for\n",
+        "all possible types in query: ",
+        posterior,
+        "\n",
+        sep = ""
+      )
+      df
+    }}()
+}
+```
+
+# Using the function
+
+```{r}
+model <- make_model("S -> C -> Y <- R <- X; X -> C -> R") |>
+  set_restrictions(labels = list( C = c("1110", "1111"), 
+                                  R = c("0001", "0000"), 
+                                  Y = c("0001")), 
+                   keep = TRUE) 
+data <- data.frame(S= 1, X=1, C= 0, R =0, Y = 0) 
+
+query <- "Y[S=1] < Y[S=0]" 
+
+by_hand(model, data, query)
+by_hand(model, data, "Y[S=1] > Y[S=0]")
+by_hand(model, data, "Y[X=1] == Y[X=0]")
+
+```
+

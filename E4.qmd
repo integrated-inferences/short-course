@@ -1,0 +1,48 @@
+---
+format: 
+   html:
+      embed-resources: true
+      theme: serif
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+title: "Causal models for qualitative and mixed methods inference"
+subtitle: "Exercise 4: Mixed methods"
+author: "Macartan Humphreys and Alan Jacobs"
+bibliography: assets/bib.bib
+---
+
+```{r, include = FALSE}
+
+options(future.globals.maxSize = 3 * 1024^3)  # 2GB
+set.seed(1)
+library(knitr)
+source("assets/setup.R")
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+**(30 minutes)**
+
+## A hoop test justified with data.
+
+Sometimes we treat the absence of an expected mediator as strong evidence against a proposition. 
+In this exercise we will try to *justify* a claim of this form:
+
+
+1. Define a model in which $X \rightarrow M \rightarrow Y$ but do *not* impose any other restrictions
+2. Imagine you saw 20 cases in which $X$ and $M$ are very highly correlated and $M$ and $Y$ are very highly correlated. Generate data like this and update the model.
+3. Now imagine you saw a case in which $X=1$ and $Y=1$. What should you believe about the probability that $X$ caused $Y$?
+3. Now imagine you saw in addition that $M=1$. What should you believe about the probability that $X$ caused $Y$?
+4. Now imagine you saw instead that $M=0$. What should you believe about the probability that $X$ caused $Y$?
+
+
+# A smoking gun test
+**(30 minutes)**
+
+Can you construct another model and background data that lets you treat $K$ as a smoking gun evidnece for the $X$ causing $Y$?
+
+# Application
+
+
+

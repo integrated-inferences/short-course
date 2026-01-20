@@ -1,0 +1,258 @@
+---
+title: "Causal Inference from Causal Models"
+subtitle: "Introduction"
+author: "Alan Jacobs"
+header-includes:
+  - \usepackage{multirow}
+  - \usepackage{graphicx}
+  - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+  - \usepackage{bbold, mathabx}
+output: 
+  beamer_presentation:
+    slide_level: 2
+    incremental: true
+---
+
+```{r, include = FALSE}
+set.seed(1)
+library(knitr)
+source("assets/setup.R")
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Motivation 1: beyond random assignment
+
+### "Causal inference"
+
+* The term has become synonymous with randomization, or *design-based* inference
+
+* Massive growth in last 15 years in design-based approaches in political science and economics
+
+    * Randomization by the researcher: standard experiments
+
+    * Randomization by nature: pure natural experiments
+
+    * "As if" randomization, e.g.:
+
+        * Regression-discontinuity designs
+    
+
+### The benefit of strong design: assumption-free inference
+
+* Broad, deep skepticism about observational, assumption- (or model-) based inference
+
+    * Gerber, Green, and Kaplan (2014): "...observational findings are accorded zero weight...." if biases unknown
+
+* Randomized assignment allows for "assumption-free" causal inference
+
+    * To get the ATE, just difference the outcomes between treatment groups
+    
+    * Liberated from **models**
+    
+    
+
+### But sometimes randomization isn't enough
+
+* To be clear: we think developments in design-based inference are enormously important
+
+    * If you can randomize to get at your estimand, go for it
+    
+* But the "causal inference revolution" has some limits
+
+
+<!-- ## Limits of randomized designs -->
+
+<!-- * **Feasibility**: Randomization impossible or unavailable for large set of research and policy questions -->
+
+
+<!-- ## Limits of randomized designs -->
+
+<!-- * Does randomization even tell us what we want to know? -->
+
+<!-- Consider the following potential outcomes table: -->
+<!-- \begin{table} \centering -->
+
+<!-- 	\begin{tabular}{c|c|c} -->
+<!-- 		In treatment?	&Y(0)	&Y(1)  \\ \hline -->
+<!-- 		Yes	&	& 2	\\ -->
+<!-- 		No	& 3	&	\\ -->
+<!-- 		No	& 1	&	\\ -->
+<!-- 		Yes	&	& 3	\\ -->
+<!-- 		Yes	&	& 3	\\ -->
+<!-- 		No	& 2	&	 -->
+<!-- 	\end{tabular}  -->
+<!-- \end{table} -->
+
+<!-- \color{red}\textbf{Questions for us: } Fill in the blanks. -->
+<!-- \begin{itemize} -->
+<!-- 	\item Assuming a constant treatment effect of $+1$  -->
+<!--  	\item Assuming an \textit{average} treatment effect of $1$ -->
+<!-- \end{itemize} -->
+<!-- \color{red} How useful is the ATE? -->
+
+
+### Limits of randomized designs
+
+* **Feasibility**: Randomization impossible or unavailable for large set of research and policy questions.
+    * Some causal variables that are hard to randomize
+        * Institutions
+        * Conflict
+        * Economic development
+        * Party systems
+    
+
+### And non-experimental causal inference always requires models
+
+Simple example:
+
+* Assume no randomization
+
+* We want to know if $X$ causes $Y$
+    
+* We want to use $X,Y$ correlations as evidence
+    
+    * But this evidence depends on beliefs about how the world works
+    
+        * Specifically, we have to believe there is no $Z$ such that: $X \leftarrow Z \rightarrow Y$
+    
+* Or maybe we do think there is a confounding $Z$
+    * So then we control for $Z$
+    * But this strategy depends on a different model of the world 
+        * A model in which THIS isn't happening: $X \rightarrow Z \rightarrow Y$
+
+* In sum: beliefs about the world will always play a central role in non-randomized inference
+
+
+### Even *with* randomization, soooo many questions we can't answer without models
+
+Randomization can give us an $ATE$, but can't address many other causal estimands of interest
+
+* Distribution of effects
+    * Say, we know an aid treatment had an ATE of $+20\%$ on village income
+    * For what proportion of villages did it have a positive effect? 
+    * What proportion did it *hurt*?
+        
+* How effects occurred (mechanisms)
+    * Did aid boost income by enabling capital investments?
+    * By boosting schooling?
+    * By mitigating conflict?
+ 
+ 
+
+## Even *with* randomization, soooo many questions we can't answer without models
+    
+* Whether and where effects will travel
+    * We see effects in Northeastern Kenya
+    * Should we expect those effects to operate in Somalia? In Bangladesh?
+    
+* *Case*-level effects
+    * We get a *population-level* estimate of $+20\%$ causal effect
+    * But did aid cause income growth in *this* specific village that received aid and experienced income growth? 
+
+* We can't answer any of these questions without models!
+
+<!-- ## And if you don't use a model, you never learn about a model -->
+
+<!-- Only by bringing a model to bear on an empirical problem can we learn about: -->
+
+<!-- * Scope conditions -->
+
+<!-- * Causal pathways/mechanisms -->
+
+<!-- * Case-level causes (e.g., causal explanation) -->
+
+
+## Motivation 2: analytically explicit qualitative inference
+
+## Qualitative inference: an ambiguity at the heart of process tracing
+
+* We have a general intuition about how process tracing works
+
+    * I have a theory that $Inequality \rightarrow MassMobilization \rightarrow Democratization$
+    
+* So I go into a case with high Inequality and I look to see if there was Mass Mobilization
+    
+* If I see Mass Mobilization, I take this as evidence that Inequality caused Democratization in this case
+
+
+## An ambiguity at the heart of process tracing
+
+* But what warrants this conclusion?
+
+    * Why isn't this just another correlation?
+    
+    * Why is seeing Mass Mobilization more indicative of a causal effect than seeing no Mass Mobilization?
+
+
+* Is seeing Mobilization evidence that Inequality caused Democracy?
+    * Maybe: if I believe democracy causes Mobilization, which causes Democratization
+    * But what if I believe: Inequality *weakens* Mobilization?
+    * Then seeing Mobilization would be evidence *against* Inequality's having had an effect
+
+
+<!-- ## Motivation 3: Mixing methods -->
+
+<!-- * Multi-method research is all the rage -->
+
+<!-- * But how to systematically combine cross-case and within-case information? -->
+
+<!-- * Maybe we only use one method in service of another (Seawright 2016)? -->
+
+<!--     * Using process tracing to test assumptions underlying a regression -->
+
+<!--     * Let regression give us the inference -->
+
+<!-- * But this leaves information on the table -->
+
+<!--     * e.g., what can the within-case data tell us about causal effects? -->
+
+<!-- * How can we fully *integrate* forms of information to generate a single set of inferences? -->
+
+
+### Models $\Rightarrow$ more transparent, evaluable qualitative inference
+
+* In qualitative inference too, what counts as evidence for a finding depends on how we think the world works
+
+* By making our beliefs about the world *explicit* and reasoning systematically from them, we can do much better than if we keep our underlying models implicit
+    * Logical consistency
+    * Transparency
+    * Openness to evaluation
+
+
+## The challenge of multi-method research
+
+### How can we integrate qualitative and quantitative data?
+
+* Data of different forms
+    * Quant: a little information on lots of cases; focused on $X$'s and $Y$
+    * Qual: lots of information on one/few cases; focused on process and context
+    
+* We want two forms of integration
+    * Combination: Arrive at inferences that build on all information
+    * Joint gains: Allow one form of evidence to inform inferences from other forms of evidence
+
+
+## In sum
+
+### Key benefits of doing inference with causal models
+
+Using causal models can allow us to
+
+* Answer a vast range of causal questions, with experimental and observational data
+
+* Draw inferences from evidence in ways logically consistent with our prior beliefs/information
+
+* Show, and allow others to see, precisely how our inferences hinge on our model
+
+* Readily integrate quantitative and qualitative evidence into a single set of findings
+
+* [Though not in this course] Make research design choices in a way systematically informed by what we already know
+
+* $\Rightarrow$ implications for large-n, small-n, and mixed-method research
+
+
+    
+
+    
+
+

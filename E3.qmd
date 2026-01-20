@@ -1,0 +1,153 @@
+---
+format: 
+   html:
+      embed-resources: true
+      theme: serif
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+title: "Causal models for qualitative and mixed methods inference"
+subtitle: "Exercise 3: Process tracing"
+author: "Macartan Humphreys and Alan Jacobs"
+bibliography: assets/bib.bib
+---
+
+```{r, include = FALSE}
+
+options(future.globals.maxSize = 3 * 1024^3)  # 2GB
+set.seed(1)
+library(knitr)
+source("assets/setup.R")
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## Exercise 3: Process Tracing with a Causal Model
+
+**(45 minutes)**
+
+In this exercise, you will work through “by hand” the logic of process tracing with a causal model. We are providing you with a causal model, drawn from Chapter 12 of the book, that relates the existence of a free press to the removal of governments from office. The model represents a set of beliefs about when and through what mechanism(s) the existence of a free press threatens incumbents’ hold on office.
+
+## The model
+
+### Variable definitions
+
+- **X**: A free press exists (1) in the country or does not exist (0)
+- **S**: Government is sensitive (1) or insensitive (0) to public opinion
+- **C**: The government is corrupt (1) or non-corrupt (0)
+- **R**: The media reports (1) or does not report (0) on any governmental corruption that may be occurring
+- **Y**: The government is replaced (1) or survives (0)
+
+
+### DAG
+
+
+```{r}
+#| label: fig-HJ-F-12-1
+#| echo: false
+#| fig-width:  9
+#| fig-height:  7
+#| fig.align: "center"
+#| out.width :  "70%"
+#| fig-cap: "Causal model in which  $S$ and $X$ are stochastic $C$ and $R$ have only two possible nodal types each $Y: 1$ if and only if $C$ and $R$ are both 1."
+#| warning: false
+
+
+x = c(0,0, 1, 1, 2)
+y = c(2,0, 1.5, .5, 1)
+
+names = c("S:~Sensitive~government", "X:~Free~Press", "C: ~Corruption", "R: ~Media~report", "Y:~Government~replaced")
+
+hj_ggdag(x =  x,
+         y = y,
+         names = c(names),
+         arcs = cbind( c(1,2,2, 3, 4, 3),
+                       c(3,3,4, 5, 5, 4)),
+         title = "Free Press and Government Survival",
+         labels = F
+
+         )
+```
+
+
+
+### Beliefs about causal relationships
+
+Specifically, we go into the study believing the following about how each node depends on its parent node(s):
+
+- **X**: in 50% of the population of cases, there is a free press; in 50% there is not
+- **S**: 50% of governments in the population are sensitive to public opinion; 50% are not
+- **C**: 50% of governments in the population will act corruptly regardless of prior conditions; 50% will engage in corruption unless both there exists a free press (X = 1) and that government is sensitive to public opinion (S = 1)
+- **R**: in 50% of cases, the press will never report on corruption, regardless of antecedent conditions; in 50% of cases, the press will report on corruption if and only if it is free (X = 1) and corruption is present (C = 1)
+- **Y**: in all cases, the government will survive in office unless there is both corruption (C = 1) and reporting on corruption (R = 1)
+
+We now want you to “do” process tracing on a hypothetical case using this model.
+
+**Prior case observation:** Y = 1 (the government was replaced) and X = 1 (there is a free press)  
+**Query:** What is the probability that the existence of a free press was a cause of government replacement in this case?
+
+Now, imagine different process-tracing strategies you might pursue—that is, different combinations of other nodes you might choose to observe. We want to think through what inference you will draw on the query depending on what you see.
+
+## Your task
+
+Figure out what you would conclude—what is the probability that X = 1 is a cause of Y = 1 in this case—if you observe each of the following:
+
+**Prior (no additional observations)**
+
+- Nothing: before you do the process tracing
+
+**Strategy: Observe S only**
+
+- S = 0
+- S = 1
+
+**Strategy: Observe C only**
+
+- C = 0
+- C = 1
+
+**Strategy: Observe R only**
+
+- R = 0
+- R = 1  
+  *Bonus:* Why is the second of these a trick question? Why would it not make sense to observe R in this case?
+
+**Strategy: Observe S and X**
+
+- X = 0, S = 0
+- X = 1, S = 0  
+  *Bonus:* If you first observed X = 1, why should you not bother measuring S?
+
+**Strategy: Observe S and C**
+
+- S = 1, C = 0
+- S = 1, C = 1
+- S = 0, C = 1  
+  *Bonus:* If you first observed S = 0, why should you not bother measuring C?
+
+**Strategy: Observe S, X, and C**
+
+- S = 1, X = 1, C = 0
+- S = 0, X = 0, C = 1
+- S = 1, X = 0, C = 1
+- S = 0, X = 1, C = 1
+- S = 1, X = 1, C = 1
+
+**Final question:** How would you think about which of the above process-tracing strategies are most and least worth pursuing?
+
+**(15 minutes) Feedback**
+
+---
+
+## Process trace your own DAG
+
+**(30 minutes)**
+
+Make a table showing what you would conclude about your query given each pattern of data you might see.
+
+| Query | Observations | Inference |
+| --- | --- | --- |
+| “If I see X = 1, Y = 1, M = 1” | _Write the observed pattern here_ | _What do you conclude about the effect of X on Y?_ |
+
+
+

@@ -1,0 +1,83 @@
+---
+title: "Process Tracing with a Causal Model"
+subtitle: "Procedure"
+format: 
+   revealjs:
+      embed-resources: true
+      theme: serif
+      slide-level: 3
+      slide-number: true
+      toc-depth: 2
+      show-slide-number: all
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+      smaller: true
+---
+
+```{r, include = FALSE}
+set.seed(1)
+library(knitr)
+library(CausalQueries)
+source("assets/setup.R")
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## By hand: Procedure
+
+1. Make a table with rows for all causal types (there may be many if you are doing by hand!!)
+2. Add  a column to indicate your priors over these causal type
+3. Add a column to say if the query is satisfied by the causal types
+4. Calculate the conditional distributions given the types
+
+
+## By hand: Example
+
+Our DAG is:
+
+$X \rightarrow M \rightarrow Y$
+
+And we believe:
+
+* $X=1$ for half the cases, randomly
+* $X$ has a positive effect on $M$ for half the cases ("causes"), in the other half $M=0$ regardless of $X$
+* $M$ has a positive effect on $Y$ for half the cases, in the other half $Y=0$ regardless of $M$
+
+
+## By hand: Example {.smaller}
+
+What are the types? How likely is each one? Which ones satisfy the following query: $Y = 0$ *because* $X=0$?:
+
+| Type                                                     | X | M | Y | prob | Query? |
+|----------------------------------------------------------|---|---|---|------|--------|
+| X = 0, X causes M, M causes Y                             | 0 | 0 | 0 | 1/8  | Yes    |
+| X = 0, X causes M, M does not cause Y                     | 0 | 0 | 0 | 1/8  | No     |
+| X = 0, X does not cause M, M causes Y                     | 0 | 0 | 0 | 1/8  | No     |
+| X = 0, X does not cause M, M does not cause Y             | 0 | 0 | 0 | 1/8  | No     |
+| X = 1, X causes M, M causes Y                             | 1 | 1 | 1 | 1/8  | No     |
+| X = 1, X causes M, M does not cause Y                     | 1 | 1 | 0 | 1/8  | No     |
+| X = 1, X does not cause M, M causes Y                     | 1 | 0 | 0 | 1/8  | No     |
+| X = 1, X does not cause M, M does not cause Y             | 1 | 0 | 0 | 1/8  | No     |
+
+
+
+## With CausalQueries
+
+```{r, echo = TRUE}
+
+model <- 
+  make_model("X -> M -> Y") |>
+  set_restrictions("M[X = 0] == 1") |>
+  set_restrictions("Y[M = 0] == 1")
+
+inspect(model, "causal_types")
+```
+
+## With CausalQueries
+
+```{r, echo = TRUE}
+query_model(model, "Y[X=1]==1 :|: X==0 & Y == 0")
+```
+

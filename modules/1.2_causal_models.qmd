@@ -1,0 +1,543 @@
+---
+title: "What Is a Causal Model?"
+subtitle: "Causal Inference from Causal Models"
+output:
+   revealjs:
+      embed-resources: true
+      theme: serif
+      slide-level: 3
+      slide-number: true
+      toc-depth: 2
+      show-slide-number: all
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+      smaller: true
+---
+
+```{r, include = FALSE}
+set.seed(1)
+library(knitr)
+source("assets/setup.R")
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## A causal model
+
+* A representation of beliefs about causal dependencies in a given domain
+
+    * How do we believe variables relating to democratization (economic conditions, external threat, inequality, regime type, etc.) relate to one another causally?
+    
+    * How do we believe variables relating to the choice of an electoral system (party system, relative party strength, normative beliefs, electoral rules) are related to one another causally?
+    
+* Comprised of: 
+
+    * A structure -- indicating qualitative which nodes react to which others; we will represent these graphically
+    
+    * Functional relations between nodes indicating quantitatively how one responds to another
+    
+    * Probability distributions (priors) over exogenous conditions (which we deal with later)
+    
+
+
+
+<!-- ## Again: Causal types in a binary world -->
+
+<!-- \begingroup \scriptsize -->
+
+<!-- \begin{table}[h!] -->
+<!-- \begin{tabular}{l|cccc} \small -->
+
+<!-- & Type a & Type b & Type c & Type d \\ -->
+
+<!-- & \textbf{a}dverse effects & \textbf{b}eneficial Effects & \textbf{c}hronic cases & \textbf{d}estined cases \\ -->
+<!-- \hline -->
+<!-- Not treated &    Healthy &       Sick &       Sick &    Healthy \\ -->
+<!-- Treated &       Sick &    Healthy &       Sick &    Healthy \\ -->
+<!-- \end{tabular} -->
+<!-- \label{tabPO} -->
+<!-- \end{table} -->
+
+<!-- \endgroup -->
+
+<!-- **Case-level:** -->
+
+<!-- * $a$: negative effect -->
+<!-- * $b$: positive effect -->
+<!-- * $c$: 0 effect, $Y=0$ -->
+<!-- * $d$: 0 effect, $Y=1$ -->
+
+
+<!-- ## Causal types: case-level -->
+
+<!-- Let $t_{ij}$ refer to a causal type in which -->
+
+<!-- * $y=i|x=0$ -->
+<!-- * $y=j|x=1$ -->
+
+<!-- Then we have: -->
+
+<!-- * $a$: negative effect $\Rightarrow$ $\theta_{10}$ -->
+<!-- * $b$: positive effect $\Rightarrow$ $\theta_{01}$ -->
+<!-- * $c$: 0 effect, $Y=0$ $\Rightarrow$ $\theta_{00}$ -->
+<!-- * $d$: 0 effect, $Y=1$ $\Rightarrow$ $\theta_{11}$ -->
+
+
+<!-- ## Causal types: case-level -->
+
+<!-- * $a$: negative effect $\Rightarrow$ $\theta_{10}$ -->
+<!-- * $b$: positive effect $\Rightarrow$ $\theta_{01}$ -->
+<!-- * $c$: 0 effect, $Y=0$ $\Rightarrow$ $\theta_{00}$ -->
+<!-- * $d$: 0 effect, $Y=1$ $\Rightarrow$ $\theta_{11}$ -->
+
+<!-- We can start to think about this *graphically*: -->
+
+<!-- $$X \rightarrow Y \leftarrow \theta$$ -->
+<!-- where $\theta$ is a variable that takes on different values: e.g., $\theta=\theta_{01}$ -->
+
+<!-- (What's assumed?) -->
+
+<!-- ## Causal types -->
+
+<!-- \begingroup \scriptsize -->
+
+<!-- \begin{table}[h!] -->
+<!-- \begin{tabular}{l|cccc} \small -->
+
+<!-- & Type a & Type b & Type c & Type d \\ -->
+
+<!-- & \textbf{a}dverse effects & \textbf{b}eneficial Effects & \textbf{c}hronic cases & \textbf{d}estined cases \\ -->
+<!-- \hline -->
+<!-- Not treated &    Healthy &       Sick &       Sick &    Healthy \\ -->
+<!-- Treated &       Sick &    Healthy &       Sick &    Healthy \\ -->
+<!-- \end{tabular} -->
+<!-- \label{tabPO} -->
+<!-- \end{table} -->
+
+<!-- \endgroup -->
+
+<!-- **Population-level:** -->
+
+<!-- * $\lambda_a, \lambda_b, \lambda_c, \lambda_d$: type shares in population -->
+<!-- * ATE = $\lambda_b - \lambda_a$ -->
+
+<!-- **Graph:** -->
+
+<!-- $$X \rightarrow Y \leftarrow T \leftarrow \lambda$$ -->
+
+
+## Structural causal model: A Directed Acyclic Graph (DAG)
+
+Suppose we believe that inequality ($I$) can cause democratization ($D$) through mass mobilization ($M$).
+
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 1, 2),
+       y = c(2, 2, 2),
+       names = c(
+         "I", 
+         "M",
+         "D" 
+         ),
+       arcs = cbind( c(1, 2),
+                     c(2, 3)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+
+
+<!-- ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'} -->
+<!-- par(mar=c(1,1,1,1)) -->
+<!-- hj_dag(x = c(0, 0, 1, 1, 2, 2), -->
+<!--        y = c(2, 3, 2, 3, 2, 3), -->
+<!--        names = c( -->
+<!--          "I",  -->
+<!--          expression(paste(U[I])), -->
+<!--          "M", -->
+<!--          expression(paste(U[M])),  -->
+<!--          "D",  -->
+<!--          expression(paste(U[D]))  -->
+<!--          ), -->
+<!--        arcs = cbind( c(2, 4, 6, 1, 1, 3), -->
+<!--                      c(1, 3, 5, 7, 3, 5)), -->
+<!--        # title = "A Simple DAG", -->
+<!--        padding = .4, contraction = .15)  -->
+
+<!-- ``` -->
+
+
+## Elements of a Directed Acyclic Graph (DAG)
+
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 1, 2),
+       y = c(2, 2, 2),
+       names = c(
+         "I", 
+         "M",
+         "D" 
+         ),
+       arcs = cbind( c(1, 2),
+                     c(2, 3)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+
+
+
+## $\theta$ terms: random disturbances
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 2),
+       y = c(2, 3, 2, 3, 2, 3),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])) 
+         ),
+       arcs = cbind( c(2, 4, 6, 1, 1, 3),
+                     c(1, 3, 5, 7, 3, 5)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+
+
+
+* A $\theta$ term for each variable (Pearl uses a $U$ here)
+* Represent exogenous variation affecting the system
+* Think: unexplained prior conditions, features of context, random disturbances
+
+
+
+## DAG grammar
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 2),
+       y = c(2, 3, 2, 3, 2, 3),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])) 
+         ),
+       arcs = cbind( c(2, 4, 6, 1, 1, 3),
+                     c(1, 3, 5, 7, 3, 5)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+* Node: a variable with a specified range
+
+* Edge: an arrow connecting two nodes
+
+    * Implies *possible* causal dependency
+    
+    * Only *direct* dependencies are connected
+    
+    * **No edge** $\Rightarrow$ **no causal dependency**
+
+
+## DAG grammar: this is NOT allowed
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 2),
+       y = c(2, 3, 3, 4, 2, 3),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])) 
+         ),
+       arcs = cbind( c(5, 2, 4, 6, 1, 1, 3),
+                     c(1, 1, 3, 5, 7, 3, 5)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+
+* No causal cycles: "acyclic"
+
+
+## DAG grammar
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 2),
+       y = c(2, 3, 2, 3, 2, 3),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])) 
+         ),
+       arcs = cbind( c(2, 4, 6, 1, 1, 3),
+                     c(1, 3, 5, 7, 3, 5)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+
+*Not* represented on the DAG:
+
+* Ranges of variables
+
+* Functional relationships
+
+    * E.g., does $I$ have a positive or negative effect on $M$?
+    
+* Beliefs about the distributions of $\theta$ terms
+
+
+## Different causal structures
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 2),
+       y = c(2, 3, 3, 4, 2, 3),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])) 
+         ),
+       arcs = cbind( c(1, 2, 4, 6, 1, 1, 3),
+                     c(5, 1, 3, 5, 7, 3, 5)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+
+* Here we allow for a *direct* effect of $I$ on $D$
+    * $\Rightarrow$ there could be effects that do *not* go through mobilization
+* $M$ mediates *and* moderates $I$'s effect
+
+
+## Different causal structures
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 3, 2, 2),
+       y = c(2, 3, 3, 4, 2, 3, 3, 4),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])),
+         "P",
+         expression(paste(theta[P]))
+         ),
+       arcs = cbind( c(1, 2, 4, 6, 1, 3, 7, 8),
+                     c(5, 1, 3, 5, 3, 5, 5, 7)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+* A second causal variable
+    * DAG alone does not tell us whether or how $I$, $M$, $P$ interact
+
+
+
+## Assumptions implied by a DAG
+
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 3, 2, 2),
+       y = c(2, 3, 3, 4, 2, 3, 3, 4),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])),
+         "P",
+         expression(paste(theta[P]))
+         ),
+       arcs = cbind( c(1, 2, 4, 6, 1, 3, 7, 8),
+                     c(5, 1, 3, 5, 3, 5, 5, 7)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+
+* Exogenous nodes are assigned independently 
+    * Above graph implies $I$ and $P$ are generated *independently*
+    * No *confounding* between them
+
+
+## Assumptions implied by a DAG
+
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 3, 2, 2),
+       y = c(2, 3, 3, 4, 2, 3, 3, 4),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])),
+         "P",
+         expression(paste(theta[P]))
+         ),
+       arcs = cbind( c(1, 2, 4, 6, 1, 3, 7, 8),
+                     c(5, 1, 3, 5, 3, 5, 5, 7)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+
+* Similarly, implies no confounding between $I$ and $D$
+* We can allow for confounding with double-headed arrows
+
+
+## Assumptions implied by a DAG
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 2),
+       y = c(2, 3, 3, 4, 2, 3),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])) 
+         ),
+       arcs = cbind( c(2, 4, 6, 1, 1, 3),
+                     c(1, 3, 5, 7, 3, 5)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```    
+
+* Absent arrows mean NO direct effect
+    * Here, we assume any effect of $I$ *must* run through $M$
+    * A strong assumption: that we *know* the mechanism
+    
+
+## Assumptions implied by a DAG
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 2),
+       y = c(2, 3, 3, 4, 2, 3),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])) 
+         ),
+       arcs = cbind( c(1, 2, 4, 6, 1, 1, 3),
+                     c(5, 1, 3, 5, 7, 3, 5)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```    
+
+* This graph makes a weaker assumption
+    * Allows for effects of $I$ on $D$ that do NOT run through $M$
+
+## DAG lingo: all in the family
+
+We use familial language to talk about relations among nodes
+
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 2),
+       y = c(2, 3, 3, 4, 2, 3),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])) 
+         ),
+       arcs = cbind( c(1, 2, 4, 6, 1, 1, 3),
+                     c(5, 1, 3, 5, 7, 3, 5)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+
+* Parents: $M$ is a parent of $D$
+
+* Children: $I$ has two children, $M$ and $D$
+
+* Ancestors: $\theta_I$ is an ancestor of $M$
+
+<!-- ## Example: Przeworski and Limongi on GDP and democracy -->
+
+<!-- ```{r, echo = FALSE, out.width = "320px", fig.align = "center", eval = TRUE} -->
+<!-- knitr::include_graphics("assets/PLexample.png") -->
+<!-- ``` -->
+
+## A model is a summary of background knowledge - not an "argument"
+
+Based on our read of the inequality and democratization literature (Acemoglu/Robinson, Boix, Haggard/Kaufman, Ansell/Samuels):
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 1, 2, 2),
+       y = c(2, 3, 2, 3),
+       names = c(
+         "I", 
+      
+         "M",
+         
+         "D", 
+        
+         "P"
+        
+         ),
+       arcs = cbind( c(1, 2, 4, 1),
+                     c(2, 3, 3, 3)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+```
+
+
+
+## Example: Pierson on welfare-state cuts
+
+```{r, echo = FALSE, out.width = "320px", fig.align = "center", eval = TRUE}
+knitr::include_graphics("assets/Piersonexample.png")
+```
+
+
+<!-- ## Example: Saunders on military intervention -->
+
+<!-- ```{r, echo = FALSE, out.width = "320px", fig.align = "center", eval = TRUE} -->
+<!-- knitr::include_graphics("assets/Saundersexample.png") -->
+<!-- ``` -->
+

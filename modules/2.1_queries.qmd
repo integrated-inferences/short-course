@@ -1,0 +1,215 @@
+---
+title: "Causal Questions: Case Level"
+subtitle: "Causal Inference from Causal Models"
+format: 
+   revealjs:
+      embed-resources: true
+      theme: serif
+      slide-level: 3
+      slide-number: true
+      toc-depth: 2
+      show-slide-number: all
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+      smaller: true
+---
+
+```{r, include = FALSE}
+set.seed(1)
+library(knitr)
+source("assets/setup.R")
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Estimands (causal questions)
+
+Estimands are the things you want to know. 
+
+A few common causal estimands:
+
+* Case-level causal effects
+    * e.g., Did/does $X$ have a positive effect on $Y$ in this case?
+    * e.g., Did $X=1$ cause $Y=1$ in this case with $X=1, Y=1$?
+
+* Causal pathways
+    * e.g., Does $X$ affect $Y$ through $M$?
+        * For this case?
+        * For population as a whole?
+    
+* Average causal effects for a population
+    * e.g., What is the average effect of $X$ on $Y$
+
+
+<!-- ## Estimands (causal questions) -->
+
+<!-- A couple of less-common causal estimands: -->
+
+<!-- * Causal attribution -->
+
+<!-- * Actual causes -->
+
+
+
+## Case-level causal effects
+
+* In qualitative research, we often see an outcome and want to know what caused it
+    * Why does $Y=1$ in this case?
+    * Why did Argentina democratize in the 1980s?
+    
+* And we have suspected causes?
+    * Did $X=1$ cause $Y=1$ in this case? 
+    * Did $W=1$ cause $Y=1$ in this case?
+    * Did military defeat cause Argentina's democratization?
+
+* "Did $X=1$ cause $Y=1$ in this case?" means (in a binary framework)....
+    * If $X$ had been $0$ in this case, **would $Y$ have been $0$?**
+
+* "Did military defeat cause Argentina's democratization?" means....
+    * If military defeat had not happened, would Argentina's democratization failed to happen?
+
+## The probability of a case-level causal effect
+
+* We can express case-level causal effects queries as questions about **probabilities**
+    * "Did $X=1$ cause $Y=1$ in this case?" is not a yes/no question
+
+* We need to ask, what is the **probability** that $X=1$ caused $Y=1$ in this case?
+    * Probability of causation
+
+* We always **condition** this question on what we already know about the case
+    * Given that $X=1$ and $Y=1$ in this case, what's the probability that $X=1$ caused $Y=1$?
+    * Given that Argentina experienced military defeat and democratized, what's the probability that former caused the latter?
+
+## Case-level causal effects and nodal types
+
+* "Did $X=1$ cause $Y=1$ in this case?" means (in a binary framework)....
+    * If $X$ had been $0$ in this case, **would $Y$ have been $0$?**
+
+* This is the **same** as asking: is the case a $\theta_{01}$ type?
+    * This is a type in which
+        * $Y=1$ if $X=1$
+        * $Y=0$ if $X=0$
+
+* More precisely we ask, what's the probability that this case is a $\theta^{01}$ type?
+
+## Causal queries on a DAG
+
+<!-- Consider two common causal questions: -->
+
+<!-- * **Case-level causal effect**: Does $X$ cause $Y$ in this case? -->
+
+<!--     * The stuff of process-tracing -->
+
+<!-- * **Average causal effect**: What is the average effect of $X$ on $Y$ in the population? -->
+
+<!--     * The stuff of quantitative, large-n analysis -->
+
+*Causal queries can be expressed as nodes on a causal graph*
+
+
+## Causal queries on a DAG: case-level causal effect
+
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 0, 2, 2, 2),
+       y = c(1, 2, 3, 1, 2, 3),
+       names = c("X", expression(theta^X), expression(lambda^X), "Y", expression(theta^Y), expression(lambda^Y)),
+       arcs = cbind( c(3, 2, 1, 5, 6),
+                     c(2, 1, 4, 4, 5)),
+       padding = .4, contraction = .15)
+
+```
+
+* Does $X$ have a positive effect on $Y$ in this case? 
+    * This is a question about the value of $\theta^Y$
+    
+* Does $\theta^Y = \theta^Y_{01}$? (Or what's the probability of that?)
+
+
+## Pathway questions
+
+* How did $X$ cause $Y$ in this case?
+    * What is the pathway or mechanism?
+    
+* We might think there's a *possible* pathway through $M$, but did that pathway actually operate in this case?
+
+* There could be other possibilities
+
+* Did military defeat cause democratization in Argentina through creating division within the army?
+    * Or did military defeat cause democratization in Argentina through generating popular protest?
+    
+* Also a question about nodal types 
+
+
+## Causal queries on a DAG: pathway questions
+
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
+       y = c(1, 2, 3, 1, 2, 3, 2, 3, 4),
+       names = c("X", expression(theta^X), expression(lambda^X), "Y", expression(theta^Y), expression(lambda^Y), "M", expression(theta^M), expression(lambda^M)),
+       arcs = cbind( c(3, 2, 1, 5, 6, 7, 8, 9, 1),
+                     c(2, 1, 7, 4, 5, 4, 7, 8, 4)),
+       padding = .4, contraction = .15)
+
+```
+
+* Does $X$ have a positive effect on $Y$ through $M$ in this case?
+* A question about $\theta^M$ and $\theta^Y$ in this case
+
+
+## Causal queries on a DAG: pathway questions
+
+* A question about $\theta^M$
+    * Does $M$ respond to $X$?
+    * E.g., is $\theta^M = \theta_{01}^M$?
+    
+* Questions about $\theta^Y$
+    * When $M$ changes the way it does when $X$ goes from 0 to 1, does $Y$ go from 0 to 1, **even when $X$ is held constant**?
+    * Does $Y$ increase if $X$ increases **but $M$ is held constant**?
+    
+* We work through this in the "Causal Questions" chapter, but larger point:
+    * We can define this causal question (like any causal question) as a question about combinations of nodal types (i.e., causal types)
+    
+    
+## Causal queries with conditioning
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 1, 1, 2, 2),
+       y = c(2, 3, 3, 4, 2, 3),
+       names = c(
+         "I", 
+         expression(paste(theta[I])),
+         "M",
+         expression(paste(theta[M])), 
+         "D", 
+         expression(paste(theta[D])) 
+         ),
+       arcs = cbind( c(1, 2, 4, 6, 1, 1, 3),
+                     c(5, 1, 3, 5, 7, 3, 5)),
+       # title = "A Simple DAG",
+       padding = .4, contraction = .15) 
+
+``` 
+    
+* We can ask: what is the effect of $X$ on $Y$ given $M=1$?
+* Importantly, different from: what is the effect of $X$ on $Y$ if $M$ is *set* to $1$?
+
+## Why bother? Why define causal questions on a DAG?
+
+* We are turning our questions into nodes on a graph
+* The key is: **We can learn about nodes if we have information on other nodes they're connected to**
+* If we know $X$, $M$, and $Y$ in a case, we can draw inferences about $\theta^M$ and $\theta^Y$ for this case
+* This is, at an intuitive level, what `CausalQueries` does
+
+
+
+
+
+
+
+
