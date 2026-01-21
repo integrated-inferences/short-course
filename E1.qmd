@@ -39,6 +39,8 @@ Select an outcome variable of interest.
 
 Decide on 2–3 causal variables that might influence the outcome (causes of primary theoretical interest, moderators, additional causes in the literature, etc.).
 
+Draw your model by hand -- before you do anything in `CausalQueries`.
+
 In `CausalQueries`, create a model that connects the causal variables to the outcome variable.
 
 Consider also including:
