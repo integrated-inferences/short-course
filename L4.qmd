@@ -17,20 +17,8 @@ author: "Macartan Humphreys and Alan Jacobs"
 bibliography: assets/bib.bib
 ---
 
+# Population parameters
 
-
-
-
-```{css}
-##| echo: false
-##| include: false
-
-.reveal table {
-  font-size: medium;
-}
-
-```
-  
 ```{r, include = FALSE}
 
 options(future.globals.maxSize = 3 * 1024^3)  # 2GB
