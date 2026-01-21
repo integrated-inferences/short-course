@@ -27,7 +27,7 @@ run <- FALSE
 
 
 
-### Big picture
+## Big picture
 
 `CausalQueries` brings these elements together by allowing users to:
 
@@ -35,7 +35,7 @@ run <- FALSE
 2. **Update model**: Provide data to the DAG:  `CausalQueries`  writes a `stan` model and updates on all parameters
 3. Query model: `CausalQueries` figures out which parameters correspond to a given causal query
 
-### Illustration $X \rightarrow Y$ model
+## Illustration $X \rightarrow Y$ model
 
 Consider this problem:
 
@@ -47,7 +47,7 @@ Consider this problem:
 
 where $X$ is randomized, both $X$, $Y$ binary
 
-### Model, update, query
+## Model, update, query
 
 ```{r, echo = TRUE}
 data = fabricate(
@@ -58,13 +58,13 @@ data = fabricate(
 model <- make_model("X -> Y") |> update_model(data)
 ```
 
-### Model, update, query
+## Model, update, query
 
 ```{r, echo = TRUE}
 model |> inspect("posterior_distribution") 
 ```
 
-### Model, update, query
+## Model, update, query
 
 ```{r, fig.cap = "Posterior draws"}
 model |> grab("posterior_distribution") |> 
@@ -72,7 +72,7 @@ model |> grab("posterior_distribution") |>
 ```
 
 
-### Model, update, query
+## Model, update, query
 
 ```{r}
 model |> query_model(
@@ -84,7 +84,7 @@ model |> query_model(
 
 ```
 
-### Generalization: Procedure
+## Generalization: Procedure
 
 The `CausalQueries` approach generalizes to settings in which nodes are categorical:
 
@@ -94,19 +94,17 @@ The `CausalQueries` approach generalizes to settings in which nodes are categori
 4. Figure out $\Pr(\text{Data} | \lambda)$
 5. Use `stan` to figure out $\Pr(\lambda | \text{Data})$
 
-### Generalization: Procedure
+## Generalization: Procedure
+
+Also possible when there is unobserved confounding
 
 ```{r, echo = FALSE, fig.width=10, fig.height=5, fig.align='center'}
-ggpubr::ggarrange(
-plot(make_model("X1 -> Y <- X2"), nodecol = "white", textcol = "black"), 
-plot(make_model("X->M -> Y <- X",add_causal_types = FALSE), nodecol = "white", textcol = "black"),
-plot(make_model("Z->X -> Y <- U ->X; X <-> Z",add_causal_types = FALSE), nodecol = "white", textcol = "black"),
-plot(make_model("X -> Y -> Y1; Y -> Y2; Y1 <-> Y2",add_causal_types = FALSE), nodecol = "white", textcol = "black")
-)
+plot(make_model("Z->X -> Y <- U ->X; Y <-> Z",add_causal_types = FALSE))
 ```
+
 ...where dotted lines means that the response types for two nodes are not independent 
 
-### Illustration: "Lipids" data {.smaller}
+## Illustration: "Lipids" data {.smaller}
 
 Example of an IV model. What are the principle strata (response types)? What relations of conditional independence are implied by the models? 
 
@@ -121,7 +119,7 @@ lipids_data |> kable()
 
 Note that in compact form we simply record the number of units ("count") that display each possible pattern of outcomes on the three variables ("event").[^1]
 
-###  Model
+##  Model
 
 
 ```{r}
@@ -134,7 +132,7 @@ model |> plot()
 ```
 
 
-### Updating and querying  {.smaller}
+## Updating and querying  {.smaller}
 
 Queries can be condition on observable or counterfactual quantities
 

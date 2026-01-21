@@ -76,7 +76,8 @@ Key insight:
 That, with priors, is enough to update:
 
 $$p(\lambda | D) = \frac{p(D | \lambda)p(\lambda)}{p(D)}$$
-## "By hand"
+
+## Illustrattion of 'manual' updating
 
 Let's update manually.
 

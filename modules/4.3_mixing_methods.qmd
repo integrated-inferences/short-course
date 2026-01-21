@@ -114,7 +114,7 @@ $$p_{1?1} =  \lambda^X_1\times \left((\lambda^M_{01} + \lambda^M_{11}) \times (\
 
 So the probability of this data is just:
 
-$$p(D|\lambda) = p_{111} * p{1?1}$$
+$$p(D|\lambda) = p_{111} * p_{1?1}$$
 
 ## Mixing in practice
 
@@ -127,9 +127,9 @@ That, with priors, is enough to update:
 $$p(\lambda | D) = \frac{p(D | \lambda)p(\lambda)}{p(D)}= \frac{p(D | \lambda)p(\lambda)}{\int_{\lambda'}p(D|\lambda')p(\lambda')d\lambda'}$$
 
 
-# Why is this useful?
+## Why is this useful?
 
-## How qual can inform quant: confounding
+### How qual can inform quant: confounding
 
 ```{r echo=FALSE, out.width="300px", fig.align="center", eval = TRUE}
 knitr::include_graphics("assets/confounding.png")
@@ -142,7 +142,7 @@ Remember:
 * Could be because of confounding
 
 
-## How qual can inform quant: confounding
+### How qual can inform quant: confounding
 
 ```{r echo=FALSE, out.width="300px", fig.align="center", eval = TRUE}
 knitr::include_graphics("assets/confounding.png")
@@ -155,7 +155,7 @@ Remember
 * Key point: we don't need $M$ for all cases
     * Can learn from $I$ and $D$ for lots of cases and $M$ for a subset
 
-## How qual can inform quant: observable confounder
+### How qual can inform quant: observable confounder
 
 * Another example: $M$ as the confound 
 
@@ -165,7 +165,7 @@ make_model("X->Y <-M->X") |> plot()
 ```
 
 
-## How qual can inform quant: observable confounder
+### How qual can inform quant: observable confounder
 
 * How much can we learn from $M$ data for *some* cases?
 
@@ -174,7 +174,7 @@ knitr::include_graphics("assets/widedeep.png")
 ```
 
 
-## How quant can inform qual: getting probative value of a clue from the data
+### How quant can inform qual: getting probative value of a clue from the data
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align="center", out.width='.8\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -194,7 +194,7 @@ hj_dag(x = c(0, 0, 2, 2, 1, 1),
 
 * NOTHING YET!
 
-## How quant can inform qual: getting probative value of a clue from the data
+### How quant can inform qual: getting probative value of a clue from the data
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align="center", out.width='.8\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -213,7 +213,7 @@ hj_dag(x = c(0, 0, 2, 2, 1, 1),
     * Meaning that $M=1$ in an $I=1, D=1$ case speaks in favor of $I=1$ causing $D=1$
 * The mixed-methods solution: **learn** about population-level effects from large-$N$ data
 
-## How quant can inform qual: getting probative value of a clue from the data
+### How quant can inform qual: getting probative value of a clue from the data
 
 * Suppose we have data on $I$, $D$, and $M$ for a large number of cases
 * Suppose we observe a strong positive correlation across all 3 variables
