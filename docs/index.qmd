@@ -13,17 +13,17 @@ Materials for a two day introduction for causal models for process tracing and m
 
 Day 1:
 
-* [Lecture 1: Causality and Causal Models]("L1.html")
-* [Exercises 1: Make some causal models]("E1.html")
-* [Lecture 2: Queries and inferences]("L2.html")
-* [Exercises 2: Defining questions, Bayesian updating]("E2.html")
+* [Lecture 1: Causality and Causal Models](L1.html)
+* [Exercises 1: Make some causal models](E1.html)
+* [Lecture 2: Queries and inferences](L2.html)
+* [Exercises 2: Defining questions, Bayesian updating](E2.html)
 
 Day 2:
 
-* [Lecture 3: Process tracing]("L3.html")
-* [Exercises 3]("E3.html")
-* [Lecture 4: Mixed methods]("L4.html")
-* [Exercises 4]("E4.html")
+* [Lecture 3: Process tracing](L3.html)
+* [Exercises 3](E3.html)
+* [Lecture 4: Mixed methods](L4.html)
+* [Exercises 4](E4.html)
 
 ## Resources
 
