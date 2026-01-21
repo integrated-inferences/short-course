@@ -124,7 +124,7 @@ If we imagine possible parameter values we can figure out the likeihood of *any*
 
 That, with priors, is enough to update:
 
-$$p(\lambda | D) = \frac{p(D | \lambda)}{p(D)}$$
+$$p(\lambda | D) = \frac{p(D | \lambda)p(\lambda)}{p(D)}= \frac{p(D | \lambda)p(\lambda)}{\int_{\lambda'}p(D|\lambda')p(\lambda')d\lambda'}$$
 
 
 # Why is this useful?

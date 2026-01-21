@@ -25,173 +25,28 @@ run <- FALSE
 
 ```
 
-
-
 ### Big picture
 
 `CausalQueries` brings these elements together by allowing users to:
 
-1. Make model: Specify a DAG: `CausalQueries` figures out all principal strata and places a prior on these
-2. Update model: Provide data to the DAG:  `CausalQueries`  writes a `stan` model and updates on all parameters
-3. Query model: `CausalQueries` figures out which parameters correspond to a given causal query
+1. Make model: Specify a DAG: `CausalQueries` figures out all principal strata and place probabilities on these (parameters)
+2. Query model: `CausalQueries` figures out which parameters correspond to a given causal query
 
-### Illustration $X \rightarrow Y$ model
-
-Consider this problem:
-
-|     | Y = 0 | Y = 1 | 
-|-----|-------|-------|
-| **X = 0** | $n_{00}$      |  $n_{01}$     |   
-| **X = 1** | $n_{10}$      |  $n_{11}$     |   
-
-
-where $X$ is randomized, both $X$, $Y$ binary
-
-### Model, update, query
-
-```{r, echo = TRUE}
-data = fabricate(
-  N = 1000, 
-  X = rbinom(N, 1, prob = .5),  
-  Y = rbinom(N, 1, prob = .2 + .4*X))
-
-model <- make_model("X -> Y") |> update_model(data)
-```
-
-### Model, update, query
-
-```{r, echo = TRUE}
-model |> inspect("posterior_distribution") 
-```
-
-### Model, update, query
-
-```{r, fig.cap = "Posterior draws"}
-model |> grab("posterior_distribution") |> 
-  ggplot(aes(Y.01, Y.10)) + geom_point(alpha = .2)
-```
-Note in the grid approach we had the same set of candidate vectors with different weights attached; in the MCMC approach our draws reflect the posterior distribution directly.
-
-### Model, update, query
+### Illustration 1
 
 ```{r}
-model |> query_model(
-  query = c(ATE = "Y[X=1] - Y[X=0]", 
-            POS = "Y[X=1] > Y[X=0]", 
-            SOME = "Y[X=1] != Y[X=0]" ),
-  using = c("priors", "posteriors")) |>
-  plot()
-
-```
-
-### Generalization: Procedure
-
-The `CausalQueries` approach generalizes to settings in which nodes are categorical:
-
-1. Identify all principal strata: that is, the universe of possible response types or "causal types": $\theta$
-2. Define as parameters of interest the *probability* of each of these response types: $\lambda$
-3. Place a prior over $\lambda$: e.g. Dirichlet
-4. Figure out $\Pr(\text{Data} | \lambda)$
-5. Use `stan` to figure out $\Pr(\lambda | \text{Data})$
-
-### Generalization: Procedure
-
-```{r, echo = FALSE, fig.width=10, fig.height=5, fig.align='center'}
-ggpubr::ggarrange(
-plot(make_model("X1 -> Y <- X2"), nodecol = "white", textcol = "black"), 
-plot(make_model("X->M -> Y <- X",add_causal_types = FALSE), nodecol = "white", textcol = "black"),
-plot(make_model("Z->X -> Y <- U ->X; X <-> Z",add_causal_types = FALSE), nodecol = "white", textcol = "black"),
-plot(make_model("X -> Y -> Y1; Y -> Y2; Y1 <-> Y2",add_causal_types = FALSE), nodecol = "white", textcol = "black")
-)
-```
-...where dotted lines means that the response types for two nodes are not independent 
-
-### Illustration: "Lipids" data {.smaller}
-
-Example of an IV model. What are the principle strata (response types)? What relations of conditional independence are implied by the models? 
-
-```{r}
-#| echo: true
-
-data("lipids_data")
-
-lipids_data |> kable()
-
-```
-
-Note that in compact form we simply record the number of units ("count") that display each possible pattern of outcomes on the three variables ("event").[^1]
-
-###  Model
-
-
-```{r}
-#| echo: true
-#| eval: true
-#| purl: false
-
-model <- make_model("Z -> X -> Y; X <-> Y") 
-model |> plot()
-```
-
-
-### Updating and querying  {.smaller}
-
-Queries can be condition on observable or counterfactual quantities
-
-```{r}
-#| echo: true
-#| eval: false
-#| purl: false
+model <- make_model('X -> M -> Y') |>
+  set_restrictions(decreasing("X", "M"))
 
 model |>
-  update_model(lipids_data, refresh = 0) |>
-  query_model(queries = c(
-      ATE  = "Y[X=1] - Y[X=0]",
-      PoC  = "Y[X=1] - Y[X=0] :|: X==0 & Y==0",
-      LATE = "Y[X=1] - Y[X=0] :|: X[Z=1] > X[Z=0]"),
-      using = "posteriors") 
-```
-
-```{r}
-#| label: tbl-lipids
-#| tbl-cap: "Replication of Chickering and Pearl  (1996)."
-#| echo: false
-
-if (run) {
-  
-  lipids_model <- 
-    make_model("Z -> X -> Y; X <-> Y") |>
-    update_model(lipids_data, refresh = 0) 
-  
-  lipids_model |> 
-    readr::write_rds(x = _, file = "assets/lipids_model.rds")
-     
-  lipids_model |>
-    query_model(
-     queries = list(
-      ATE  = "Y[X=1] - Y[X=0]",
-      PoC  = "Y[X=1] - Y[X=0] :|: X==0 & Y==0",
-      LATE = "Y[X=1] - Y[X=0] :|: X[Z=1] > X[Z=0]"),
-      using = "posteriors") |>
-    readr::write_rds(x = _, file = "assets/lipids_results.rds")
-
-}
-
-lipids_model <- read_rds("assets/lipids_model.rds")
-
-results <- read_rds("assets/lipids_results.rds")
-
-results |>
-  dplyr::select(query, given, mean, sd, starts_with("cred")) |>
-  knitr::kable(
-    digits = 2,
-    booktabs = TRUE,
-    align = "c",
-    escape = TRUE) 
+  query_model(
+    query = "Y[X=1] != Y[X=0]",
+    given = c("X==1 & Y ==1", 
+              "M==0", 
+              "M==1",
+              "X==1 & Y ==1 & M==0",
+              "X==1 & Y ==1 & M==1"),
+    using = "parameters"
+)
 
 ```
-
-
-
-
-

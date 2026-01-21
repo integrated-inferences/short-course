@@ -63,6 +63,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Mixed methods in `CausalQueries`
 
+```{r, child = "modules/4.4_CQ.qmd"}
+
+```
+
 
 ## Application
 

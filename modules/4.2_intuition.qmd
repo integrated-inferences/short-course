@@ -76,52 +76,121 @@ Key insight:
 That, with priors, is enough to update:
 
 $$p(\lambda | D) = \frac{p(D | \lambda)p(\lambda)}{p(D)}$$
+## "By hand"
+
+Let's update manually.
+
+### Causal inference on a grid
+
+Consider this joint distribution with binary $X$ and binary $Y$ from [here](https://macartan.github.io/ci/ci_2025.html#/example-without-identification-2)
+
+|     | Y = 0 | Y = 1 | 
+|-----|-------|-------|
+| **X = 0** | $b/2 + c/2$      |  $a/2 + d/2$     |   
+| **X = 1** | $a/2 + c/2$      |  $b/2 + d/2$     |   
 
 
-## Learning with confounding
+reminder: $a$ is share with negative effects, $b$ is share with positive effects...
 
-```{r echo=FALSE, out.width="300px", fig.align="center", eval = TRUE}
-knitr::include_graphics("assets/confounding.png")
+### Causal inference on a grid: strategy
+
+Say we now had (finite) data filling out this table. What posteriors should we form over $a,b,c,d$?
+
+
+|     | Y = 0 | Y = 1 | 
+|-----|-------|-------|
+| **X = 0** | $n_{00}$      |  $n_{01}$     |   
+| **X = 1** | $n_{10}$      |  $n_{11}$     |   
+
+Lets start with a flat prior over the shares and then update over possible shares based on the data.
+
+This time we will start with a draw of possible shares and put look for posterior weights on each drawn share.
+
+
+### Causal inference on a grid: likelihood {.smaller}
+
+$$
+\Pr(n_{00}, n_{01}, n_{10}, n_{11} \mid a,b,c,d) =
+f_{\text{multinomial}}\left( \alpha_{00}, \alpha_{01}, \alpha_{10}, \alpha_{11} \mid \sum n, w \right)
+$$
+where:
+
+$$w = \left(\frac12(b + c),  \frac12(a+d), \frac12(a+c), \frac12(b+d)\right)$$
+
+why multinomial?
+
+### Causal inference on a grid: execution {.smaller}
+
+prior draw with 10000 possibilities:
+
+```{r}
+
+x <- gtools::rdirichlet(10000, alpha = c(1,1,1,1)) |> as.data.frame()
+names(x) <- letters[1:4]
+
+x |> head() |> kable(digits = 3)
+```
+each row sums to 1; each point (row) lies on a simplex
+
+### Causal inference on a grid: execution {.smaller}
+
+
+Imagine we had data (number of units with given values of X and Y):
+
+$n_{00} = 400, n_{01} = 100, n_{10} = 100, n_{11} = 400$
+
+Difference in means = .6. 
+
+Then:
+
+
+```{r}
+# add likelihood and calculate posterior
+
+x <- x |> 
+  rowwise() |>  # Ensures row-wise operations
+  mutate(
+    likelihood = dmultinom(
+      c(400, 100, 100, 400),
+      prob = c(b + c, a + c, a + d, b + d) / 2
+    )
+  ) |> 
+  ungroup() |>
+  mutate(posterior = likelihood / sum(likelihood))
+
 ```
 
-* Say we just observe a positive Inequality-Democratization correlation
-* Could be because Inequality causes Democratization
-* Could be because of confounding
 
+### Causal inference on a grid: execution {.smaller}
 
-## Learning with confounding
-
-```{r echo=FALSE, out.width="300px", fig.align="center", eval = TRUE}
-knitr::include_graphics("assets/confounding.png")
+```{r}
+x |> 
+  mutate(likelihood = formatC(likelihood, format = "e", digits = 2),
+         posterior = formatC(posterior, format = "e", digits = 2)) |> 
+  head() |>
+  kable(digits = 2)
 ```
 
-* So observing $M$ helps!
-    * Allows us to learn if $I$ affects $M$
-    * And if $M$ affects $D$
-* Suppose we see:
-    * a strong positive $I$ to $M$ correlation
-    * a strong positive $M$ to $D$ correlation
-* We update toward belief that $I$ to $D$ effect is common, and that confounding is uncommon
-* If $I/M$ and $M/D$ correlations are weak/absent, then confounding likely
-* **Process data helps address the deep problem of confounding**
+### Causal inference on a grid: inferences
 
+```{r}
+x |> summarize(a = weighted.mean(a, posterior),
+               b = weighted.mean(b, posterior),
+               ATE = b - a) |>
+  kable(digits = 2)
+```
 
-<!-- ## Integration qual and quant: getting our probative value from the data -->
+### Causal inference on a grid: inferences
 
-<!-- * Suppose we have data on $I$, D$, **and $M$** for a large number of cases -->
-<!-- * We observe a strong positive correlation across all 3 variables -->
-<!-- * What have we learned, under this model? -->
-<!--     * Positive $I \rightarrow M$ effects more likely than negative -->
-<!--     * Positive $M \rightarrow D$ effects more likely than negative -->
-<!-- * Given the model, we've now drawn our population-level beliefs **from the data** -->
-<!-- * Now, we go and process-trace -->
-<!--     * Did high inequality cause democratization in Malawi? -->
-<!--     * Observe $M$ -->
-<!-- * Now, we have population-beliefs that give $M$ probative value -->
+```{r, fig.cap = "Spot the ridge"}
+x |> ggplot(aes(b, a, size = posterior)) + geom_point(alpha = .5) 
+
+```
+
 
 ## In sum: learning from data
 
-* For any data pattern, we gain confience in parameter values more consistent with the data
+* For any data pattern, we gain confidence in parameter values more consistent with the data
 * For single-case inference, we must bring background beliefs about population-level causal effects
 * For multiple cases, we can learn about effects from the data
 * Large-$N$ data can thus provide probative value for small-$N$ process-tracing
