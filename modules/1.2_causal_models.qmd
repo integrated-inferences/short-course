@@ -532,9 +532,13 @@ knitr::include_graphics("assets/Piersonexample.png")
 
 A specific argument about how things work in a case might look like something like this: 
 
-* socioeconomic pressures *put* issues on the agenda; being on the agenda and having an opportunity to avoid blame were individually necessary and jointly sufficient for retrenchment
+> socioeconomic pressures *put* issues on the agenda; being on the agenda and having an opportunity to avoid blame were individually necessary and jointly sufficient for retrenchment
 
-* formally this involves a specification of the $\theta$s. The $\theta$s can be used to indicate *how* a given child reacts to a parents value
+Note:
+
+* formally this involves a specification of the $\theta$s
+* The $\theta$s can be used to indicate *how* a given child reacts to a parents value
+* Process tracing is in a way: figuring out what thetas are for a case.
 
 ## Causal types
 
@@ -542,11 +546,12 @@ A specific argument about how things work in a case might look like something li
 
 * For a node with one parent: $\theta$  indicates how the node would respond to each value of its parents. For instance:
 
-* $Y=0$ regardless of $X$ --- we will call this "$\theta^Y =$ '00'"
-* $Y=1$ if and only if $X=1$ --- we will call this "$\theta^Y =$ '01'"
-* $Y=1$ if and only if $X=0$ --- we will call this "$\theta^Y =$ '10'"
-* $Y=1$ regardless of $X$ --- we will call this "$\theta^Y =$ '11'"
+  * $Y=0$ regardless of $X$: we will call this "$\theta^Y =$ '00'"
+  * $Y=1$ if and only if $X=1$: we will call this "$\theta^Y =$ '01'"
+  * $Y=1$ if and only if $X=0$: we will call this "$\theta^Y =$ '10'"
+  * $Y=1$ regardless of $X$: we will call this "$\theta^Y =$ '11'"
 
 * For a node with $k$ parents: $\theta$  can take on up to $2^{\left(2^k\right)}$ values! This grows quickly.
 
-* You refine a model by specificying  which types are possible or which types are *likely*
+* You refine a model by specifiying  which types are possible or which types are *likely*
+* Probabilistic process tracing can be thought of as figuring out which types are likely among all those that are possible 
