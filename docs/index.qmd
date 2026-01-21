@@ -32,7 +32,7 @@ Day 2:
 * [Videos](https://integrated-inferences.github.io/videos.html)
 * [GESIS course description](https://training.gesis.org/?site=pDetails&child=full&pID=0x3C86637E0A0145B2858B47F204C50FAC&lang=en_US&lang=de_DE&lang=en_US)
 
-* Shiny app
+* [Shiny app to do process tracing by hand](https://shiny2.wzb.eu/ipi/process_tracing/)
 
 * [Cheat sheet for causal types](cheatsheet.html)
 
