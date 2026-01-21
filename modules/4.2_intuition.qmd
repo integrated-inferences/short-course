@@ -38,34 +38,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align="center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
-hj_dag(x = c(0, 0, 2, 2),
-       y = c(1, 2, 1, 2),
-       names = c(expression(paste(I)),
-                 expression(paste(theta^I)),
-                expression(paste(D)),
-                expression(paste(theta^D))),
-       arcs = cbind( c(2, 1, 4),
-                     c(1, 3, 3)),
-       padding = .4, contraction = .15) 
-
-```
-
-## Large-$N$ estimation of $ATE$: basic intuition
-
-* The most straightforward
-* Suppose we collect data on $I$ and $D$ for a large number of cases
-* We observe a strong positive correlation 
-* We will think there's a positive average effect
-    * Note: this specific model rules out confounding
-    * All exogenous nodes are independently assigned 
-        * We will complicate this later
-
-
-
-## Now, complicate the DAG
-
-```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align="center", out.width='.9\\textwidth'}
-par(mar=c(1,1,1,1))
 hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
        y = c(1, 2, 3, 1, 2, 3, 1, 2, 3),
        names = c("I", expression(theta^I), expression(lambda^I), "D", expression(theta^D), expression(lambda^D), "M", expression(theta^M), expression(lambda^M)),
@@ -78,15 +50,14 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 
 ## Large-$N$ estimation of $ATE$: what happens to beliefs over parameters
 
-* Again, we collect data on $I$ and $D$ for a large number of cases
+* We collect data on $I$, $M$, and $D$ for a large number of cases
 * We observe a strong positive correlation 
 * We will think there's a positive average effect
 
 
-
 ## Large-$N$ estimation of $ATE$: what happens to beliefs over parameters
 
-* Now, we will update on both $\lambda^M$ and $\lambda^D$
+* Now, we will update on both $\lambda^I$ , $\lambda^M$ and $\lambda^D$
 * An $I \rightarrow D$ effect can only happen if $I$ affects $M$ and $M$ affects $D$, in specific ways
 * Two possible **combinations** of effects can generate a positive $I \rightarrow D$ effect
     * $I \rightarrow M$ is positive, $M \rightarrow D$ is positive
@@ -94,6 +65,17 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 * So we will come to put more weight on a *joint distribution* of $\lambda^M$ and $\lambda^D$ in which there are lots of cases with one of these two combinations
 * ...and less posterior weight on all other combinations of effects
 
+## General procedure
+
+Key insight: 
+
+* If we *suppose* a given set of  parameter values we can figure out the likelihood of the data given those values.
+* We can do this for all possible parameter values and see which ones are more in line with the data
+
+
+That, with priors, is enough to update:
+
+$$p(\lambda | D) = \frac{p(D | \lambda)p(\lambda)}{p(D)}$$
 
 
 ## Learning with confounding

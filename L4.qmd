@@ -43,20 +43,26 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-# Mixed Methods
+# Population parameters
 
 ```{r, child = "modules/4_mixed_methods.qmd"}
 
 ```
 
+# Intuition
 
 ```{r, child = "modules/4.2_intuition.qmd"}
 
 ```
 
+# Mixed methods
+
 ```{r, child = "modules/4.3_mixing_methods.qmd"}
 
 ```
+
+# Mixed methods in `CausalQueries`
+
 
 ## Application
 

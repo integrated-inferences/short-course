@@ -18,9 +18,6 @@ bibliography: assets/bib.bib
 ---
 
 
-
-
-
 ```{css}
 ##| echo: false
 ##| include: false

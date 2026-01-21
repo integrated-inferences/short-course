@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-## Start with a DAG
+## A DAG
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align="center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -43,24 +43,11 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 
 ## A typical "quantitative" data structure
 
-```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align="center", out.width='.9\\textwidth'}
-par(mar=c(1,1,1,1))
-hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
-       y = c(1, 2, 3, 1, 2, 3, 2, 3, 4),
-       names = c("I", expression(theta^I), expression(lambda^I), "D", expression(theta^D), expression(lambda^D), "M", expression(theta^M), expression(lambda^M)),
-       arcs = cbind( c(3, 2, 1, 5, 6, 7, 8, 9, 1),
-                     c(2, 1, 7, 4, 5, 4, 7, 8, 4)),
-       padding = .4, contraction = .15)
-
-```
-
 
 * Data on exogenous variables and a key outcome for many cases
 
 * E.g., data on inequality ($I$) and democracy ($D$) for many cases
 
-
-## A typical "quantitative" data structure
 
 ```{r echo=FALSE, out.width="320px", fig.align="center", eval = TRUE}
 knitr::include_graphics("assets/quantdata.png")
@@ -68,50 +55,14 @@ knitr::include_graphics("assets/quantdata.png")
 
 
 
-##  A typical "quantitative" data structure
-
-```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align="center", out.width='.9\\textwidth'}
-par(mar=c(1,1,1,1))
-hj_dag(x = c(0, 0, 1, 1, 2, 3, 2, 2),
-       y = c(2, 3, 3, 4, 2, 3, 3, 4),
-       names = c(
-         "I", 
-         expression(paste(theta^I)),
-         "M",
-         expression(paste(theta^M)), 
-         "D", 
-         expression(paste(theta^D)),
-         "P",
-         expression(paste(theta^P))
-         ),
-       arcs = cbind( c(1, 2, 4, 6, 1, 3, 7, 8),
-                     c(5, 1, 3, 5, 3, 5, 5, 7)),
-       # title = "A Simple DAG",
-       padding = .4, contraction = .15) 
-
-```
-* Or maybe data on inequality, democracy, and international pressure for many cases
-
 
 ## A typical "qualitative" data structure
-
-```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align="center", out.width='.9\\textwidth'}
-par(mar=c(1,1,1,1))
-hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
-       y = c(1, 2, 3, 1, 2, 3, 2, 3, 4),
-       names = c("I", expression(theta^I), expression(lambda^I), "D", expression(theta^D), expression(lambda^D), "M", expression(theta^M), expression(lambda^M)),
-       arcs = cbind( c(3, 2, 1, 5, 6, 7, 8, 9, 1),
-                     c(2, 1, 7, 4, 5, 4, 7, 8, 4)),
-       padding = .4, contraction = .15)
-
-```
 
 * Data on exogenous variables and a key outcome plus elements of process for a **small** number of cases
     * Finite resources mean tradeoffs between extensive and intensive data collection
 
 * E.g., data on inequality ($I$), mass mobilization ($M$), and democracy ($D$) for many cases
 
-## A typical "qualitative" data structure
 
 ```{r echo=FALSE, out.width="320px", fig.align="center", eval = TRUE}
 knitr::include_graphics("assets/qualdata.png")
@@ -135,9 +86,48 @@ knitr::include_graphics("assets/mixeddata.png")
 * We simply ask: 
     * Which causal effects in the population are most and least consistent with the data pattern we observe?
 * That is, what distribution of causal effects in the population, for each node, are most consistent with this data pattern?
-* CausalQueries uses information wherever it finds it
+* `CausalQueries` uses information wherever it finds it
+
+## Mixing in practice
+
+For Bayesian approaches this mixing is not hard.
+
+Critically though we maintain the assumption that cases for "in depth" analysis are chose *at random*---otherwise we have to account for selection processes.
 
 
+What is the probability of seeing these two cases:
+
+1. $X=1, M = 1, Y = 1$ case 
+2. $X=1, Y=1$ (no data on $M$) 
+
+given parameters $\lambda$:
+
+## Mixing in practice
+
+The probability of 1 is:
+
+$$p_{111}= \lambda^X_1 \times (\lambda^M_{01} + \lambda^M_{11}) \times (\lambda^Y_{01} +\lambda^Y_{11})$$
+
+The probability of 2 is:
+
+$$p_{1?1} =  \lambda^X_1\times \left((\lambda^M_{01} + \lambda^M_{11}) \times (\lambda^Y_{01} +\lambda^Y_{11}) + (\lambda^M_{10} + \lambda^M_{00}) \times (\lambda^Y_{10} +\lambda^Y_{11}) \right)$$
+
+So the probability of this data is just:
+
+$$p(D|\lambda) = p_{111} * p{1?1}$$
+
+## Mixing in practice
+
+Insight:
+
+If we imagine possible parameter values we can figure out the likeihood of *any* data type -- quantitative, qualitative or mixed.
+
+That, with priors, is enough to update:
+
+$$p(\lambda | D) = \frac{p(D | \lambda)}{p(D)}$$
+
+
+# Why is this useful?
 
 ## How qual can inform quant: confounding
 
@@ -146,6 +136,7 @@ knitr::include_graphics("assets/confounding.png")
 ```
 
 Remember:
+
 * Say we just observe a positive Inequality-Democratization correlation
 * Could be because Inequality causes Democratization
 * Could be because of confounding
@@ -158,6 +149,7 @@ knitr::include_graphics("assets/confounding.png")
 ```
 
 Remember
+
 * Observing $M$ helps
 * **Process data helps address the deep problem of confounding**
 * Key point: we don't need $M$ for all cases
@@ -168,19 +160,8 @@ Remember
 * Another example: $M$ as the confound 
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
-par(mar=c(1,1,1,1))
-hj_dag(x = c(0, 1, 2),
-       y = c(2, 3, 2),
-       names = c(
-         "X", 
-         "M",
-         "Y" 
-         ),
-       arcs = cbind( c(1, 3),
-                     c(2, 1),
-                     c(2, 3)),
-       padding = .4, contraction = .15) 
 
+make_model("X->Y <-M->X") |> plot()
 ```
 
 
@@ -234,7 +215,7 @@ hj_dag(x = c(0, 0, 2, 2, 1, 1),
 
 ## How quant can inform qual: getting probative value of a clue from the data
 
-* Suppose we have data on $I$, D$, and $M$ for a large number of cases
+* Suppose we have data on $I$, $D$, and $M$ for a large number of cases
 * Suppose we observe a strong positive correlation across all 3 variables
 * What have we learned, under this model?
     * Positive $I \rightarrow M$ effects more likely than negative
