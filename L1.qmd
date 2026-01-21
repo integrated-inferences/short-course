@@ -48,14 +48,12 @@ library(ggplot2)
 ```
 
 
-
 ```{r, child = "modules/0_intro.qmd"}
 
 ```
 
 
 #  Causality
-
 
 ```{r, child = "modules/1.1_causality.qmd"}
 

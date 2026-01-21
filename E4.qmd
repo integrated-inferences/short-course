@@ -22,9 +22,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-**(30 minutes)**
+Choose your exercise:
 
-## A hoop test justified with data.
+# Own data exercise
+
+If you brought your own data, now please try to:
+
+1. Define your model
+2. Update your model on your data
+3. Compute a query using posteriors and compare to inferences based on priors
+
+**OR:**
+
+
+# A hoop test justified with data
+
+**(45 minutes)**
 
 Sometimes we treat the absence of an expected mediator as strong evidence against a proposition. 
 In this exercise we will try to *justify* a claim of this form:
@@ -40,9 +53,10 @@ In this exercise we will try to *justify* a claim of this form:
 # A smoking gun test
 **(30 minutes)**
 
-Can you construct another model and background data that lets you treat $K$ as a smoking gun evidnece for the $X$ causing $Y$?
+To think through: Can you construct another model and background data that lets you treat $K$ as a smoking gun evidnece for the $X$ causing $Y$?
 
-# Application
+# Closing discussion
+**(15 minutes)**
 
 
 

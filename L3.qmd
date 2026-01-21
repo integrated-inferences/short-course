@@ -55,6 +55,7 @@ library(ggplot2)
 
 ```
 
+# Procedure for process tracing
 
 ```{r, child = "modules/3.2_process_tracing_procedure.qmd"}
 

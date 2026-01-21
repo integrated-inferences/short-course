@@ -111,8 +111,6 @@ Say you knew for the $A$, $B$ relationship:
 * there is a 25% chance that $B=0$ regardless of $A$
 * there is a 25% chance that $B=1$ regardless of $A$
 
-Independently there is 50% chance that $B$ causes $C$ for a given unit.
-
 Say you knew for the $B$, $C$ relationship:
 
 * there is a 50% chance that $B$ causes $C$ for a given unit.
@@ -127,4 +125,4 @@ Now:
 * What is the probability that $A$ causes $C$ for a case in which $A=1$ and $B=1$ and $C=1$?
 * What is the probability that $A$ causes $C$ for a case in which $A=1$ and $B=0$ and $C=1$?
 
-
+Summarize: when is $B$ informative for the $A \rightarrow C$ relationship.
