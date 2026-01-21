@@ -1,0 +1,193 @@
+---
+title: "Making and plotting causal models"
+format: 
+   revealjs:
+      embed-resources: true
+      theme: serif
+      slide-level: 3
+      slide-number: true
+      toc-depth: 2
+      show-slide-number: all
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+      smaller: true
+---
+
+```{r, echo = FALSE}
+if(!exists("child")){
+library(tidyverse)
+library(CausalQueries)
+}
+```
+
+## Making models
+
+### Causal statements
+
+The key input to model creation is the causal statement:
+
+* "X -> Y"
+* "A -> B -> C <- A <-> C"
+* "A -> B; B <- C"
+
+Note:
+
+* Arrows can go both directions
+* Double headed arrows means confounding
+* Parts of a statement can be separated using `;`
+* Avoid spaces and special characters in names (`.`, `-`, `_`, `|`, etc.)
+
+### Causal statements
+
+`CausalQueries` will always translate causal statements into a simple collection of connections:
+
+```{r, echo = TRUE}
+make_model("A -> B -> C <- A <-> C") |>
+  inspect("statement")
+```
+
+Note:
+
+* Arrows can go both directions
+* Double headed arrows means confounding
+* Parts of a statement can be separated using `;`
+
+### Inspect {.smaller}
+
+Once a model is made there is a default generation of causal structure, causal types, parameters, priors, and so on.  All elements  can be examined using `inspect`:
+
+```{r, echo = TRUE}
+make_model("X -> Y") |>
+  inspect("parameters_df")
+```
+
+### Interpret {.smaller}
+
+All the nodal types get made but they can still be hard to interpret. You can get help using `summary` or `interpret`:
+
+```{r, echo = TRUE}
+make_model("A -> Y <- B") |>
+  interpret_type(nodes = "Y")
+```
+
+### Refine
+
+There are various ways to refine a model:
+
+* Set restrictions: `set_restrictions` removes particular "nodal types"
+* Set parameters: `set_parameters`  provide particular parameter values for a model
+* Set priors: `set_priors` provide priors over model parameters
+
+There are many ways to use these so consult help. e.g. `? set_restrictions`
+
+### Example 1
+
+Say I have a model of the form `A -> B -> C`. I want to impose monotonicity (no negative effects), but I also want to assume that the `A -> B` relation is very strong:
+
+Using natural language statements: 
+
+```{r}
+model <- 
+  make_model("A -> B-> C") |>
+  set_restrictions(statement = decreasing("A", "B")) |>
+  set_restrictions(statement = decreasing("B", "C")) |>
+  set_parameters(statement = increasing("A", "B"), parameters = .8)
+
+model |>  inspect("parameters_df")
+```
+
+### Example 1
+
+Say I have a model of the form `A -> B -> C`. I want to impose monotonicity (no negative effects), but I also want to assume that the `A -> B` relation is very strong:
+
+Using nodal types: 
+
+```{r}
+model <- 
+  make_model("A -> B-> C") |>
+  set_restrictions(param_names  = 'B.10') |>
+  set_restrictions(param_names  = 'C.10') |>
+  set_parameters(param_names = 'B.01', parameters = .8)
+
+model |>  inspect("parameters_df")
+```
+
+## Plotting
+
+Plotting functionality makes use of the Sugiyama layout from `igraph` which plots nodes to reflect their position in a causal ordering.
+
+The `plot` method calls `plot_model` and passes provided arguments to it.
+
+
+### A basic plot:
+
+```{r bbasic, fig.cap = "Simple model"}
+model <- make_model("X -> Y")
+
+model |> plot_model()
+```
+
+### ggplot layers
+
+The model that is produced is a `ggplot` object and additional layers can be added in the usual way.
+
+```{r bgg, fig.cap = "Adding additional `ggplot` layers"}
+model |>
+  plot_model()  +
+  annotate("text", x = c(1, -1) , y = c(1.5, 1.5), label = c("Some text", "Some more text")) +
+  coord_flip()
+```
+
+
+### Adding labels
+
+Provide labels in the same order as model nodes.
+
+```{r blabs, fig.cap = "Adding labels"}
+model <- make_model("A -> B -> C <- A")
+
+
+# Check node ordering
+inspect(model, "nodes")
+
+# Provide labels
+model |>
+   plot_model(
+     labels = c("This is A", "Here is B", "And C"),
+     nodecol = "white", textcol = "black")
+```
+
+### Controlling  positions
+
+You can manually set positions using the `x_coord` and `y_coord` arguments.
+
+You can manually set positions using the `x_coord` and `y_coord` arguments.
+
+```{r bcoord, fig.cap = "Specifying coordinates"}
+model |>
+  plot(x_coord = 0:2,  y_coord = c(0, 2, 1))
+```
+
+
+### Controlling  color
+
+You can manually control node color and text color for all nodes together or separately.
+
+```{r bcolor, fig.cap = "Controlling colors"}
+model |>
+  plot(x_coord = 0:2,  y_coord = c(0, 2, 1),
+       nodecol = c("blue", "orange", "red"),
+       textcol = c("white", "red", "blue"))
+```
+
+### Models with unobserved confounding
+
+Unobserved confounding is represented using dashed curves.
+
+
+```{r bdashed, fig.cap = "Plot showing confounding"}
+make_model('X -> K -> Y <- X; X <-> Y; K <-> Y') |>   plot()
+```
+
+

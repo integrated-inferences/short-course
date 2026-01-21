@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
 width: 0.8em;
 margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
 }
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+}
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -2167,61 +2202,80 @@ vertical-align: -.125em;
 </header>
 
 
+<section id="nodal-types" class="level2">
+<h2 class="anchored" data-anchor-id="nodal-types">Nodal types</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href>Outline</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href>Resources</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href>About</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href>One parent</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href>Two parents</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href>Three parents</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href>Note on ordering</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<p>Materials for a two day introduction for causal models for process tracing and mixed methods</p>
-<p>Day 1:</p>
-<ul>
-<li><a href="L1.html">Lecture 1: Causality and Causal Models</a></li>
-<li><a href="E1.html">Exercises 1: Make some causal models</a></li>
-<li><a href="L2.html">Lecture 2: Queries and inferences</a></li>
-<li><a href="E2.html">Exercises 2: Defining questions, Bayesian updating</a></li>
-</ul>
-<p>Day 2:</p>
-<ul>
-<li><a href="L3.html">Lecture 3: Process tracing</a></li>
-<li><a href="E3.html">Exercises 3</a></li>
-<li><a href="L4.html">Lecture 4: Mixed methods</a></li>
-<li><a href="E4.html">Exercises 4</a></li>
-</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make_model</span>(<span class="st">&quot;X -&gt; Y&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">interpret_type</span>(<span class="at">nodes =</span> <span class="st">&quot;Y&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Y
+  index  interpretation
+1    *-  Y = * if X = 0
+2    -*  Y = * if X = 1</code></pre>
+</div>
+</div>
+<p>e.g. type “01”: Y = 0 if X = 01, Y = 1 if X = 1</p>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<ul>
-<li><p><a href="https://integrated-inferences.github.io/">All resources</a></p></li>
-<li><p><a href="https://integrated-inferences.github.io/book/">Book</a></p></li>
-<li><p><a href="https://integrated-inferences.github.io/videos.html">Videos</a></p></li>
-<li><p><a href="https://training.gesis.org/?site=pDetails&amp;child=full&amp;pID=0x3C86637E0A0145B2858B47F204C50FAC&amp;lang=en_US&amp;lang=de_DE&amp;lang=en_US">GESIS course description</a></p></li>
-<li><p>Shiny app</p></li>
-<li><p><a href="cheatsheet.html">Cheat sheet for causal types</a></p></li>
-</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make_model</span>(<span class="st">&quot;X -&gt; Y &lt;- Z&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">interpret_type</span>(<span class="at">nodes =</span> <span class="st">&quot;Y&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Y
+  index          interpretation
+1  *---  Y = * if X = 0 &amp; Z = 0
+2  -*--  Y = * if X = 1 &amp; Z = 0
+3  --*-  Y = * if X = 0 &amp; Z = 1
+4  ---*  Y = * if X = 1 &amp; Z = 1</code></pre>
+</div>
+</div>
+<p>e.g. type “0001”: Y = 1 only if X = 1 and Z = 1</p>
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
-<section id="advance-watching-and-reading" class="level3">
-<h3 class="anchored" data-anchor-id="advance-watching-and-reading">Advance watching and reading</h3>
-<p>The causal models approach we’ll be teaching is fairly complex, and you will get much more out of the course if you prepare in advance by engaging with our book, <em>Integrated Inferences</em>.</p>
-<p>First, watch these four introductory videos to get the general idea - they will make the reading a bit easier: https://integrated-inferences.github.io/videos.html</p>
-<p>Then, read the following chapters from the open access pre-print: https://integrated-inferences.github.io/book/</p>
-<p>Chapters 2, 4, 5, 7, 9</p>
-<p>The text is fairly dense, so don’t let yourself get bogged down if there are things you don’t understand. Just keep going. There will be plenty of time for questions and further explanation in class, but it’s critical that you come in with this overview.</p>
-</section>
-<section id="software-installation" class="level3">
-<h3 class="anchored" data-anchor-id="software-installation">Software installation</h3>
-<p>In class, we will be doing hands-on exercises with the software package through which the approach can be implemented, CausalQueries. You will thus need to have all necessary software installed before the start of class on the first day.</p>
-<p>Make sure you have an up to date installation of R Make sure you have an up to date installation of RStudio Install CausalQueries from CRAN, e.g. in Rstudio. e.g. via install.packages(“CausalQueries”) To check the package is working try to make and update a model like this: model &lt;- make_model() |&gt; update_model()</p>
-</section>
-<section id="identify-data-optional" class="level3">
-<h3 class="anchored" data-anchor-id="identify-data-optional">Identify data (Optional)</h3>
-<p>During the class we will practice forming causal models and drawing inferences from them. We will work with simulated examples and some real examples that we used in our book. However if you have an application in mind we encourage you to identify data, even if imperfect, that you can try this all out on. Good data for this would have the following features:</p>
-<p>A key outcome variable you particularly care about</p>
-<p>One or two possible causes that you care about</p>
-<p>Data on at least some of the cases that capture either relevant features of context, or aspects of processes connecting causes and outcomes</p>
-<p>All variables can be plausibly dichotomized (measured as 0 or 1) Keep things simple: use a setting where each observation is independent – so avoid data with complex hierarchical, clustering, or time dependence features.</p>
-</section>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make_model</span>(<span class="st">&quot;A -&gt; Y &lt;- B; C-&gt;Y&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">interpret_type</span>(<span class="at">nodes =</span> <span class="st">&quot;Y&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Y
+     index                  interpretation
+1 *-------  Y = * if A = 0 &amp; B = 0 &amp; C = 0
+2 -*------  Y = * if A = 1 &amp; B = 0 &amp; C = 0
+3 --*-----  Y = * if A = 0 &amp; B = 1 &amp; C = 0
+4 ---*----  Y = * if A = 1 &amp; B = 1 &amp; C = 0
+5 ----*---  Y = * if A = 0 &amp; B = 0 &amp; C = 1
+6 -----*--  Y = * if A = 1 &amp; B = 0 &amp; C = 1
+7 ------*-  Y = * if A = 0 &amp; B = 1 &amp; C = 1
+8 -------*  Y = * if A = 1 &amp; B = 1 &amp; C = 1</code></pre>
+</div>
+</div>
+<p>e.g. type “10000001”: Y = 1 only if A = 0, B= 0 , C = 0 or A = 1, B = 1 , C = 1</p>
+</div>
+<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
+<p>The order in which nodes appear in the indexing depends on the their “generation” in the causal model. In this example C actually precedes B and so precedes it in the indexing:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make_model</span>(<span class="st">&quot;A -&gt; Y &lt;- B &lt;- C; C-&gt;Y&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">interpret_type</span>(<span class="at">nodes =</span> <span class="st">&quot;Y&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Y
+     index                  interpretation
+1 *-------  Y = * if A = 0 &amp; C = 0 &amp; B = 0
+2 -*------  Y = * if A = 1 &amp; C = 0 &amp; B = 0
+3 --*-----  Y = * if A = 0 &amp; C = 1 &amp; B = 0
+4 ---*----  Y = * if A = 1 &amp; C = 1 &amp; B = 0
+5 ----*---  Y = * if A = 0 &amp; C = 0 &amp; B = 1
+6 -----*--  Y = * if A = 1 &amp; C = 0 &amp; B = 1
+7 ------*-  Y = * if A = 0 &amp; C = 1 &amp; B = 1
+8 -------*  Y = * if A = 1 &amp; C = 1 &amp; B = 1</code></pre>
 </div>
 </div>
 </div>
+</div>
+</div>
+</section>
 
 </main>
 <!-- /main column -->
