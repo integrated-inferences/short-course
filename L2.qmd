@@ -50,20 +50,20 @@ library(ggplot2)
 
 
 
-# Queries, updating
+# Queries
 
 ```{r, child = "modules/2.1_queries.qmd"}
 
 ```
 
-## Updating
+# Updating
 
 
 ```{r, child = "modules/2.2_bayesbasics.qmd"}
 
 ```
 
-## Conditional independence
+# Conditional independence
 
 *Figuring out when A tells you something about B*
 
@@ -71,7 +71,7 @@ library(ggplot2)
 
 ```
 
-## Updating in `CausalQueries`
+# Updating in `CausalQueries`
 
 *`CausalQueries` brings these elements together*
 

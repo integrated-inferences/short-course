@@ -31,7 +31,9 @@ library(ggplot2)
 
 ```
 
-## Exercise 1: Make your own model in CausalQueries
+# Exercise 1: Make your own model in `CausalQueries`
+
+## Define the model
 
 Select an outcome variable of interest.
 
@@ -51,7 +53,7 @@ Email the `.qmd` file to alan.jacobs@ubc.ca.
 
 Be prepared to talk the class through the choices you made in building the model. What assumptions did you intend to build in or leave out, and why, given background knowledge of the domain?
 
-### Keep in mind
+Keep in mind
 
 - Missing arrows make the strongest statements.
 - Are there direct effects you are unintentionally excluding?
@@ -62,4 +64,18 @@ Be prepared to talk the class through the choices you made in building the model
 - Possible causes can be left out as long as they do not affect more than one node included on the graph.
 - Mediating steps can be left out or collapsed.
 
+## Refine the model
+
+Inspect the collection of implied types, via
+
+```{r, eval = FALSE}
+my_model |> inspect("parameters_df")
+```
+* Are there restrictions you would want to impose to any types? What would they be
+* Select one type for each node (e.g. a type for $X$, for $M$, and for $Y$) and describe what would actually *happen* in that case.
+
+## Plot the model
+
+* plot your model using `plot_model`
+* assess whether there are more intuitive placements for the nodes and adjust using `x_coord`, `y_coord`. Make sure to give coordinates in the order of the model nodes. (Check via: `model$nodes`).
 
