@@ -24,19 +24,25 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Queries
 
-In `CausalQueries` we distinguish between controlled interventions and simple conditioning:
+Return to the model that you created in Exercise 1. Now write down at least 3 queries that can be defined vis-a-vis this model and that might be of substantive interest. You should write down each query in two ways:
 
-$Y[A==1] :|: B == 1$ means the value for $Y$ when $A$ is "set" to 1 and $B$ happens to be 1.
+1. In plain, but maximally precise, plain language.
 
-Then the effect of $A$ given $B$ might be written:
+2. In `CausalQueries`
 
-$(Y[A=1] - Y[A=0]) :|: B == 1$ 
+<!-- In `CausalQueries` we distinguish between controlled interventions and simple conditioning: -->
 
-For your model: 
+<!-- $Y[A==1] :|: B == 1$ means the value for $Y$ when $A$ is "set" to 1 and $B$ happens to be 1. -->
 
-* describe a query that depends on an controlled change in some variable 
-* describe a query that depends on a natural (observational) change in some variable 
-* describe a query that depends on both 
+<!-- Then the effect of $A$ given $B$ might be written: -->
+
+<!-- $(Y[A=1] - Y[A=0]) :|: B == 1$  -->
+
+<!-- For your model:  -->
+
+<!-- * describe a query that depends on a controlled change in some variable  -->
+<!-- * describe a query that depends on a natural (observed) change in some variable  -->
+<!-- * describe a query that depends on both  -->
 
 
 # Bayesian sequencing and posterior variance
