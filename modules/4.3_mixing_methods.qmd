@@ -17,8 +17,9 @@ format:
 
 ```{r, include = FALSE}
 set.seed(1)
+library(here)
+source(here("assets", "setup.R"))
 library(knitr)
-source("assets/setup.R")
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -92,7 +93,7 @@ knitr::include_graphics("assets/mixeddata.png")
 
 For Bayesian approaches this mixing is not hard.
 
-Critically though we maintain the assumption that cases for "in depth" analysis are chose *at random*---otherwise we have to account for selection processes.
+Critically though we maintain the assumption that cases for "in depth" analysis are chosen *at random*---otherwise we have to account for selection processes.
 
 
 What is the probability of seeing these two cases:
@@ -212,6 +213,43 @@ hj_dag(x = c(0, 0, 2, 2, 1, 1),
     * E.g., beliefs that linked positive effects are more likely than linked negative effects
     * Meaning that $M=1$ in an $I=1, D=1$ case speaks in favor of $I=1$ causing $D=1$
 * The mixed-methods solution: **learn** about population-level effects from large-$N$ data
+
+
+### Application from the book: rule-of-law institutions and long-term growth
+
+```{r, echo = FALSE}
+model <- make_model("Mort -> RoL -> Grth <- Dist; RoL <-> Grth")
+  model |> plot_model()
+```
+* We start with flat priors over causal types
+* Gather data on all nodes for many cases
+
+### Rule-of-law and growth: process-tracing probative value from large-$N$ data
+
+```{r echo=FALSE, out.width="300px", fig.align="center", eval = TRUE}
+knitr::include_graphics("assets/mixingappclue")
+```
+
+
+### Rule-of-law and growth: learning about confounding
+
+* We allowed for confounding between rule of law and growth
+    * Mortality's effects on institutions may be correlated with institutions' effects on growth
+* We learn about that confounding from the data
+    * Rule of law more often has a positive effect on growth where mortality has a negative effect on institutions
+* Consistent with selection effects:
+    * When mortality is low, settlers make institutional choices in anticipation of their growth effects
+
+
+### Rule-of-law and growth: learning about confounding
+
+What this looks like in our posteriors over nodal types:
+
+```{r echo=FALSE, out.width="300px", fig.align="center", eval = TRUE}
+knitr::include_graphics("assets/mixingappconfound")
+```
+
+A type where RoL has a positive effect on Growth is more common when Mortality has a negative effect on RoL.
 
 ### How quant can inform qual: getting probative value of a clue from the data
 
