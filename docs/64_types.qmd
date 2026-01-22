@@ -6,6 +6,14 @@ format:
     toc: false
 ---
 
+In a $X \rightarrow M \rightarrow Y \leftarrow X$ model in which $X$ can affect $Y$ directly or indirectly through $M$, all nodes binary, there are:
+
+* 4 types for $M$ (4 ways that $M$'s values could be determined, given $X$)
+* 16 types for $Y$ (16 ways that $Y$'s values could be determined, given $X$ and $M$)
+* 64 distinct causal types, capturing all the different ways that $X$ could cause $Y$ directly or indirectly through $M$
+
+The table below shows all 64 types and how to interpret them.
+
 ```{=html}
 <style>
 .type-table {
@@ -30,6 +38,10 @@ format:
   padding: 2px 6px;
   border-radius: 999px;
   font-weight: 600;
+}
+.black-pill {
+  background: #111;
+  color: #fff;
 }
 .ym-pill {
   background: #e7f1ff;
@@ -103,7 +115,7 @@ row_block <- raw[5:20, ]
 y_bits <- row_block[, 2:5]
 nums <- row_block[, 7:10]
 
-y_bits <- apply(y_bits, c(1, 2), as.integer)
+y_bits_num <- apply(y_bits, c(1, 2), as.integer)
 nums <- apply(nums, c(1, 2), as.integer)
 
 format_label <- function(text) {
@@ -133,6 +145,27 @@ describe_m <- function(m0, m1) {
     "X has a negative effect on M (M switches from 1 to 0)."
   }
 }
+
+m_type_tooltips <- vapply(
+  seq_along(x0_vals),
+  function(i) describe_m(x0_vals[i], x1_vals[i]),
+  character(1)
+)
+m_type_headers <- c(
+  "\u00A0",
+  vapply(
+    seq_along(x0_vals),
+    function(i) {
+      sprintf(
+        "<span class='pill black-pill num-tooltip' data-tooltip='%s'>M.%s%s</span>",
+        htmlEscape(m_type_tooltips[i]),
+        x0_vals[i],
+        x1_vals[i]
+      )
+    },
+    character(1)
+  )
+)
 
 describe_y <- function(y00, y10, y01, y11) {
   vals <- c(y00, y10, y01, y11)
@@ -238,18 +271,33 @@ explain_type <- function(m0, m1, y00, y10, y01, y11) {
 
 tooltips <- character(64)
 for (r in seq_len(nrow(nums))) {
-  y00 <- y_bits[r, 1]
-  y10 <- y_bits[r, 2]
-  y01 <- y_bits[r, 3]
-  y11 <- y_bits[r, 4]
+  y00 <- y_bits_num[r, 1]
+  y10 <- y_bits_num[r, 2]
+  y01 <- y_bits_num[r, 3]
+  y11 <- y_bits_num[r, 4]
   for (c in seq_len(ncol(nums))) {
     idx <- nums[r, c]
     tooltips[idx] <- explain_type(x0_vals[c], x1_vals[c], y00, y10, y01, y11)
   }
 }
 
-y_bits <- apply(y_bits, c(1, 2), function(x) {
+y_bits_display <- apply(y_bits_num, c(1, 2), function(x) {
   cell_spec(x, extra_css = "color: #444; padding: 2px 6px;")
+})
+
+y_row_labels <- apply(y_bits_num, 1, function(row) {
+  label <- paste0(row, collapse = "")
+  tip <- describe_y(row[1], row[2], row[3], row[4])
+  wrapped <- sprintf(
+    "<span class='pill black-pill num-tooltip' data-tooltip='%s'>Y.%s</span>",
+    htmlEscape(tip),
+    label
+  )
+  cell_spec(
+    wrapped,
+    extra_css = "display: inline-block; padding: 2px 6px;",
+    escape = FALSE
+  )
 })
 
 nums_bold <- apply(nums, c(1, 2), function(x) {
@@ -274,14 +322,14 @@ nums_bold <- apply(nums, c(1, 2), function(x) {
   )
 })
 
-table_df <- cbind(y_bits, key = rep("", nrow(nums_bold)), nums_bold)
-colnames(table_df) <- c(y_headers, rep("", 5))
+table_df <- cbind(y_row_labels, y_bits_display, key = rep("", nrow(nums_bold)), nums_bold)
+colnames(table_df) <- c("", y_headers, rep("", 5))
 
 header_labels <- c(
   "<span class='section-pill'>Y when</span>",
   "<span class='section-pill'>M when</span>"
 )
-header_spans <- c(4, 5)
+header_spans <- c(5, 5)
 
 knitr::kable(
   table_df,
@@ -293,15 +341,22 @@ knitr::kable(
 ) %>%
   add_header_above(
     setNames(
-      rep(1, 9),
-      c(rep("&#160;", 4), m_header_row2)
+      rep(1, 10),
+      c(rep("&#160;", 5), m_header_row2)
     ),
     escape = FALSE
   ) %>%
   add_header_above(
     setNames(
-      rep(1, 9),
-      c(rep("&#160;", 4), m_header_row1)
+      rep(1, 10),
+      c(rep("&#160;", 5), m_header_row1)
+    ),
+    escape = FALSE
+  ) %>%
+  add_header_above(
+    setNames(
+      rep(1, 10),
+      c(rep("&#160;", 5), m_type_headers)
     ),
     escape = FALSE
   ) %>%
@@ -310,5 +365,5 @@ knitr::kable(
     escape = FALSE
   ) %>%
   kable_styling(full_width = FALSE, position = "center") %>%
-  column_spec(5, width = "4em")
+  column_spec(6, width = "4em")
 ```
