@@ -1,0 +1,314 @@
+---
+title: "The 64 causal types in a mediation model"
+format:
+  html:
+    embed-resources: true
+    toc: false
+---
+
+```{=html}
+<style>
+.type-table {
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 4px 2px;
+}
+.type-table td,
+.type-table th {
+  border: none;
+  padding: 4px 6px;
+}
+.section-pill {
+  display: inline-block;
+  background: #f2f2f2;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.pill {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.ym-pill {
+  background: #e7f1ff;
+}
+.x0-pill {
+  background: #fff0cc;
+}
+.x1-pill {
+  background: #ffe0e0;
+}
+.mini-table {
+  display: grid;
+  gap: 2px;
+}
+.mini-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.mini-val {
+  font-weight: 600;
+}
+.num-tooltip {
+  position: relative;
+  cursor: help;
+}
+.num-tooltip:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  top: 115%;
+  transform: translateX(-50%);
+  z-index: 20;
+  min-width: 220px;
+  max-width: 360px;
+  padding: 8px 12px;
+  background: #f3f4f6;
+  color: #222;
+  border-radius: 6px;
+  font-size: 0.85em;
+  line-height: 1.2;
+  white-space: normal;
+  text-align: left;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+.num-tooltip:hover::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #f3f4f6 transparent transparent transparent;
+}
+</style>
+```
+
+```{r, include=FALSE}
+library(kableExtra)
+library(magrittr)
+library(htmltools)
+```
+
+```{r, echo = FALSE}
+#| results: asis
+raw <- read.csv("64_types.csv", header = FALSE, stringsAsFactors = FALSE)
+
+row_block <- raw[5:20, ]
+y_bits <- row_block[, 2:5]
+nums <- row_block[, 7:10]
+
+y_bits <- apply(y_bits, c(1, 2), as.integer)
+nums <- apply(nums, c(1, 2), as.integer)
+
+format_label <- function(text) {
+  parts <- strsplit(text, ",\\s*")[[1]]
+  parts <- gsub("X=([01])", "X = \\1", parts)
+  parts <- gsub("M=([01])", "M = \\1", parts)
+  paste(parts, collapse = ", ")
+}
+
+y_headers <- vapply(raw[4, 2:5], format_label, character(1))
+y_headers <- sprintf("<span class='pill ym-pill'>%s</span>", y_headers)
+
+x0_vals <- as.character(raw[2, 7:10])
+x1_vals <- as.character(raw[3, 7:10])
+
+m_header_row1 <- c("<span class='pill x0-pill'>X = 0</span>", x0_vals)
+m_header_row2 <- c("<span class='pill x1-pill'>X = 1</span>", x1_vals)
+
+describe_m <- function(m0, m1) {
+  if (m0 == "0" && m1 == "0") {
+    "X has no effect on M; M is always 0."
+  } else if (m0 == "1" && m1 == "1") {
+    "X has no effect on M; M is always 1."
+  } else if (m0 == "0" && m1 == "1") {
+    "X has a positive effect on M (M switches from 0 to 1)."
+  } else {
+    "X has a negative effect on M (M switches from 1 to 0)."
+  }
+}
+
+describe_y <- function(y00, y10, y01, y11) {
+  vals <- c(y00, y10, y01, y11)
+  if (all(vals == 0)) return("Y is always 0.")
+  if (all(vals == 1)) return("Y is always 1.")
+
+  depends_x <- (y10 != y00) || (y11 != y01)
+  depends_m <- (y01 != y00) || (y11 != y10)
+  interaction <- (y10 - y00) != (y11 - y01)
+
+  if (!depends_x && depends_m) {
+    if (y00 == 0 && y01 == 1) return("Y is 1 if and only if M = 1 (M alone causes Y).")
+    return("Y is 1 if and only if M = 0 (M alone prevents Y).")
+  }
+  if (depends_x && !depends_m) {
+    if (y00 == 0 && y10 == 1) return("Y is 1 if and only if X = 1 (X alone causes Y).")
+    return("Y is 1 if and only if X = 0 (X alone prevents Y).")
+  }
+  if (depends_x && depends_m && !interaction) {
+    return("Y increases with both X and M (additive effects).")
+  }
+
+  if (y00 == 0 && y10 == 0 && y01 == 0 && y11 == 1) {
+    return("Y is 1 only when X = 1 and M = 1 (X and M are complements).")
+  }
+  if (y00 == 1 && y10 == 0 && y01 == 0 && y11 == 0) {
+    return("Y is 1 only when X = 0 and M = 0 (joint absence causes Y).")
+  }
+  if (y00 == 0 && y10 == 1 && y01 == 1 && y11 == 1) {
+    return("Y is 1 unless X = 0 and M = 0 (either X or M is sufficient).")
+  }
+  if (y00 == 1 && y10 == 1 && y01 == 1 && y11 == 0) {
+    return("Y is 0 only when X = 1 and M = 1 (either X or M prevents Y).")
+  }
+  if (y00 == 0 && y10 == 1 && y01 == 1 && y11 == 0) {
+    return("Y is 1 when X and M differ (substitutes; XOR).")
+  }
+  if (y00 == 1 && y10 == 0 && y01 == 0 && y11 == 1) {
+    return("Y is 1 when X and M agree (complements; XNOR).")
+  }
+  if (y00 == 0 && y10 == 1 && y01 == 0 && y11 == 1) {
+    return("Y is 1 if and only if X = 1; M does not matter.")
+  }
+  if (y00 == 1 && y10 == 0 && y01 == 1 && y11 == 0) {
+    return("Y is 1 if and only if X = 0; M does not matter.")
+  }
+  if (y00 == 0 && y10 == 0 && y01 == 1 && y11 == 1) {
+    return("Y is 1 if and only if M = 1; X does not matter.")
+  }
+  if (y00 == 1 && y10 == 1 && y01 == 0 && y11 == 0) {
+    return("Y is 1 if and only if M = 0; X does not matter.")
+  }
+
+  ones <- c()
+  if (y00 == 1) ones <- c(ones, "X = 0, M = 0")
+  if (y10 == 1) ones <- c(ones, "X = 1, M = 0")
+  if (y01 == 1) ones <- c(ones, "X = 0, M = 1")
+  if (y11 == 1) ones <- c(ones, "X = 1, M = 1")
+  paste("Y is 1 when", paste(ones, collapse = "; "), ".")
+}
+
+describe_effects <- function(m0, m1, y00, y10, y01, y11) {
+  y_x0 <- if (m0 == "0") y00 else y01
+  y_x1 <- if (m1 == "0") y10 else y11
+
+  direct_change <- (if (m0 == "0") y10 else y11) != y_x0
+  indirect_change <- (if (m0 == "0") y10 else y11) != y_x1
+  total_change <- y_x1 != y_x0
+
+  pieces <- c()
+  if (direct_change) {
+    pieces <- c(pieces, "Direct effect: changing X while holding M at its X=0 value changes Y.")
+  } else {
+    pieces <- c(pieces, "No direct effect when holding M at its X=0 value.")
+  }
+  if (m0 != m1 && indirect_change) {
+    pieces <- c(pieces, "Indirect effect: X changes M and that shifts Y.")
+  } else if (m0 != m1) {
+    pieces <- c(pieces, "No indirect effect via M.")
+  } else {
+    pieces <- c(pieces, "No indirect effect because X does not change M.")
+  }
+  if (total_change) {
+    pieces <- c(pieces, "Overall, X causes Y in the observed data.")
+  } else {
+    pieces <- c(pieces, "Overall, X does not change Y in the observed data.")
+  }
+  paste(pieces, collapse = " ")
+}
+
+explain_type <- function(m0, m1, y00, y10, y01, y11) {
+  m_text <- describe_m(m0, m1)
+  y_text <- describe_y(y00, y10, y01, y11)
+  y_x0 <- if (m0 == "0") y00 else y01
+  y_x1 <- if (m1 == "0") y10 else y11
+  obs_text <- sprintf(
+    "Observed outcomes: if X = 0 then M = %s and Y = %s; if X = 1 then M = %s and Y = %s.",
+    m0, y_x0, m1, y_x1
+  )
+  eff_text <- describe_effects(m0, m1, y00, y10, y01, y11)
+  paste(m_text, y_text, obs_text, eff_text)
+}
+
+tooltips <- character(64)
+for (r in seq_len(nrow(nums))) {
+  y00 <- y_bits[r, 1]
+  y10 <- y_bits[r, 2]
+  y01 <- y_bits[r, 3]
+  y11 <- y_bits[r, 4]
+  for (c in seq_len(ncol(nums))) {
+    idx <- nums[r, c]
+    tooltips[idx] <- explain_type(x0_vals[c], x1_vals[c], y00, y10, y01, y11)
+  }
+}
+
+y_bits <- apply(y_bits, c(1, 2), function(x) {
+  cell_spec(x, extra_css = "color: #444; padding: 2px 6px;")
+})
+
+nums_bold <- apply(nums, c(1, 2), function(x) {
+  tip <- gsub("[\r\n]+", " ", tooltips[as.integer(x)])
+  wrapped <- sprintf(
+    "<span class='num-tooltip' data-tooltip='%s'>%s</span>",
+    htmlEscape(tip),
+    x
+  )
+  cell_spec(
+    wrapped,
+    bold = TRUE,
+    escape = FALSE,
+    extra_css = paste(
+      "display: inline-block;",
+      "min-width: 2.1em;",
+      "text-align: center;",
+      "border: 1px solid #d9d9d9;",
+      "border-radius: 4px;",
+      "padding: 2px 6px;"
+    )
+  )
+})
+
+table_df <- cbind(y_bits, key = rep("", nrow(nums_bold)), nums_bold)
+colnames(table_df) <- c(y_headers, rep("", 5))
+
+header_labels <- c(
+  "<span class='section-pill'>Y when</span>",
+  "<span class='section-pill'>M when</span>"
+)
+header_spans <- c(4, 5)
+
+knitr::kable(
+  table_df,
+  escape = FALSE,
+  align = "c",
+  table.attr = 'class="type-table"',
+  row.names = FALSE,
+  format = "html"
+) %>%
+  add_header_above(
+    setNames(
+      rep(1, 9),
+      c(rep("&#160;", 4), m_header_row2)
+    ),
+    escape = FALSE
+  ) %>%
+  add_header_above(
+    setNames(
+      rep(1, 9),
+      c(rep("&#160;", 4), m_header_row1)
+    ),
+    escape = FALSE
+  ) %>%
+  add_header_above(
+    setNames(header_spans, header_labels),
+    escape = FALSE
+  ) %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  column_spec(5, width = "4em")
+```

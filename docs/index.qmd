@@ -34,7 +34,7 @@ Day 2:
 
 * [Shiny app to do process tracing by hand](https://shiny2.wzb.eu/ipi/process_tracing/)
 
-* [Cheat sheet for causal types](cheatsheet.html)
+* [Cheat sheet for causal types](cheatsheet.html) | [64 types](64_types.html)
 
 ## About
 
