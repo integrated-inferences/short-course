@@ -510,7 +510,7 @@ hj_dag(x = c(0, 0, 1, 1, 2, 2),
 
 It is not a specific "argument" for how things work
 
-Based on our read of the inequality and democratization literature (Acemoglu/Robinson, Boix, Haggard/Kaufman, Ansell/Samuels):
+A model based on our read of the inequality and democratization literature (Acemoglu/Robinson, Boix, Haggard/Kaufman, Ansell/Samuels):
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -541,6 +541,7 @@ hj_dag(x = c(0, 1, 2, 2),
 knitr::include_graphics("assets/Piersonexample.png")
 ```
 
+No argument here -- just potentially causal connections
 
 <!-- ## Example: Saunders on military intervention -->
 
@@ -550,19 +551,19 @@ knitr::include_graphics("assets/Piersonexample.png")
 
 ## Causal types
 
-A specific argument about how things work in a case might look like something like this: 
+A specific *argument* about how things work in a case might look go: 
 
 > socioeconomic pressures *put* issues on the agenda; being on the agenda and having an opportunity to avoid blame were individually necessary and jointly sufficient for retrenchment
 
 Note:
 
-* formally this involves a specification of the $\theta$s
-* The $\theta$s can be used to indicate *how* a given child reacts to a parents value
-* Process tracing is in a way: figuring out what thetas are for a case.
+* Formally, this involves a specification of the $\theta$'s
+* The $\theta$'s indicate how a node *responds* to its "parents"
+* Process tracing is: figuring out what the theta's are for a case.
 
 ## Causal types
 
-* For a node with no parents: $\theta$ simply indicates the nodes value. e.g. 0 or 1. 
+* For a node with no parents: $\theta$ simply indicates the node's value. e.g. 0 or 1. 
 
 * For a node with one parent: $\theta$  indicates how the node would respond to each value of its parents. For instance:
 
