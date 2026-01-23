@@ -18,6 +18,7 @@ bibliography: assets/bib.bib
 ---
 
 
+# Queries
 
 
 
@@ -49,14 +50,20 @@ library(ggplot2)
 ```
 
 
-
-# Queries
-
 ```{r, child = "modules/2.1_queries.qmd"}
 
 ```
 
+# Queries in `CausalQueries`
+
+```{r, child = "modules/2.1_CQ_queries.qmd"}
+
+```
+
 # Updating
+
+
+*Updating on causal quantities*
 
 
 ```{r, child = "modules/2.2_bayesbasics.qmd"}

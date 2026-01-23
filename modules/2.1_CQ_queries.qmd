@@ -1,0 +1,106 @@
+---
+title: "Causal Questions: Case Level"
+subtitle: "Causal Inference from Causal Models"
+format: 
+   revealjs:
+      embed-resources: true
+      theme: serif
+      slide-level: 3
+      slide-number: true
+      toc-depth: 2
+      show-slide-number: all
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+      smaller: true
+---
+
+```{r, include = FALSE}
+set.seed(1)
+library(knitr)
+source("assets/setup.R")
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Defining queries in `CausalQueries`
+
+* We use $[]$ to describe conditions that are set
+* we use "given" arguments to describe conditions that happen to hold
+
+* $Y[X=1]$ is the value of $Y$ when $X$ is *set* to 1. (`do`$(X=1)$, or $X \leftarrow 1$)
+* $Y[X=1] - Y[X=0]$ is the effect of $X$ on $Y$
+* $Y[X=1, M = 1] - Y[X=0, M=1]$ is the effect of $X$ on $Y$ when $M$ is *set* to 1
+* $Y[X=1] - Y[X=0]$ `given` $M==1$ is the effect of $X$ on $Y$ when $M$ happens to be  1
+
+## From statements to types
+
+In general even complex queries can be written as sets of causal types. `CausalQueries` translates from causal statements to causal types.
+
+```{r}
+make_model("X->Y") |>
+  get_query_types("Y[X=1] ==1 ")
+```
+## From statements to types
+
+In general even complex queries can be written as sets of causal types. `CausalQueries` translates from causal statements to causal types.
+
+```{r}
+make_model("X->Y") |>
+  get_query_types("Y[X=1] == Y[X=0]")
+```
+
+## Conditioning in `CausalQueries`
+
+You can query using multiple queries, and asking for queries based on parameters, priors, or posteriors.
+
+```{r, eval = FALSE}
+model <- make_model("X -> M -> Y")
+
+model |> query_model("Y[X=1] - Y[X=0]")
+
+model |> query_model("Y[X=1, M=1] - Y[X=0, M=1]")
+
+model |> query_model("Y[X=1] - Y[X=0]", given = "M==1")
+
+model |> query_model("Y[X=1] - Y[X=0]", using = "posteriors")
+
+```
+
+## Lotsa queries {.smaller}
+
+```{r}
+#| echo: false
+
+q <- read.csv("assets/queries.csv")
+
+types <- sapply(1:nrow(q), function(j) {
+  model <- make_model(q$Model[j])
+  a1 <- get_query_types(model, q$Query[j])$types
+  if(q$Given[j] == "") {a2 <- TRUE
+   } else {
+     a2 <- get_query_types(model, q$Given[j])$types
+     }
+  
+  paste(names(a1)[a1 & a2], collapse = ", ")
+})
+
+q <- q |> mutate(Types = types)
+q |> kable()  |> 
+          kableExtra::column_spec(1, width = "7em")  |> 
+          kableExtra::column_spec(2, width = "10em")  |> 
+          kableExtra::column_spec(3, width = "7em")  |> 
+          kableExtra::column_spec(4, width = "10em")  |> 
+          kableExtra::column_spec(5, width = "10em") |>
+  kableExtra::kable_styling(latex_options="scale_down")
+
+
+
+```
+
+
+
+
+
+

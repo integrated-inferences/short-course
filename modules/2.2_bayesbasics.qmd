@@ -25,9 +25,6 @@ source("assets/setup.R")
 
 ```
 
-# Bayesian approaches {#secbayes}
-
-*Updating on causal quantities*
 
 ## Outline
 
@@ -143,9 +140,6 @@ As an equation:
 
 $$\text{Prob both boys | Not both girls} = \frac{\text{Prob both boys}}{\text{Prob not both girls}} = \frac{\text{1 in 4}}{\text{3 in 4}}$$
 
-### Monty Hall
-
-Can anyone describe the Monty Hall puzzle?
 
 
 ### Bayes Rule {.smaller}
@@ -202,58 +196,58 @@ plot(x, dbeta(x, 20, 10), type = "l", main = expression(paste("Beta distribution
 ```
 
 
-## Bayes "by hand"
+<!-- ## Bayes "by hand" -->
 
-*Bayes on a Grid*
+<!-- *Bayes on a Grid* -->
 
-### Bayes by hand 
+<!-- ### Bayes by hand  -->
 
-* The simplest and most intuitive way to do Bayesian estimation is just to apply the formula over a grid of possible values
-* This becomes too hard once your parameter space grows but it is worth working though the logic by hand to get a feel for Bayes
+<!-- * The simplest and most intuitive way to do Bayesian estimation is just to apply the formula over a grid of possible values -->
+<!-- * This becomes too hard once your parameter space grows but it is worth working though the logic by hand to get a feel for Bayes -->
 
-### Bayes by hand 
+<!-- ### Bayes by hand  -->
 
-* Lets say that we want to figure out the share of women in some population. 
-* We start off with a flat prior over all possible numbers
-* We draw a sample from the population: 100 people of which 20 are women
-* What's our posterior?
+<!-- * Lets say that we want to figure out the share of women in some population.  -->
+<!-- * We start off with a flat prior over all possible numbers -->
+<!-- * We draw a sample from the population: 100 people of which 20 are women -->
+<!-- * What's our posterior? -->
 
-### Bayes by hand 
+<!-- ### Bayes by hand  -->
 
-```{r, fig.height = 3, fig.width = 8}
-fabricate(N = 100,
-          parameters = seq(.01, .99, length = N),
-          likelihood = dbinom(20, 100, parameters),
-          posterior = likelihood/sum(likelihood)) |>
-  ggplot(aes(parameters, posterior)) + geom_line() + theme_bw()
-  
-
-```
-
-### Bayes by hand 
-
-Now with a strongish prior on 50%:
-
-```{r, fig.height = 3, fig.width = 8}
-fabricate(N = 100,
-          parameters = seq(.01, .99, length = N),
-          prior = dbeta(parameters, 20, 20), 
-          prior = prior/sum(prior),
-          likelihood = dbinom(20, 100, parameters),
-          posterior = likelihood*prior/sum(likelihood*prior)) |>
-  ggplot(aes(parameters, posterior)) + geom_line() + theme_bw() +
-  geom_line(aes(parameters, prior), color = "red")
-  
-  
-
-```
+<!-- ```{r, fig.height = 3, fig.width = 8} -->
+<!-- fabricate(N = 100, -->
+<!--           parameters = seq(.01, .99, length = N), -->
+<!--           likelihood = dbinom(20, 100, parameters), -->
+<!--           posterior = likelihood/sum(likelihood)) |> -->
+<!--   ggplot(aes(parameters, posterior)) + geom_line() + theme_bw() -->
 
 
-### Bayes by hand 
+<!-- ``` -->
 
-* This approach is sound, but if you are dealing with many continuous parameters, the full parameter space can get very large and so the number of calculations you do increases rapidly.
+<!-- ### Bayes by hand  -->
 
-* Luckily other approaches have been developed.
+<!-- Now with a strongish prior on 50%: -->
+
+<!-- ```{r, fig.height = 3, fig.width = 8} -->
+<!-- fabricate(N = 100, -->
+<!--           parameters = seq(.01, .99, length = N), -->
+<!--           prior = dbeta(parameters, 20, 20),  -->
+<!--           prior = prior/sum(prior), -->
+<!--           likelihood = dbinom(20, 100, parameters), -->
+<!--           posterior = likelihood*prior/sum(likelihood*prior)) |> -->
+<!--   ggplot(aes(parameters, posterior)) + geom_line() + theme_bw() + -->
+<!--   geom_line(aes(parameters, prior), color = "red") -->
+
+
+
+<!-- ``` -->
+
+
+<!-- ### Bayes by hand  -->
+
+<!-- * This approach is sound, but if you are dealing with many continuous parameters, the full parameter space can get very large and so the number of calculations you do increases rapidly. -->
+
+<!-- * Luckily other approaches have been developed. -->
 
 
 

@@ -91,7 +91,7 @@ A few common causal estimands:
         * $Y=1$ if $X=1$
         * $Y=0$ if $X=0$
 
-* More precisely we ask, what's the probability that this case is a $\theta^{01}$ type?
+* More precisely we ask, what's the probability that this case is a $\theta_{01}$ type?
 
 ## Causal queries on a DAG
 
@@ -199,48 +199,24 @@ hj_dag(x = c(0, 0, 1, 1, 2, 2),
 * We can ask: what is the effect of $X$ on $Y$ given $M=1$?
 * Importantly, different from: what is the effect of $X$ on $Y$ if $M$ is *set* to $1$?
 
+## Types of conditioning
+
+We distinguish between:
+
+* the effect of $X$ on $Y$ when $M$ "happens to" take on a given value 
+* the effect of $X$ on $Y$ when $M$ "is set to" a given value 
+
+Say we thought that $X$ affects $Y$ through $M$. Going to school increased income via education. 
+
+* we are more convinced that $X$ caused $Y$ if we observed that $M=1$
+* we are expect that $X$ would *not* cause $Y$ if we set $M$ to $1$
+
+
+
 ## Why bother? Why define causal questions on a DAG?
 
 * We are turning our questions into nodes on a graph
 * The key is: **We can learn about nodes if we have information on other nodes they're connected to**
 * If we know $X$, $M$, and $Y$ in a case, we can draw inferences about $\theta^M$ and $\theta^Y$ for this case
 * This is, at an intuitive level, what `CausalQueries` does
-
-
-## Lotsa queries {.smaller}
-
-```{r}
-#| label: tbl-HJ-T-4-3
-#| echo: false
-
-q <- read.csv("assets/queries.csv")
-
-types <- sapply(1:nrow(q), function(j) {
-  model <- make_model(q$Model[j])
-  a1 <- get_query_types(model, q$Query[j])$types
-  if(q$Given[j] == "") {a2 <- TRUE
-   } else {
-     a2 <- get_query_types(model, q$Given[j])$types
-     }
-  
-  paste(names(a1)[a1 & a2], collapse = ", ")
-})
-
-q <- q |> mutate(Types = types)
-q |> kable()  |> 
-          kableExtra::column_spec(1, width = "7em")  |> 
-          kableExtra::column_spec(2, width = "10em")  |> 
-          kableExtra::column_spec(3, width = "7em")  |> 
-          kableExtra::column_spec(4, width = "10em")  |> 
-          kableExtra::column_spec(5, width = "10em") |>
-  kableExtra::kable_styling(latex_options="scale_down")
-
-
-
-```
-
-
-
-
-
 

@@ -25,20 +25,23 @@ run <- FALSE
 
 ```
 
-### Big picture
+## Big picture
 
 `CausalQueries` brings these elements together by allowing users to:
 
-1. Make model: Specify a DAG: `CausalQueries` figures out all principal strata and place probabilities on these (parameters)
-2. Query model: `CausalQueries` figures out which parameters correspond to a given causal query
+1. Make model: Specify a DAG: `CausalQueries` figures out all causal types and places probabilities on these (parameters)
+2. Query model: `CausalQueries` figures out which types correspond to a given causal query given case data and figures out the probability of these (*given* some parameters)
+3. Update model: `CausalQueries` figures out which parameters are more likely given data, allowing you to query using these parameters 
 
-### Illustration 1
+## Illustration of 1 and 2
+
+When we pose queries *given* different data we are in fact using Bayesian updating.
+
+Below we update on our beliefs *about a single case* given different data we might see. This, essentially, is what process tracing is (in our view).
 
 ```{r}
-model <- make_model('X -> M -> Y') |>
-  set_restrictions(decreasing("X", "M"))
-
-model |>
+make_model('X -> M -> Y') |>
+  set_restrictions(decreasing("X", "M"))|>
   query_model(
     query = "Y[X=1] != Y[X=0]",
     given = c("X==1 & Y ==1", 
@@ -47,6 +50,6 @@ model |>
               "X==1 & Y ==1 & M==0",
               "X==1 & Y ==1 & M==1"),
     using = "parameters"
-)
+) 
 
 ```

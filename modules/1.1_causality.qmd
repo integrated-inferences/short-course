@@ -79,15 +79,6 @@ Now that we have a concept of causal effects available, let's answer two **quest
 -   So: *did the boulder cause you to survive?*
  
 
-### Potential Outcomes
-
-CONNECTEDNESS Say $A$ causes $B$ --- does that mean that there is a spatiotemporally continuous sequence of causal intermediates?
-
-### Potential Outcomes
-
-CONNECTEDNESS Say $A$ causes $B$ --- does that mean that there is a spatiotemporally continuous sequence of causal intermediates?
-
--   Person A is planning some action $Y$; Person B sets out to stop them; person X intervenes and prevents person B from stopping person A. In this case Person A may complete their action, producing Y, without any knowledge that B and X even exist; in particular B and X need not be anywhere close to the action. So: *did X cause Y*?
 
 ### Causal claims: Contribution or attribution?
 
@@ -104,22 +95,7 @@ $$Y(0,0) = 0$$ $$Y(1,0) = 0$$ $$Y(0,1) = 0$$ $$Y(1,1) = 1$$
 
 What caused $Y$? Which cause was most important?
 
-### Causal claims: Contribution or attribution?  {.smaller}
 
- 
-The counterfactual model is about attribution in a very conditional sense.
-
--   This is problem for research programs that define "explanation" in terms of figuring out the things that cause $Y$
-
--   Real difficulties conceptualizing what it means to say one cause is more important than another cause. What does that mean?
- 
-
-### Causal claims: Contribution or attribution?
-
-*Erdogan's increasing authoritarianism was the most important reason for the attempted coup*
-
--   More important than Turkey's history of coups?
--   What does that mean?
 
 ### Causal claims: No causation without manipulation
 
@@ -135,11 +111,7 @@ The counterfactual model is about attribution in a very conditional sense.
 -   This renders thinking about effects of race and gender difficult
 -   **Compare**: What does it mean to say that Southern counties voted for Brexit because they have many old people?
 
-### Causal claims: No causation without manipulation
-
-More uncomfortably:
-
-What does it mean to say that the tides are caused by the moon? What exactly do we have to imagine...
+- More uncomfortably: What does it mean to say that the tides are caused by the moon? What exactly do we have to imagine...
 
 ### Causal claims: Causal claims are everywhere
 
