@@ -33,7 +33,7 @@ library(ggplot2)
 
 # Exercise 1: Make your own model in `CausalQueries`
 
-## Define the model
+## Define the model (30 mins)
 
 Select an outcome variable of interest.
 
@@ -66,7 +66,7 @@ Keep in mind
 - Possible causes can be left out as long as they do not affect more than one node included on the graph.
 - Mediating steps can be left out or collapsed.
 
-## Refine the model
+## Refine the model (20 mins)
 
 Inspect the collection of implied types, via
 
@@ -76,8 +76,10 @@ my_model |> inspect("parameters_df")
 * Are there restrictions you would want to impose to any types? What would they be
 * Select one type for each node (e.g. a type for $X$, for $M$, and for $Y$) and describe what would actually *happen* in that case.
 
-## Plot the model
+## Plot the model (10 mins)
 
 * plot your model using `plot_model`
 * assess whether there are more intuitive placements for the nodes and adjust using `x_coord`, `y_coord`. Make sure to give coordinates in the order of the model nodes. (Check via: `model$nodes`).
+
+## Group discussion (30 mins)
 

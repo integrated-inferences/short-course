@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-# Queries
+# Queries (30 mins)
 
 Return to the model that you created in Exercise 1. Now write down at least 3 queries that can be defined vis-a-vis this model and that might be of substantive interest. You should write down each query in two ways:
 
@@ -45,7 +45,7 @@ Return to the model that you created in Exercise 1. Now write down at least 3 qu
 <!-- * describe a query that depends on both  -->
 
 
-# Bayesian sequencing and posterior variance
+# Bayesian sequencing and posterior variance (30 mins)
 
 Say you knew the probability of $Y$ given $X_1$ and $X_2$:
 
@@ -107,7 +107,7 @@ c(
 ```  
 
 
-# A causal chain
+# A causal chain (20 mins)
 
 Imagine a causal chain: $A$ causes $B$ and $B$ causes $C$
 
@@ -132,3 +132,5 @@ Now:
 * What is the probability that $A$ causes $C$ for a case in which $A=1$ and $B=0$ and $C=1$?
 
 Summarize: when is $B$ informative for the $A \rightarrow C$ relationship.
+
+# Group discussion (30 mins)
