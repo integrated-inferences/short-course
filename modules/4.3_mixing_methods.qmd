@@ -215,6 +215,22 @@ hj_dag(x = c(0, 0, 2, 2, 1, 1),
 * The mixed-methods solution: **learn** about population-level effects from large-$N$ data
 
 
+### How quant can inform qual: getting probative value of a clue from the data
+
+* Suppose we have data on $I$, $D$, and $M$ for a large number of cases
+* Suppose we observe a strong positive correlation across all 3 variables
+* What have we learned, under this model?
+    * Positive $I \rightarrow M$ effects more likely than negative
+    * Positive $M \rightarrow D$ effects more likely than negative
+* So **linked positive effects** more common than linked negative effects
+* Meaning that $M=1$ in an $I=1, D=1$ case speaks in favor of $I=1$ causing $D=1$
+* But now we've now drawn our population-level beliefs **from the data**
+* Now, we can go and process-trace
+    * Did high inequality cause democratization in Malawi?
+    * Observe $M$
+* With conclusions grounded in case-level AND population-level evidence
+
+
 ### Application from the book: rule-of-law institutions and long-term growth
 
 ```{r, echo = FALSE}
@@ -250,19 +266,3 @@ knitr::include_graphics("assets/mixingappconfound")
 ```
 
 A type where RoL has a positive effect on Growth is more common when Mortality has a negative effect on RoL.
-
-### How quant can inform qual: getting probative value of a clue from the data
-
-* Suppose we have data on $I$, $D$, and $M$ for a large number of cases
-* Suppose we observe a strong positive correlation across all 3 variables
-* What have we learned, under this model?
-    * Positive $I \rightarrow M$ effects more likely than negative
-    * Positive $M \rightarrow D$ effects more likely than negative
-* So **linked positive effects** more common than linked negative effects
-* Meaning that $M=1$ in an $I=1, D=1$ case speaks in favor of $I=1$ causing $D=1$
-* But now we've now drawn our population-level beliefs **from the data**
-* Now, we can go and process-trace
-    * Did high inequality cause democratization in Malawi?
-    * Observe $M$
-* With conclusions grounded in case-level AND population-level evidence
-
