@@ -1,0 +1,10 @@
+Model,Query,Given,Interpretation
+X -> Y,Y[X=1] > Y[X=0],,Probability that X has a positive effect on Y
+X -> Y,Y[X=1] < Y[X=0],X == 1,Probability that X has a negative effect on Y among those for whom X=1
+X -> Y,Y[X=1] > Y[X=0],X==1 & Y==1,Probability that Y=1 is due to X=1 (Attribution)
+X -> Y <- W,Y[X=1] > Y[X=0],W == 1,Probability that X has a positive effect on Y for a case in which W  = 1 (where W is possibly defined post treatment)
+X -> Y <- W,"Y[X=1, W = 1] > Y[X=0, W = 1]",W==0,Probability that X has a positive effect on Y if  W were set to 1 for cases for which in fact W=0
+X -> Y <- W,Y[X=1] > Y[X=0],Y[W=1] > Y[W=0],Probability that X has a positive effect on Y for a case in which W  has a positive effect on Y
+X -> Y <- W,"(Y[X=1, W = 1] > Y[X=0, W = 1])  > (Y[X=1, W = 0] > Y[X=0, W = 0])",W==1 & X==1,Probability of a positive interaction between W and X for Y; the probability that the effect of X on Y is stronger when W is larger
+X -> M -> Y  <- X,"Y[X = 1, M = M[X=1]] > Y[X = 0, M = M[X=1]]",X==1 & M==1 & Y==1,The probability X would have a positive effct on Y if M were controlled to be at the level it would take if X were 1 for units for which in fact M==1
+X -> M -> Y  <- X,(Y[M = 1] > Y[M = 0])  & (M[X = 1] > M[X = 0]),Y[X=1] > Y[X=0] & M==1,The probability that X causes M and M causes Y among units for which M = 1 and X causes Y

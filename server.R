@@ -14,16 +14,15 @@ by_hand <- function(model, data, query){
     dplyr::mutate(
       type    = rownames(amb),
       in_query = get_query_types(model, query)$types,
-      priors   = CausalQueries:::get_type_prob(model)
-    ) |>
-    dplyr::filter(.data[[data_type]] == 1) |>
-    dplyr::mutate(rescaled_priors = priors / sum(priors))
+    priors   = CausalQueries:::get_type_prob(model),
+    in_data  = .data[[data_type]] == 1
+  )
 
-  # Calculate denominator (sum of priors for types consistent with data)
-  denominator <- sum(result$priors)
+# Calculate denominator (sum of priors for types consistent with data)
+denominator <- sum(result$priors[result$in_data])
 
-  # Calculate numerator (sum of priors for types consistent with data AND query)
-  numerator <- sum(result$priors[result$in_query])
+# Calculate numerator (sum of priors for types consistent with data AND query)
+numerator <- sum(result$priors[result$in_data & result$in_query])
 
   # Calculate posterior
   posterior <- numerator / denominator
@@ -46,8 +45,11 @@ server <- function(input, output, session) {
   # Reactive value to store the base model (before restrictions)
   base_model_reactive <- reactiveVal(NULL)
 
-  # Reactive value to store restrictions
+  # Reactive value to store restrictions (nodal types)
   restrictions_reactive <- reactiveVal(list())
+
+  # Reactive value to store natural language restrictions
+  nl_restrictions_reactive <- reactiveVal(list())
 
   # Reactive value to store parameters
   parameters_reactive <- reactiveVal(list())
@@ -62,7 +64,7 @@ server <- function(input, output, session) {
     # Start from base model
     model_rebuilt <- base_model
 
-    # Apply all restrictions
+    # Apply all restrictions (nodal types)
     current_restrictions <- restrictions_reactive()
     if (length(current_restrictions) > 0) {
       restrictions_list <- lapply(current_restrictions, function(x) x$types)
@@ -78,6 +80,40 @@ server <- function(input, output, session) {
           labels = setNames(list(types_to_use), node_name),
           keep = keep_val
         )
+      }
+    }
+
+    # Apply all restrictions (natural language)
+    current_nl_restrictions <- nl_restrictions_reactive()
+    if (length(current_nl_restrictions) > 0) {
+      for (node_name in names(current_nl_restrictions)) {
+        entry <- current_nl_restrictions[[node_name]]
+        keep_types <- entry$keep_types
+        drop_types <- entry$drop_types
+        if (is.null(keep_types) && !is.null(entry$types) && entry$keep) {
+          keep_types <- entry$types
+        }
+        if (is.null(drop_types) && !is.null(entry$types) && !entry$keep) {
+          drop_types <- entry$types
+        }
+
+        if (!is.null(drop_types) && length(drop_types) > 0) {
+          model_rebuilt <- set_restrictions(
+            model_rebuilt,
+            labels = setNames(list(drop_types), node_name),
+            keep = FALSE
+          )
+        }
+        if (!is.null(keep_types) && length(keep_types) > 0) {
+          keep_effective <- if (!is.null(drop_types)) setdiff(keep_types, drop_types) else keep_types
+          if (length(keep_effective) > 0) {
+            model_rebuilt <- set_restrictions(
+              model_rebuilt,
+              labels = setNames(list(keep_effective), node_name),
+              keep = TRUE
+            )
+          }
+        }
       }
     }
 
@@ -109,6 +145,18 @@ server <- function(input, output, session) {
     plot(model)
   })
 
+  output$parameters_table <- renderTable({
+    model <- model_reactive()
+    if (is.null(model)) {
+      return(NULL)
+    }
+    params <- model$parameters_df
+    if (is.null(params)) {
+      return(NULL)
+    }
+    params
+  })
+
   # Create model when button is clicked
   observeEvent(input$create_model, {
     tryCatch({
@@ -137,14 +185,23 @@ server <- function(input, output, session) {
       model <- make_model(input$model_string)
       base_model_reactive(model)  # Store base model
       restrictions_reactive(list())  # Reset restrictions
+      nl_restrictions_reactive(list())  # Reset natural language restrictions
       parameters_reactive(list())    # Reset parameters
       model_reactive(model)
+      nodes <- model$nodes
+      if (length(nodes) >= 1) {
+        x1 <- nodes[1]
+        xn <- nodes[length(nodes)]
+        default_query <- paste0(xn, "[", x1, "=1] == ", xn, "[", x1, "=0]")
+        updateTextInput(session, "query", value = default_query)
+      }
       showNotification("Model created successfully!", type = "message")
     }, error = function(e) {
       showNotification(paste("Error creating model:", e$message), type = "error")
       model_reactive(NULL)
       base_model_reactive(NULL)
       restrictions_reactive(list())
+      nl_restrictions_reactive(list())
       parameters_reactive(list())
     })
   })
@@ -157,14 +214,62 @@ server <- function(input, output, session) {
     }
 
     tagList(
-      selectInput("restrict_node",
-                  label = "Select node to restrict:",
-                  choices = c("", model$nodes),
-                  selected = ""),
-      uiOutput("node_types_ui"),
-      actionButton("apply_restriction", "Apply Restriction", class = "btn-warning"),
-      actionButton("clear_restrictions", "Clear All Restrictions", class = "btn-danger")
+      radioButtons(
+        "restriction_mode",
+        label = "Restriction input:",
+        choices = c("Nodal types" = "types", "Natural language" = "nl"),
+        selected = "types",
+        inline = TRUE
+      ),
+      uiOutput("restriction_mode_ui")
     )
+  })
+
+  output$restriction_mode_ui <- renderUI({
+    model <- model_reactive()
+    if (is.null(model)) {
+      return(NULL)
+    }
+
+    if (input$restriction_mode == "nl") {
+      tagList(
+        selectInput(
+          "restrict_node_nl",
+          label = "Select node:",
+          choices = c("", model$nodes),
+          selected = ""
+        ),
+        uiOutput("nl_options_ui"),
+        radioButtons(
+          "nl_restriction_action",
+          label = "Action:",
+          choices = list("Keep selected restrictions" = "keep",
+                         "Drop selected restrictions" = "drop"),
+          selected = "keep",
+          inline = TRUE
+        ),
+        div(
+          style = "display: flex; gap: 8px; margin-top: 6px;",
+          actionButton("apply_nl_restriction", "Apply Restriction", class = "btn-warning"),
+          actionButton("clear_restrictions", "Clear Restrictions", class = "btn-danger")
+        )
+      )
+    } else {
+      tagList(
+        selectInput(
+          "restrict_node",
+          label = "Select node:",
+          choices = c("", model$nodes),
+          selected = ""
+        ),
+        uiOutput("node_types_ui"),
+        div(
+          style = "display: flex; gap: 8px; margin-top: 6px;",
+          actionButton("apply_restriction", "Apply Restriction", class = "btn-warning"),
+          actionButton("clear_restrictions", "Clear Restrictions", class = "btn-danger")
+        )
+      )
+    }
   })
 
   # Display types for selected node
@@ -195,6 +300,141 @@ server <- function(input, output, session) {
                          choices = types,
                          selected = NULL)
     )
+  })
+
+  get_parents_for_node <- function(model, node) {
+    dag <- tryCatch(grab(model, what = "dag"), error = function(e) NULL)
+    if (is.null(dag) && !is.null(model$dag)) {
+      dag <- model$dag
+    }
+    if (is.null(dag) && !is.null(model$statement)) {
+      dag <- tryCatch(CausalQueries:::make_dag(model$statement), error = function(e) NULL)
+    }
+    dag <- tryCatch(data.frame(dag), error = function(e) NULL)
+    if (is.null(dag) || !all(c("v", "w") %in% names(dag))) {
+      return(character(0))
+    }
+    unique(as.character(dag$v[dag$w == node]))
+  }
+
+  build_nl_choices <- function(node, parents) {
+    choices <- c(
+      setNames(paste("always_0", node, sep = "|"),
+               paste(node, "= 0 regardless of parents")),
+      setNames(paste("always_1", node, sep = "|"),
+               paste(node, "= 1 regardless of parents"))
+    )
+
+    for (p in parents) {
+      choices <- c(
+        choices,
+        setNames(paste("increasing", p, node, sep = "|"),
+                 paste(node, "increasing in", p)),
+        setNames(paste("non_decreasing", p, node, sep = "|"),
+                 paste(node, "non-decreasing in", p)),
+        setNames(paste("decreasing", p, node, sep = "|"),
+                 paste(node, "decreasing in", p)),
+        setNames(paste("non_increasing", p, node, sep = "|"),
+                 paste(node, "non-increasing in", p))
+      )
+    }
+
+    if (length(parents) >= 2) {
+      pairs <- combn(parents, 2, simplify = FALSE)
+      for (pair in pairs) {
+        p1 <- pair[1]
+        p2 <- pair[2]
+        choices <- c(
+          choices,
+          setNames(paste("interacts", p1, p2, node, sep = "|"),
+                   paste(node, "has interaction between", p1, "and", p2)),
+          setNames(paste("complements", p1, p2, node, sep = "|"),
+                   paste(p1, "and", p2, "are complements for", node)),
+          setNames(paste("substitutes", p1, p2, node, sep = "|"),
+                   paste(p1, "and", p2, "are substitutes for", node))
+        )
+      }
+    }
+
+    choices
+  }
+
+  output$nl_options_ui <- renderUI({
+    model <- model_reactive()
+    node <- input$restrict_node_nl
+
+    if (is.null(model) || node == "" || is.null(node)) {
+      return(NULL)
+    }
+
+    parents <- get_parents_for_node(model, node)
+    choices <- build_nl_choices(node, parents)
+    label_text <- if (length(parents) == 0) {
+      paste("Restrictions for", node, ":")
+    } else {
+      paste("Restrictions for", node, "(based on parents:", paste(parents, collapse = ", "), "):")
+    }
+
+    tagList(
+      checkboxGroupInput(
+        "nl_selected_restrictions",
+        label = label_text,
+        choices = choices,
+        selected = NULL
+      ),
+      textOutput("nl_types_preview")
+    )
+  })
+
+  output$nl_types_preview <- renderText({
+    base_model <- base_model_reactive()
+    node <- input$restrict_node_nl
+    selected <- input$nl_selected_restrictions
+    action <- input$nl_restriction_action
+    if (is.null(base_model) || node == "" || length(selected) == 0) {
+      return("Types kept: (none selected)")
+    }
+
+    parents <- get_parents_for_node(base_model, node)
+    type_len <- 2 ^ length(parents)
+    always_0_type <- paste(rep("0", type_len), collapse = "")
+    always_1_type <- paste(rep("1", type_len), collapse = "")
+
+    types_list <- list()
+    for (sel in selected) {
+      parts <- strsplit(sel, "\\|")[[1]]
+      fn_name <- parts[1]
+      if (fn_name %in% c("always_0", "always_1")) {
+        types_list[[length(types_list) + 1]] <- if (fn_name == "always_0") always_0_type else always_1_type
+      } else {
+        fn <- get(fn_name, mode = "function")
+        args <- as.list(parts[2:length(parts)])
+        statement <- do.call(fn, args)
+        types_map <- get_query_types(base_model, statement, map = "nodal_type")$types
+        types_list[[length(types_list) + 1]] <- names(types_map)[types_map]
+      }
+    }
+
+    types_to_use <- unique(unlist(types_list))
+    if (length(types_to_use) == 0) {
+      return("Types kept: none (no types match selections)")
+    }
+
+    existing <- nl_restrictions_reactive()[[node]]
+    drop_types <- if (!is.null(existing)) existing$drop_types else character(0)
+
+    if (action == "drop") {
+      return(paste0("Types to drop: ", paste(types_to_use, collapse = ", ")))
+    }
+
+    if (length(drop_types) > 0) {
+      types_to_use <- setdiff(types_to_use, drop_types)
+    }
+    if (length(types_to_use) == 0) {
+      return("Types kept: none (all selected types are already dropped)")
+    }
+
+    paste0("Types kept: ", paste(types_to_use, collapse = ", "))
   })
 
   # Apply restriction
@@ -241,6 +481,97 @@ server <- function(input, output, session) {
     })
   })
 
+  observeEvent(input$apply_nl_restriction, {
+    model <- model_reactive()
+    base_model <- base_model_reactive()
+    node <- input$restrict_node_nl
+    action <- input$nl_restriction_action
+    selected <- input$nl_selected_restrictions
+
+    if (is.null(model) || is.null(base_model) || node == "" || length(selected) == 0) {
+      showNotification("Please select a node and at least one restriction", type = "warning")
+      return()
+    }
+
+    tryCatch({
+      current_nl <- nl_restrictions_reactive()
+      keep_action <- (action == "keep")
+
+      parents <- get_parents_for_node(base_model, node)
+      type_len <- 2 ^ length(parents)
+      always_0_type <- paste(rep("0", type_len), collapse = "")
+      always_1_type <- paste(rep("1", type_len), collapse = "")
+
+      types_list <- list()
+      labels <- names(selected)
+
+      for (sel in selected) {
+        parts <- strsplit(sel, "\\|")[[1]]
+        fn_name <- parts[1]
+        if (fn_name %in% c("always_0", "always_1")) {
+          types_list[[length(types_list) + 1]] <- if (fn_name == "always_0") always_0_type else always_1_type
+        } else {
+          fn <- get(fn_name, mode = "function")
+          args <- as.list(parts[2:length(parts)])
+          statement <- do.call(fn, args)
+          types_map <- get_query_types(base_model, statement, map = "nodal_type")$types
+          types_list[[length(types_list) + 1]] <- names(types_map)[types_map]
+        }
+      }
+
+      types_to_use <- unique(unlist(types_list))
+      if (length(types_to_use) == 0) {
+        showNotification(
+          "Selected restrictions do not map to any nodal types.",
+          type = "warning"
+        )
+        return()
+      }
+
+      existing <- current_nl[[node]]
+      if (is.null(existing)) {
+        existing <- list(keep_types = character(0), drop_types = character(0), labels = character(0))
+      }
+
+      if (keep_action) {
+        if (length(existing$keep_types) > 0) {
+          existing$keep_types <- intersect(existing$keep_types, types_to_use)
+        } else {
+          existing$keep_types <- types_to_use
+        }
+        if (length(existing$drop_types) > 0) {
+          existing$keep_types <- setdiff(existing$keep_types, existing$drop_types)
+        }
+        if (length(existing$keep_types) == 0) {
+          showNotification(
+            "No nodal types remain after applying this restriction.",
+            type = "warning"
+          )
+        }
+      } else {
+        existing$drop_types <- unique(c(existing$drop_types, types_to_use))
+      }
+      existing$labels <- unique(c(existing$labels, labels))
+
+      current_nl[[node]] <- existing
+      nl_restrictions_reactive(current_nl)
+
+      model_rebuilt <- rebuild_model()
+      if (is.null(model_rebuilt)) {
+        showNotification("Base model not found. Please recreate the model.", type = "error")
+        return()
+      }
+
+      model_reactive(model_rebuilt)
+      showNotification("Restriction applied successfully!", type = "message")
+
+      updateSelectInput(session, "restrict_node_nl", selected = "")
+      updateCheckboxGroupInput(session, "nl_selected_restrictions", selected = NULL)
+    }, error = function(e) {
+      showNotification(paste("Error applying restriction:", e$message), type = "error")
+    })
+  })
+
   # Clear all restrictions
   observeEvent(input$clear_restrictions, {
     base_model <- base_model_reactive()
@@ -250,6 +581,7 @@ server <- function(input, output, session) {
 
     # Clear restrictions and rebuild model (with any parameters)
     restrictions_reactive(list())
+    nl_restrictions_reactive(list())
     model_clean <- rebuild_model()
     if (!is.null(model_clean)) {
       model_reactive(model_clean)
@@ -260,18 +592,46 @@ server <- function(input, output, session) {
   # Display current restrictions
   output$current_restrictions <- renderText({
     restrictions <- restrictions_reactive()
-    if (length(restrictions) == 0) {
+    nl_restrictions <- nl_restrictions_reactive()
+    if (length(restrictions) == 0 && length(nl_restrictions) == 0) {
       return("No restrictions applied")
     }
 
     restriction_text <- "Current restrictions:\n"
-    for (node in names(restrictions)) {
-      action <- if (restrictions[[node]]$keep) "Keep" else "Drop"
-      types <- paste(restrictions[[node]]$types, collapse = ", ")
-      restriction_text <- paste0(restriction_text,
-                                 node, ": ", action, " [", types, "]\n")
+    if (length(restrictions) > 0) {
+      restriction_text <- paste0(restriction_text, "Nodal types:\n")
+      for (node in names(restrictions)) {
+        action <- if (restrictions[[node]]$keep) "Keep" else "Drop"
+        types <- paste(restrictions[[node]]$types, collapse = ", ")
+        restriction_text <- paste0(restriction_text,
+                                   node, ": ", action, " [", types, "]\n")
+      }
     }
-    return(restriction_text)
+
+    if (length(nl_restrictions) > 0) {
+      restriction_text <- paste0(restriction_text, "Natural language:\n")
+      for (node in names(nl_restrictions)) {
+        keep_types <- nl_restrictions[[node]]$keep_types
+        drop_types <- nl_restrictions[[node]]$drop_types
+        if (!is.null(keep_types) && length(keep_types) > 0) {
+          if (!is.null(drop_types) && length(drop_types) > 0) {
+            keep_types <- setdiff(keep_types, drop_types)
+          }
+          restriction_text <- paste0(
+            restriction_text,
+            node, ": Keep [", paste(keep_types, collapse = ", "), "]\n"
+          )
+        }
+        if (!is.null(drop_types) && length(drop_types) > 0) {
+          restriction_text <- paste0(
+            restriction_text,
+            node, ": Drop [", paste(drop_types, collapse = ", "), "]\n"
+          )
+        }
+      }
+    }
+
+    restriction_text
   })
 
   # UI for parameters
@@ -290,7 +650,7 @@ server <- function(input, output, session) {
       ),
       uiOutput("node_param_ui"),
       actionButton("apply_parameters", "Apply Parameters", class = "btn-warning"),
-      actionButton("clear_parameters", "Clear All Parameters", class = "btn-danger")
+      actionButton("clear_parameters", "Clear Parameters", class = "btn-danger")
     )
   })
 
@@ -497,24 +857,30 @@ server <- function(input, output, session) {
 
      data_type <- res$data_type_name
 
-     # Format the table nicely
-     table_data <- res$result |>
-       dplyr::mutate(
-         in_query = ifelse(in_query, "Yes", "No"),
-         priors = round(priors, 3),
-         rescaled_priors = round(rescaled_priors, 3)
-       ) |>
-       # Put causal type first, drop the data-type column (it is 1 everywhere)
-       dplyr::select(
-         type,
-         in_query,
-         priors,
-         rescaled_priors,
-         dplyr::everything(),
-         -dplyr::all_of(data_type)
-       )
+    # Format the table nicely
+    table_data <- res$result |>
+      dplyr::mutate(
+        in_data = ifelse(in_data, "Yes", "No"),
+        in_query = ifelse(in_query, "Yes", "No"),
+        priors = round(priors, 3)
+      ) |>
+      dplyr::mutate(
+        sort_group = dplyr::case_when(
+          in_data == "Yes" & in_query == "Yes" ~ 1,
+          in_data == "Yes" & in_query == "No" ~ 2,
+          in_data == "No" & in_query == "Yes" ~ 3,
+          TRUE ~ 4
+        )
+      ) |>
+      dplyr::arrange(sort_group) |>
+      dplyr::select(
+        type,
+        in_data,
+        in_query,
+        priors
+      )
 
-     datatable(
+    datatable(
        table_data,
        options = list(
          scrollX = TRUE,
@@ -522,11 +888,15 @@ server <- function(input, output, session) {
          dom = "tip"  # table, info, pagination; no search box
        ),
        rownames = FALSE
-     ) |>
-       formatStyle(
-         "in_query",
-         backgroundColor = styleEqual("Yes", "lightgreen")
-       )
+    ) |>
+      formatStyle(
+        "in_data",
+        backgroundColor = styleEqual("Yes", "lightpink")
+      ) |>
+      formatStyle(
+        "in_query",
+        backgroundColor = styleEqual("Yes", "lightgreen")
+      )
    })
 }
 

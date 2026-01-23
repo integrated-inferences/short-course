@@ -5,6 +5,24 @@ library(dplyr)
 
 # UI
 ui <- fluidPage(
+  tags$head(
+    tags$style(HTML("
+      .panel-box {
+        background: #f7f9fc;
+        border: 1px solid #e3e8f0;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+      }
+      .panel-box h4 {
+        margin-top: 0;
+      }
+      .panel-box h3 {
+        margin-top: 0;
+      }
+    "))
+  ),
   titlePanel("Process Tracing by Hand"),
 
   tabsetPanel(
@@ -16,31 +34,42 @@ ui <- fluidPage(
       fluidRow(
         column(
           width = 4,
-          h4("1. Input Model"),
-          textInput(
-            "model_string",
-            label = "Model (e.g., 'X -> Y' or 'S -> C -> Y <- R <- X; X -> C -> R')",
-            value = "X -> M -> Y",
-            placeholder = "Enter model specification"
+          div(
+            class = "panel-box",
+            h4("1. Input Model"),
+            textInput(
+              "model_string",
+              label = "Model (e.g.'S -> C -> Y <- R <- X; X -> C -> R')",
+              value = "X -> M -> Y",
+              placeholder = "Enter model specification"
+            ),
+            actionButton("create_model", "Create Model", class = "btn-primary")
           ),
-          actionButton("create_model", "Create Model", class = "btn-primary"),
-
-          hr(),
-
-          h4("2. Set Restrictions (Optional)"),
-          uiOutput("restrictions_ui"),
-          verbatimTextOutput("current_restrictions"),
-
-          hr(),
-
-          h4("3. Set Parameters (Optional)"),
-          uiOutput("parameters_ui"),
-          verbatimTextOutput("current_parameters")
+          div(
+            class = "panel-box",
+            h4("2. Set Restrictions (Optional)"),
+            uiOutput("restrictions_ui"),
+            verbatimTextOutput("current_restrictions")
+          ),
+          div(
+            class = "panel-box",
+            h4("3. Set Parameters (Optional)"),
+            uiOutput("parameters_ui"),
+            verbatimTextOutput("current_parameters")
+          )
         ),
         column(
           width = 8,
-          h4("Current model"),
-          plotOutput("model_plot", height = "400px")
+          div(
+            class = "panel-box",
+            h4("Current model"),
+            plotOutput("model_plot", height = "400px")
+          ),
+          div(
+            class = "panel-box",
+            h4("Model parameters"),
+            tableOutput("parameters_table")
+          )
         )
       )
     ),
@@ -51,31 +80,37 @@ ui <- fluidPage(
       fluidRow(
         column(
           width = 4,
-          h4("4. Input Data"),
-          uiOutput("data_inputs"),
-
-          hr(),
-
-          h4("5. Input Query"),
-          textInput(
-            "query",
-            label = "Query (e.g., 'Y[X=1] == Y[X=0]' or 'Y[S=1] < Y[S=0]')",
-            value = "Y[X=1] == Y[X=0]",
-            placeholder = "Enter causal query"
+          div(
+            class = "panel-box",
+            h4("4. Input Data"),
+            uiOutput("data_inputs")
           ),
-
-          hr(),
-
-          actionButton("calculate", "Calculate", class = "btn-success")
+          div(
+            class = "panel-box",
+            h4("5. Input Query"),
+            textInput(
+              "query",
+              label = "Query (e.g., 'Y[X=1] == Y[X=0]' or 'Y[S=1] < Y[S=0]')",
+              value = "",
+              placeholder = "Enter causal query"
+            ),
+            actionButton("calculate", "Calculate", class = "btn-success")
+          )
         ),
         column(
           width = 8,
-          h3("Results"),
-          htmlOutput("error_message"),
-          h4("Summary"),
-          htmlOutput("summary"),
-          h4("Detailed Results Table"),
-          DTOutput("results_table")
+          div(
+            class = "panel-box",
+            h3("Results"),
+            htmlOutput("error_message"),
+            h4("Summary"),
+            htmlOutput("summary")
+          ),
+          div(
+            class = "panel-box",
+            h4("Detailed Results Table"),
+            DTOutput("results_table")
+          )
         )
       )
     ),

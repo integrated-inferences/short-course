@@ -1,0 +1,93 @@
+---
+format:
+  pdf:
+    geometry:
+      - a4paper
+      - landscape
+      - left=0.6in
+      - right=0.6in
+      - top=0.6in
+      - bottom=0.6in
+header-includes:
+  - \usepackage{float}
+  - \setlength{\textfloatsep}{6pt}
+  - \setlength{\floatsep}{6pt}
+  - \setlength{\intextsep}{6pt}
+  - \usepackage{fancyhdr}
+  - \pagestyle{empty}
+  - \usepackage{titlesec}
+  - \titleformat{\section}{\normalfont\large\bfseries}{\thesection}{1em}{}
+  - \titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{1em}{}
+  - \usepackage{caption}
+  - \captionsetup[table]{font=small,skip=2pt}
+---
+```{r, include = FALSE}
+library(CausalQueries)
+library(tidyverse)
+library(kableExtra)
+library(knitr)
+```
+
+**Causal queries and causal types.**
+
+Examples of models, queries, and the collection of types that satisfy the queries.
+
+
+```{r}
+#| echo: false
+
+q <- read.csv("../assets/queries.csv")
+
+types <- sapply(1:nrow(q), function(j) {
+  model <- make_model(q$Model[j])
+  a1 <- get_query_types(model, q$Query[j])$types
+  if(q$Given[j] == "") {a2 <- TRUE
+   } else {
+     a2 <- get_query_types(model, q$Given[j])$types
+     }
+  
+  paste(names(a1)[a1 & a2], collapse = ", ")
+})
+
+escape_latex_math <- function(x) {
+  x <- gsub("%", "\\\\%", x, fixed = TRUE)
+  x <- gsub("#", "\\\\#", x, fixed = TRUE)
+  x <- gsub("_", "\\\\_", x, fixed = TRUE)
+  x <- gsub("\\^", "\\\\^{}", x)
+  gsub("~", "\\\\~{}", x, fixed = TRUE)
+}
+
+format_arrows <- function(x) {
+  x <- gsub("<-", "\\leftarrow", x, fixed = TRUE)
+  gsub("->", "\\rightarrow", x, fixed = TRUE)
+}
+
+format_logic <- function(x) {
+  x <- gsub("==", "=", x, fixed = TRUE)
+  x <- gsub(" & ", ", ", x, fixed = TRUE)
+  x <- gsub("\\s*&\\s*", ", ", x)
+  gsub("\\s*=\\s*", " = ", x)
+}
+
+wrap_math <- function(x) {
+  ifelse(x == "", "", paste0("$", x, "$"))
+}
+
+q <- q |> mutate(Types = types)
+q <- q |>
+  mutate(
+    Model = wrap_math(format_logic(format_arrows(escape_latex_math(Model)))),
+    Query = wrap_math(format_logic(format_arrows(escape_latex_math(Query)))),
+    Given = wrap_math(format_logic(format_arrows(escape_latex_math(Given)))),
+    Types = paste0("\\texttt{", escape_latex_math(Types), "}")
+  )
+
+q |> kable(format = "latex", booktabs = TRUE, escape = FALSE)  |> 
+          kableExtra::column_spec(1, width = "9em")  |> 
+          kableExtra::column_spec(2, width = "12em")  |> 
+          kableExtra::column_spec(3, width = "10em")  |> 
+           kableExtra::column_spec(4, width = "19em")  |> 
+           kableExtra::column_spec(5, width = "16em") |>
+  kableExtra::kable_styling(latex_options = "HOLD_position")
+
+```
