@@ -22,15 +22,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-# Queries (30 mins)
+# Part 1: Queries (30 mins)
 
-Return to the model that you created in Exercise 1. Now write down at least 3 queries that can be defined vis-a-vis this model and that might be of substantive interest. You should write down each query in two ways:
+Return to the model that you created in Exercise 1. Now write down at least 3 queries that can be defined for this model and that might be of substantive interest. 
+
+You should write down each query in two ways:
 
 1. In plain, but maximally precise, plain language.
 
-2. In `CausalQueries`
-
-<!-- In `CausalQueries` we distinguish between controlled interventions and simple conditioning: -->
+2. Formally using `CausalQueries`.  See the queries handout for examples. Be sure to distinguish between *controlled*  interventions (using `[X=...]`) and simple conditioning (using "given..."). 
 
 <!-- $Y[A==1] :|: B == 1$ means the value for $Y$ when $A$ is "set" to 1 and $B$ happens to be 1. -->
 
@@ -45,7 +45,37 @@ Return to the model that you created in Exercise 1. Now write down at least 3 qu
 <!-- * describe a query that depends on both  -->
 
 
-# Bayesian sequencing and posterior variance (30 mins)
+
+# Part II: A causal chain (30 mins)
+
+Imagine a causal chain: $A$ causes $B$ and $B$ causes $C$
+
+Say you knew for the $A$, $B$ relationship:
+
+* there is a 50% chance that $A$ causes $B$ for a given unit.
+* there is a 25% chance that $B=0$ regardless of $A$
+* there is a 25% chance that $B=1$ regardless of $A$
+
+Say you knew for the $B$, $C$ relationship:
+
+* there is a 50% chance that $B$ causes $C$ for a given unit.
+* there is a 25% chance that $C=0$ regardless of $B$
+* there is a 25% chance that $C=1$ regardless of $B$
+
+
+Now:
+
+* What is the probability that $A$ causes $C$?
+* What is the probability that $A$ causes $C$ for a case in which $A=1$ and $C=1$, when $B$ is not observed?
+* What is the probability that $A$ causes $C$ for a case in which $A=1$ and $B=1$ and $C=1$?
+* What is the probability that $A$ causes $C$ for a case in which $A=1$ and $B=0$ and $C=1$?
+
+Summarize: when is $B$ informative for the $A \rightarrow C$ relationship.
+
+# Group discussion (30 mins)
+
+
+# Additional (if you have time!): Bayesian sequencing and posterior variance (30 mins)
 
 Say you knew the probability of $Y$ given $X_1$ and $X_2$:
 
@@ -106,31 +136,3 @@ c(
 
 ```  
 
-
-# A causal chain (20 mins)
-
-Imagine a causal chain: $A$ causes $B$ and $B$ causes $C$
-
-Say you knew for the $A$, $B$ relationship:
-
-* there is a 50% chance that $A$ causes $B$ for a given unit.
-* there is a 25% chance that $B=0$ regardless of $A$
-* there is a 25% chance that $B=1$ regardless of $A$
-
-Say you knew for the $B$, $C$ relationship:
-
-* there is a 50% chance that $B$ causes $C$ for a given unit.
-* there is a 25% chance that $C=0$ regardless of $B$
-* there is a 25% chance that $C=1$ regardless of $B$
-
-
-Now:
-
-* What is the probability that $A$ causes $C$?
-* What is the probability that $A$ causes $C$ for a case in which $A=1$ and $C=1$, when $B$ is not observed$?
-* What is the probability that $A$ causes $C$ for a case in which $A=1$ and $B=1$ and $C=1$?
-* What is the probability that $A$ causes $C$ for a case in which $A=1$ and $B=0$ and $C=1$?
-
-Summarize: when is $B$ informative for the $A \rightarrow C$ relationship.
-
-# Group discussion (30 mins)

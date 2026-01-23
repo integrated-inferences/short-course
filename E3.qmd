@@ -22,11 +22,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-## Exercise 3: Process Tracing with a Causal Model
 
-**(45 minutes)**
+# Part 1: Process Tracing with a Causal Model
+
+**(40 minutes)**
 
 In this exercise, you will work through “by hand” the logic of process tracing with a causal model. We are providing you with a causal model, drawn from Chapter 12 of the book, that relates the existence of a free press to the removal of governments from office. The model represents a set of beliefs about when and through what mechanism(s) the existence of a free press threatens incumbents’ hold on office.
+
 
 ## The model
 
@@ -77,9 +79,9 @@ Specifically, we go into the study believing the following about how each node d
 
 - **X**: in 50% of the population of cases, there is a free press; in 50% there is not
 - **S**: 50% of governments in the population are sensitive to public opinion; 50% are not
-- **C**: 50% of governments in the population will act corruptly regardless of prior conditions; 50% will engage in corruption unless both there exists a free press (X = 1) and that government is sensitive to public opinion (S = 1)
-- **R**: in 50% of cases, the press will never report on corruption, regardless of antecedent conditions; in 50% of cases, the press will report on corruption if and only if it is free (X = 1) and corruption is present (C = 1)
-- **Y**: in all cases, the government will survive in office unless there is both corruption (C = 1) and reporting on corruption (R = 1)
+- **C**: 50% of governments in the population will act corruptly regardless of prior conditions; 50% will engage in corruption unless both there exists a free press (X = 1) and that government is sensitive to public opinion (S = 1) ($C$ is either `1111` or `1110`).
+- **R**: in 50% of cases, the press will never report on corruption, regardless of antecedent conditions; in 50% of cases, the press will report on corruption if and only if it is free (X = 1) and corruption is present (C = 1)  ($R$ is either `0000` or `0001`).
+- **Y**: in all cases, the government will survive in office unless there is both corruption (C = 1) and reporting on corruption (R = 1)  ($Y$ is always `0001`).
 
 We now want you to “do” process tracing on a hypothetical case using this model.
 
@@ -87,6 +89,7 @@ We now want you to “do” process tracing on a hypothetical case using this mo
 **Query:** What is the probability that the existence of a free press was a cause of government replacement in this case?
 
 Now, imagine different process-tracing strategies you might pursue—that is, different combinations of other nodes you might choose to observe. We want to think through what inference you will draw on the query depending on what you see.
+
 
 ## Your task
 
@@ -139,15 +142,23 @@ Figure out what you would conclude—what is the probability that X = 1 is a cau
 
 ---
 
-## Process trace your own DAG
+# Part 2: Process trace your own DAG
 
 **(30 minutes)**
 
 Make a table showing what you would conclude about your query given each pattern of data you might see.
 
-| Query | Observations | Inference |
+| Query | Possible observations | Inference |
 | --- | --- | --- |
-| “If I see X = 1, Y = 1, M = 1” | _Write the observed pattern here_ | _What do you conclude about the effect of X on Y?_ |
+| "X causes Y" | “If I see X = 1, Y = 1, M = 1” | The query is  true with probability ...|
+| "X causes Y" | “If I see X = 1, Y = 1, M = 0” | The query is  true with probability ...|
+| "X causes Y through M" | ... | ... |
 
 
 
+# Discussion
+
+
+# Additional (if you have extra time!)
+
+Look at our [shiny app](https://shiny2.wzb.eu/ipi/process_tracing/) and work through Part  1 again using the app. 

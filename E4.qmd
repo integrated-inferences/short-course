@@ -22,22 +22,26 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-Choose your exercise:
+Choose your exercise. If you brought your own data, now please try to Part 1 A otherwise do Part 1 B.
 
-# Own data exercise
 
-If you brought your own data, now please try to:
+# Part 1 A: Own data exercise
+
 
 1. Define your model
 2. Update your model on your data
 3. Compute a query using posteriors and compare to inferences based on priors
+4. Figure out what inferences you might draw for a case conditional on different within case observations you might observe
+
 
 **OR:**
 
 
-# A hoop test justified with data
+# Part 1 B: A hoop test anda  smoking gun test justified with data
 
-**(45 minutes)**
+**(60 minutes)**
+
+## Hoops
 
 Sometimes we treat the absence of an expected mediator as strong evidence against a proposition. 
 In this exercise we will try to *justify* a claim of this form:
@@ -50,13 +54,15 @@ In this exercise we will try to *justify* a claim of this form:
 4. Now imagine you saw instead that $M=0$. What should you believe about the probability that $X$ caused $Y$?
 
 
-# A smoking gun test
-**(30 minutes)**
 
-To think through: Can you construct another model and background data that lets you treat $K$ as a smoking gun evidnece for the $X$ causing $Y$?
+## Smoking guns
+
+Can you construct another model and background data that lets you treat $K$ as a smoking gun evidence for the $X$ causing $Y$?
+
+Try to generate a model and data structure that would justify smoking gun inferneces. Demonstrate on an updated model that these inferences are valid.
 
 # Closing discussion
-**(15 minutes)**
+**(30 minutes)**
 
 
 

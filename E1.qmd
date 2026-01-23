@@ -31,9 +31,25 @@ library(ggplot2)
 
 ```
 
-# Exercise 1: Make your own model in `CausalQueries`
+# Part 1: Interpreting types
 
-## Define the model (30 mins)
+(20 mins)
+
+Look at the "Types handout".
+
+1. Make sure that you can interpret what the types $M.xx$ mean $Y.xxxx$.
+2. Select 4 of the combined types (numbered 1 - 64) and describe:
+
+* Does $X$ affect $Y$ for this type?
+* Does $X$ have a direct or indirect effect via $M$? Or both? Or neither? Or sometimes??
+
+
+# Part 2: Make your own model in `CausalQueries`
+
+
+## Define the model
+
+(30 mins)
 
 Select an outcome variable of interest.
 
@@ -41,19 +57,44 @@ Decide on 2–3 causal variables that might influence the outcome (causes of pri
 
 Draw your model by hand -- before you do anything in `CausalQueries`.
 
-In `CausalQueries`, create a model that connects the causal variables to the outcome variable.
-
 Consider also including:
 
 - a key mediating variable that should be represented in your model
 - a key moderating variable that should be represented in your model
 - any indications of unmeasured confounding between nodes in your model
 
+Be prepared to talk the class through the choices you made in building the model. What assumptions did you intend to build in or leave out, and why, given background knowledge of the domain?
+
+
+## In code
+
+(10 mins)
+
+Write your model as a causal statement (of the form `X->Y`).
+
+In `CausalQueries`, create a model that connects the causal variables to the outcome variable.
+
 Now plot the model (`plot_model(model)`) and save your code in a `.qmd` file.
 
-Email the `.qmd` file to alan.jacobs@ubc.ca.
 
-Be prepared to talk the class through the choices you made in building the model. What assumptions did you intend to build in or leave out, and why, given background knowledge of the domain?
+## Refine the model
+
+Inspect the collection of implied types, via
+
+```{r, eval = FALSE}
+my_model |> inspect("parameters_df")
+```
+
+* Select one type for each node (e.g. a type for $X$, for $M$, and for $Y$) and describe what would actually *happen* in that case.
+* Are there restrictions you would want to impose to any types? What would they be? What types might you want to rule out?
+
+## Plot the model
+
+* plot your model using `plot_model`
+* assess whether there are more intuitive placements for the nodes and adjust using `x_coord`, `y_coord`. Make sure to give coordinates in the order of the model nodes. (Check via: `model$nodes`).
+
+
+## Pointers
 
 Keep in mind
 
@@ -65,21 +106,4 @@ Keep in mind
 - You do not need all the complexity.
 - Possible causes can be left out as long as they do not affect more than one node included on the graph.
 - Mediating steps can be left out or collapsed.
-
-## Refine the model (20 mins)
-
-Inspect the collection of implied types, via
-
-```{r, eval = FALSE}
-my_model |> inspect("parameters_df")
-```
-* Are there restrictions you would want to impose to any types? What would they be
-* Select one type for each node (e.g. a type for $X$, for $M$, and for $Y$) and describe what would actually *happen* in that case.
-
-## Plot the model (10 mins)
-
-* plot your model using `plot_model`
-* assess whether there are more intuitive placements for the nodes and adjust using `x_coord`, `y_coord`. Make sure to give coordinates in the order of the model nodes. (Check via: `model$nodes`).
-
-## Group discussion (30 mins)
 
