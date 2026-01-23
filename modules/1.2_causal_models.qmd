@@ -173,7 +173,7 @@ hj_dag(x = c(0, 1, 2),
 
 
 
-## $\theta$ terms: random disturbances
+## $\theta$ terms: exogenous variation
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -199,7 +199,7 @@ hj_dag(x = c(0, 0, 1, 1, 2, 2),
 * A $\theta$ term for each variable (Pearl uses a $U$ here)
 * Represent exogenous variation affecting the system
 * Think: unexplained prior conditions, features of context, random disturbances
-* For us: these will capture  the *way* a "child" responds to its parents
+* For us: these will capture  the *way* a node responds to its antecedents
 
 
 ## DAG grammar
@@ -370,6 +370,7 @@ hj_dag(x = c(0, 0, 1, 1, 2, 3, 2, 2),
 * Exogenous nodes are assigned independently 
     * Above graph implies $I$ and $P$ are generated *independently*
     * No *confounding* between them
+    * Similarly, implies no confounding between $I$ and $D$
 
 
 ## Assumptions implied by a DAG
@@ -396,8 +397,27 @@ hj_dag(x = c(0, 0, 1, 1, 2, 3, 2, 2),
 
 ```
 
-* Similarly, implies no confounding between $I$ and $D$
+
+
+## Representing confounding
+
 * We can allow for confounding with double-headed arrows
+* Here, *no* confounding
+
+```{r, echo = FALSE}
+model <- make_model("I -> M -> D; I -> D <- P")
+  model |> plot_model()
+```
+
+## Representing confounding
+
+```{r, echo = FALSE}
+model <- make_model("I -> M -> D; I -> D <- P; I<->D")
+  model |> plot_model()
+```
+
+* Here, the *possibility* of confounding between $I$ and $D$
+
 
 
 ## Assumptions implied by a DAG
