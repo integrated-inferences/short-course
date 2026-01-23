@@ -37,6 +37,8 @@ hj_dag(x = c(0, 2, 1),
 
 ```
 
+Key idea is that: *if* you believe this model, then seeing $M$ should tell you something about the $X$, $Y$ relationship.
+
 ## Crucial to keep in mind
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
@@ -50,9 +52,9 @@ hj_dag(x = c(0, 2, 1),
 
 ```
 
-* This tells us nothing about the *direction* of effects
+* Great as this is, the DAG tells us nothing about the *direction* of effects
 * Inequality might boost or depress mobilization
-* Mobilization might encourage or delay democratization (maybe it just leads to more repression)
+* Mobilization might encourage or delay democratization
 
 
 <!-- ## Crucial to keep in mind -->
@@ -82,7 +84,7 @@ hj_dag(x = c(0, 2, 1),
     
 * What we don't know is whether any of those conditions *caused* the outcome
 
-* So we collect *more* information about the case to help figure that out
+* So we collect *more* information "from other parts of the DAG"  to help figure that out
 
 
 ## Formulating a case-level question: Malawi (1994)
@@ -247,7 +249,7 @@ hj_dag(x = c(0, 2, 1),
     * Maximize explicitness and analytic transparency
 
 
-## An important implication of Bayesian reasoning {.smaller}
+## Process tracing is distinguishing among theories {.smaller}
 
 An example:
 
@@ -257,6 +259,9 @@ An example:
         * We start out thinking this is a *likely* mechanism
     * Theory 2: He might have hired an assassin
         * We start out thinking this is an *unlikely* mechanism
+
+## Distinguishing theories {.smaller}
+
 * We find a piece of evidence
     * The bullet is from a Beretta 92FS
     * Commonly used by professional killers -- rarely used by general population
@@ -265,7 +270,7 @@ An example:
     * Because it supports a very *unlikely* theory of how he'd have done it and undermines a likely theory
 
 
-## An important implication of Bayesian reasoning
+## Distinguishing theories
 
 * Often there are multiple ways in which some statement could be true
     * E.g., there are multiple mechanisms through which $I$ could have a positive effect on $D$
@@ -276,7 +281,7 @@ An example:
 * Evidence that we collect will tell us which "ways" are more likely operating in a case
 
 
-## An important implication of Bayesian reasoning
+## Distinguishing theories
 
 * When the evidence shifts our beliefs toward thinking that a *likely* theory/mechanism for some cause is operating, that makes it more likely that the cause is operating
 * When evidence shifts our beliefs away from thinking that a *likely* theory/mechanism for some cause is operating and toward thinking an *unlikely* theory/pathway is operating, that makes it **less likely** that the cause is operating
@@ -568,7 +573,9 @@ knitr::include_graphics("assets/pimddag.png")
 * Will depend on our population-level beliefs about $P$'s effects on $D$ and interactions with $M$
 
 
-## Process tracing with causal models
+# Process tracing with causal models
+
+## Where the model helps
 
 * The DAG tells us what we can possibly observe
 * We will have seen some nodes before we process trace (e.g., outcome, possible causes)
@@ -577,8 +584,69 @@ knitr::include_graphics("assets/pimddag.png")
     * What kinds of effects are most and least common?
 * How strongly our beliefs shift depends on how different those probabilities are
     * How *much* more common are linked positive effects than linked negative effects, for instance?
-* In book, some rules about when nodes are **potentially** informative
 
+
+## More formally
+
+
+* We can figure out from the causal model *which* causal types are consistent with our query
+* We can figure out from the causal model *which* causal types are consistent with our data we observe
+* If we have probabilities for each of these we can figure out the probability of the query given the data
+
+
+## Key Bayesian insight
+
+
+```{r}
+#| label: fig-HJ-F-7-1
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+#| fig-cap: "Logic of simple updating on arbitrary queries."
+#| fig.align :  "center"
+#| out.width :  "50%"
+
+par(mar = c(.1,.1,.1,.1))
+frame()
+mycols <- c(
+  rgb(0, 0, 255, max = 255, alpha = 125, names = "blue50"),
+  rgb(255, 0, 0, max = 255, alpha = 125, names = "c2"),
+  rgb(0, 255, 0, max = 255, alpha = 125, names = "c3"))
+
+mycols <- c(NA, NA, NA)
+plotrix::draw.circle(.35,.35,.3,nv=100,border=NULL,lty=1,density=NULL,
+						angle=45,lwd=1, col = mycols[1])
+plotrix::draw.circle(.65,.35,.3,nv=100,border=NULL,col=mycols[2],lty=1,density=NULL,
+						angle=45,lwd=1)
+plotrix::draw.circle(.5,.65,.3,nv=100,border=NULL,col=mycols[3],lty=1,density=NULL,
+						angle=45,lwd=1)
+text(.5, .8, "Types consistent\nwith query")
+text(.2, .35, "Types consistent\nwith priors")
+text(.8, .35, "Types consistent\nwith data")
+text(.05, .95, expression(Theta))
+text(.15, .95, "Universe of all\ncausal types")
+text(.5, .45, "A")
+text(.32, .55, "B")
+text(.5, .25, "C")
+
+
+box()
+```
+
+## From the DAG alone...
+
+We can tell when some evidence might *potentially* matter
+
+```{r, echo = FALSE, fig.align = "center", eval = TRUE}
+knitr::include_graphics("assets/possibly_informative.jpg")
+```
+
+
+
+
+## From a full model...
+
+We can say much more... actually making (model dependent) inferences
 
 ## Process tracing with causal models
 

@@ -17,7 +17,7 @@ author: "Macartan Humphreys and Alan Jacobs"
 bibliography: assets/bib.bib
 ---
 
-# Process Tracing
+# Process Tracing Intuition
 
 
 ```{css}
