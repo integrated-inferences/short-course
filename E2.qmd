@@ -30,7 +30,7 @@ You should write down each query in two ways:
 
 1. In plain, but maximally precise, plain language.
 
-2. Formally using `CausalQueries`.  See the queries handout for examples. Be sure to distinguish between *controlled*  interventions (using `[X=...]`) and simple conditioning (using "given..."). 
+2. Formally using `CausalQueries`.  See the [queries handout]("queries_handout.pdf") for examples. Be sure to distinguish between *controlled*  interventions (using `[X=...]`) and simple conditioning (using "given..."). 
 
 <!-- $Y[A==1] :|: B == 1$ means the value for $Y$ when $A$ is "set" to 1 and $B$ happens to be 1. -->
 

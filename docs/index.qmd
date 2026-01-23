@@ -28,13 +28,18 @@ Day 2:
 ## Resources
 
 * [All resources](https://integrated-inferences.github.io/)
-* [Book](https://integrated-inferences.github.io/book/)
-* [Videos](https://integrated-inferences.github.io/videos.html)
-* [GESIS course description](https://training.gesis.org/?site=pDetails&child=full&pID=0x3C86637E0A0145B2858B47F204C50FAC&lang=en_US&lang=de_DE&lang=en_US)
+  * [Book](https://integrated-inferences.github.io/book/)
+  * [Videos](https://integrated-inferences.github.io/videos.html)
+  * [GESIS course description](https://training.gesis.org/?site=pDetails&child=full&pID=0x3C86637E0A0145B2858B47F204C50FAC&lang=en_US&lang=de_DE&lang=en_US)
 
 * [Shiny app to do process tracing by hand](https://shiny2.wzb.eu/ipi/process_tracing/)
 
-* [Cheat sheet for causal types](cheatsheet.html) | [64 types](64_types.html)
+
+* Handouts:
+
+  * [Cheat sheet for causal types](types_handout.pdf)
+  * [queries and types](queries_handout.pdf)
+  * [64 types](64_types.html) interpretation guide 
 
 ## About
 

@@ -35,7 +35,7 @@ library(ggplot2)
 
 (20 mins)
 
-Look at the "Types handout".
+Look at the "[Types handout](types_handout.pdf)".
 
 1. Make sure that you can interpret what the types $M.xx$ mean $Y.xxxx$.
 2. Select 4 of the combined types (numbered 1 - 64) and describe:
