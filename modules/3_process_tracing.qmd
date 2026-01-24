@@ -24,7 +24,23 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-## Let's start with a DAG: Inequality and Democratization (through Mobilization)
+## Process tracing with a DAG
+
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+
+make_model("X->Y <- Q") |> 
+  plot_model(
+      labels = c('X', "theta^Y", 'Y'),
+      parse = TRUE,
+      textcol  = "black", nodecol = "white",)
+
+```
+
+Key idea is that: *if* you believe this model, then observations about observable nodes (eg $X$, $Y$) should be informative about unobservable estimands ($\theta^Y$).
+
+## Process tracing with a DAG
+
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -37,9 +53,9 @@ hj_dag(x = c(0, 2, 1),
 
 ```
 
-Key idea is that: *if* you believe this model, then seeing $M$ should tell you something about the $X$, $Y$ relationship.
+So, for instance: *if* you believe this model, then seeing $M$ should tell you something about a query regarding the $X$, $Y$ relationship. (What might the query be? where would it sit on the DAG?)
 
-## Crucial to keep in mind
+## Process tracing with a DAG
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -74,7 +90,7 @@ hj_dag(x = c(0, 2, 1),
 
 
 
-## How we're conceiving of process tracing
+## Process tracing as new data for finer inferences
 
 * We are focusing on a case
 
@@ -87,7 +103,12 @@ hj_dag(x = c(0, 2, 1),
 * So we collect *more* information "from other parts of the DAG"  to help figure that out
 
 
-## Formulating a case-level question: Malawi (1994)
+# Example: Democratization in Malawi 
+
+
+## A case level question
+
+Formulating a case-level question: Malawi (1994)
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -107,7 +128,7 @@ hj_dag(x = c(0, 2, 1),
 * We want to know: did $I=1$ cause $D=1$ in Malawi?
 
 
-## A simple process-tracing strategy
+## Prior data on Malawi
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -128,7 +149,7 @@ hj_dag(x = c(0, 2, 1),
     * Was there mass mobilization in Malawi?
 
 
-## Collect the process tracing evidence ($M$)
+## New data on Malawi (within case data)
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -149,7 +170,8 @@ hj_dag(x = c(0, 2, 1),
 * NOTHING YET!
 
 
-## Why the DAG is not enough
+## Inference 
+
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -171,7 +193,7 @@ hj_dag(x = c(0, 2, 1),
     * Mobilization not occurring?
 
 
-## Why the DAG is not enough
+## DAG not enough for inference
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -193,7 +215,7 @@ hj_dag(x = c(0, 2, 1),
 * Which value of $M$ would be most consistent with $I=1$ causing $D=1$?
     * $M=0$
  
-## Why the DAG is not enough
+## Progress from prior beliefs about processes
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -216,7 +238,7 @@ hj_dag(x = c(0, 2, 1),
     * $M=1$
     
     
-## Why the DAG is not enough
+## Progress from prior beliefs about processes
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -236,59 +258,48 @@ hj_dag(x = c(0, 2, 1),
     * then observing $M=1$ constitutes evidence that $I=1$ caused $D=1$
 
 
-## Process tracing is always theory dependent
-
-* The evidence in process tracing never speaks for itself
-
-* Our inferences from PT evidence always depend on theory
-    * On our beliefs about how the world works
-    
-* Most process tracing is either silent about these beliefs or expresses them informally
-
-* We can formalize these beliefs
-    * Maximize explicitness and analytic transparency
 
 
-## Process tracing is distinguishing among theories {.smaller}
+<!-- ## Process tracing is distinguishing among theories {.smaller} -->
 
-An example:
+<!-- An example: -->
 
-* The Lord of the Manor has been shot. Did the butler do it?
-* Two theories of how he might have done so
-    * Theory 1: He might have shot the Lord himself
-        * We start out thinking this is a *likely* mechanism
-    * Theory 2: He might have hired an assassin
-        * We start out thinking this is an *unlikely* mechanism
+<!-- * The Lord of the Manor has been shot. Did the butler do it? -->
+<!-- * Two theories of how he might have done so -->
+<!--     * Theory 1: He might have shot the Lord himself -->
+<!--         * We start out thinking this is a *likely* mechanism -->
+<!--     * Theory 2: He might have hired an assassin -->
+<!--         * We start out thinking this is an *unlikely* mechanism -->
 
-## Distinguishing theories {.smaller}
+<!-- ## Distinguishing theories {.smaller} -->
 
-* We find a piece of evidence
-    * The bullet is from a Beretta 92FS
-    * Commonly used by professional killers -- rarely used by general population
-* This strengthens belief in Theory 2, weakens belief in Theory 1 -- *if the butler did it*
-* But overall this evidence makes us *less* confident the butler did it at all!
-    * Because it supports a very *unlikely* theory of how he'd have done it and undermines a likely theory
-
-
-## Distinguishing theories
-
-* Often there are multiple ways in which some statement could be true
-    * E.g., there are multiple mechanisms through which $I$ could have a positive effect on $D$
-    * Linked positive effects, or
-    * Linked negative effects
-* Those different ways are not equally likely, though
-    * Maybe linked positive effects are much more likely than linked negative effects as ways of making "I has a positive effect on D" a true statement
-* Evidence that we collect will tell us which "ways" are more likely operating in a case
+<!-- * We find a piece of evidence -->
+<!--     * The bullet is from a Beretta 92FS -->
+<!--     * Commonly used by professional killers -- rarely used by general population -->
+<!-- * This strengthens belief in Theory 2, weakens belief in Theory 1 -- *if the butler did it* -->
+<!-- * But overall this evidence makes us *less* confident the butler did it at all! -->
+<!--     * Because it supports a very *unlikely* theory of how he'd have done it and undermines a likely theory -->
 
 
-## Distinguishing theories
+<!-- ## Distinguishing theories -->
 
-* When the evidence shifts our beliefs toward thinking that a *likely* theory/mechanism for some cause is operating, that makes it more likely that the cause is operating
-* When evidence shifts our beliefs away from thinking that a *likely* theory/mechanism for some cause is operating and toward thinking an *unlikely* theory/pathway is operating, that makes it **less likely** that the cause is operating
-* **We "lose" more by undermining the likely mechanism than we gain by boosting the unlikely mechanism**
-* So it matters how likely we think the different possible mechanisms are
-    * Will affect how we interpret the evidence
-* These are "priors"
+<!-- * Often there are multiple ways in which some statement could be true -->
+<!--     * E.g., there are multiple mechanisms through which $I$ could have a positive effect on $D$ -->
+<!--     * Linked positive effects, or -->
+<!--     * Linked negative effects -->
+<!-- * Those different ways are not equally likely, though -->
+<!--     * Maybe linked positive effects are much more likely than linked negative effects as ways of making "I has a positive effect on D" a true statement -->
+<!-- * Evidence that we collect will tell us which "ways" are more likely operating in a case -->
+
+
+<!-- ## Distinguishing theories -->
+
+<!-- * When the evidence shifts our beliefs toward thinking that a *likely* theory/mechanism for some cause is operating, that makes it more likely that the cause is operating -->
+<!-- * When evidence shifts our beliefs away from thinking that a *likely* theory/mechanism for some cause is operating and toward thinking an *unlikely* theory/pathway is operating, that makes it **less likely** that the cause is operating -->
+<!-- * **We "lose" more by undermining the likely mechanism than we gain by boosting the unlikely mechanism** -->
+<!-- * So it matters how likely we think the different possible mechanisms are -->
+<!--     * Will affect how we interpret the evidence -->
+<!-- * These are "priors" -->
     
 
 <!-- ## Cases sit within populations -->
@@ -509,10 +520,22 @@ To recap:
 * Which tells us which value of $M$ is most consistent with such an effect
 
 
-## Process tracing in Malawi
+## So: Process tracing is always theory dependent
+
+* The evidence in process tracing never speaks for itself
+
+* Our inferences from PT evidence always depend on theory
+    * On our beliefs about how the world works
+    
+* Most process tracing is either silent about these beliefs or expresses them informally
+
+* We can formalize these beliefs
+    * Maximize explicitness and analytic transparency
+
+## In practice: Process tracing in Malawi
 
 * Prior beliefs we use in the book (roughly):
-    * $I$ has positive effect on $M$ 50% of the time    
+    * $I$ has positive effect on $M$ 50% of the time (given other data)    
     * $I$ never has a negative effect on $M$
     * $M$ has positive effect on $D$ 50% of the time
     * $M$ never has a negative effect on $D$
@@ -537,7 +560,9 @@ To recap:
     * E.g., the number of $I=1, M=1$ cases tells us nothing about how often inequality *causes* mobilization
 
 
-## Process tracing for several cases
+# Democratization example
+
+Process tracing for several cases
 
 ```{r, echo = FALSE, out.width = "300px", fig.align = "center", eval = TRUE}
 knitr::include_graphics("assets/pimddag.png")
@@ -573,7 +598,8 @@ knitr::include_graphics("assets/pimddag.png")
 * Will depend on our population-level beliefs about $P$'s effects on $D$ and interactions with $M$
 
 
-# Process tracing with causal models
+
+# General strategy for process tracing with causal models
 
 ## Where the model helps
 
