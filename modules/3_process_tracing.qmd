@@ -25,78 +25,43 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Process tracing with a DAG
 
-```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
-par(mar=c(1,1,1,1))
-hj_dag(x = c(0, 2, 1),
-       y = c(1, 1, 1),
-       names = c("I", "D", "M"), 
-       arcs = cbind( c(1, 3),
-                     c(3, 2)),
-       padding = .4, contraction = .15)
-
+```{r, echo = FALSE}
+make_model("I -> M -> D") |> plot(x_coord = 1:3, y_coord = 3:1)
 ```
 
-Simple insight: *If* you believe this model, then seeing $M$ should tell you something about a query regarding the $X$, $Y$ relationship.
+Simple insight: *If* you believe this model, then seeing $M$ should tell you something about a query regarding the $I$, $D$ relationship.
+
+*If there was no mobilization then inequality didn't cause the transition*
+
+*How do we formalize this insight?*
 
 ## Process tracing with a DAG
 
-The logic behind it:
+Key formal insight:
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 
-make_model("X->Y <- Q") |> 
+make_model("X-> M -> D <- Q2; Q1 -> M") |> 
   plot_model(
-      labels = c('X', "theta^Y", 'Y'),
+      labels = c('I', "theta^D", "theta^M", 'M', 'D'),
       parse = TRUE,
       textcol  = "black", nodecol = "white",)
 
 ```
 
-Key idea is that: *if* you believe this model, then observations about observable nodes (eg $X$, $Y$) should be informative about unobservable estimands ($\theta^Y$).
+*If* you believe this model, then seeing $M$ should tell you something about the $\theta$s---which are what define the effect of $I$ on $D$. 
 
-## Process tracing with a DAG
+## Process tracing with a Causal Model
 
-So:
 
-```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
-
-make_model("X-> M -> Y <- Q2; Q1 -> M") |> 
-  plot_model(
-      labels = c('X', "theta^Y", "theta^M", 'M', 'Y'),
-      parse = TRUE,
-      textcol  = "black", nodecol = "white",)
-
-```
-```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
-par(mar=c(1,1,1,1))
-hj_dag(x = c(0, 2, 1),
-       y = c(1, 1, 1),
-       names = c("I", "D", "M"), 
-       arcs = cbind( c(1, 3),
-                     c(3, 2)),
-       padding = .4, contraction = .15)
-
+```{r, echo = FALSE}
+make_model("I -> M -> D") |> plot(x_coord = 1:3, y_coord = 3:1)
 ```
 
-*If* you believe this model, then seeing $M$ should tell you something about the $\theta$s. 
-
-## Process tracing with a DAG
-
-```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
-par(mar=c(1,1,1,1))
-hj_dag(x = c(0, 2, 1),
-       y = c(1, 1, 1),
-       names = c("I", "D", "M"), 
-       arcs = cbind( c(1, 3),
-                     c(3, 2)),
-       padding = .4, contraction = .15)
-
-```
-
-* Great as this is, the DAG tells us nothing about the *direction* of effects
-* Inequality might boost or depress mobilization
-* Mobilization might encourage or delay democratization
-
+* Great as this is, the DAG--by itself--tells us nothing about the *direction* of effects
+  * Inequality might boost or depress mobilization
+  * Mobilization might encourage or delay democratization
+* For this you need an *informative* **causal model**
 
 <!-- ## Crucial to keep in mind -->
 
@@ -119,9 +84,10 @@ hj_dag(x = c(0, 2, 1),
 
 * We are focusing on a case
 
-* We start knowing *something* about the case
-    * Perhaps the outcome
-    * Perhaps the value of a causal condition or two
+* We start with two things:
+
+  * A background *theory* about how things work in cases like this
+  * Background knowledge about the case: Perhaps the outcome; Perhaps the value of a causal condition or two
     
 * What we don't know is whether any of those conditions *caused* the outcome
 
@@ -130,6 +96,7 @@ hj_dag(x = c(0, 2, 1),
 
 # Example: Democratization in Malawi 
 
+Let's walk though the intuition
 
 ## A case level question
 
@@ -474,18 +441,16 @@ If we have already seen $I=1, D=1$
 ## Combining beliefs across the DAG
 
 * Suppose we believe that:
-    * $I$ has a positive effect on $M$ 30% of the time (= in 30% of cases in the population)
+    * $I$ has a positive effect on $M$ 30% of the time (= in 30% of cases)
     * $I$ has a negative effect on $M$ 10% of the time 
 
 * Suppose we believe that:
     * $M$ has a positive effect on $D$ 60% of the time
     * $M$ has a negative effect on $D$ 10% of the time
 
-* Then the probability of linked positive effects is simply...
-    * $0.3 \times 0.6 = 0.18$
+* Then the probability of linked positive effects is simply: $0.3 \times 0.6 = 0.18$
     
-* Probability of linked negative effects is simply...
-    * $0.1 \times 0.1 = 0.01$
+* Probability of linked negative effects is simply: $0.1 \times 0.1 = 0.01$
     
 * So we believe linked positive effects are a MUCH more common way of generating a positive $I \rightarrow D$ effect than linked negative effects
 
@@ -509,18 +474,16 @@ If we have already seen $I=1, D=1$
 Alternatively...
 
 * Suppose we believe that:
-    * $I$ has a positive effect on $M$ 20% of the time (= in 30% of cases in the population)
+    * $I$ has a positive effect on $M$ 20% of the time (= in 30% of cases)
     * $I$ has a negative effect on $M$ 20% of the time 
 
 * Suppose we believe that:
     * $M$ has a positive effect on $D$ 10% of the time
     * $M$ has a negative effect on $D$ 60% of the time
 
-* Probability of linked positive effects is...
-    * $0.2 \times 0.1 = 0.02$
+* Probability of linked positive effects is:  $0.2 \times 0.1 = 0.02$
     
-* Probability of linked negative effects is...
-    * $0.2 \times 0.6 = 0.12$
+* Probability of linked negative effects is: $0.2 \times 0.6 = 0.12$
 
 * Now linked negative effects are a MUCH more common way of generating a positive $I \rightarrow D$ effect than linked positive effects
 
@@ -626,18 +589,18 @@ knitr::include_graphics("assets/pimddag.png")
 
 # General strategy for process tracing with causal models
 
-## Where the model helps
+<!-- ## Where the model helps -->
 
-* The DAG tells us what we can possibly observe
-* We will have seen some nodes before we process trace (e.g., outcome, possible causes)
-* We can then observe any other node on the DAG
-* What we learn about the **case** from observing a node depends on our beliefs about how things work in the **population**
-    * What kinds of effects are most and least common?
-* How strongly our beliefs shift depends on how different those probabilities are
-    * How *much* more common are linked positive effects than linked negative effects, for instance?
+<!-- * The DAG tells us what we can possibly observe -->
+<!-- * We will have seen some nodes before we process trace (e.g., outcome, possible causes) -->
+<!-- * We can then observe any other node on the DAG -->
+<!-- * What we learn about the **case** from observing a node depends on our beliefs about how things work in the **population** -->
+<!--     * What kinds of effects are most and least common? -->
+<!-- * How strongly our beliefs shift depends on how different those probabilities are -->
+<!--     * How *much* more common are linked positive effects than linked negative effects, for instance? -->
 
 
-## More formally
+<!-- ## More formally -->
 
 
 * We can figure out from the causal model *which* causal types are consistent with our query
