@@ -53,3 +53,26 @@ make_model('X -> M -> Y') |>
 ) 
 
 ```
+## Illustration of 3
+
+We will spend more time on 3 later but in brief:
+
+* `update_model()` lets you update over population *parameters* not just *case types*
+
+```{r, eval = FALSE}
+model <- make_model("X->Y") 
+data  <- data.frame(X = c(0,0,1,1), Y = c(0,0,1,1))
+
+model <- update_model(model, data) |>
+  query_model("Y[X=1] - Y[X=0]", using = "posteriors")
+```
+
+```{r, echo = FALSE}
+model <- make_model("X->Y") 
+data  <- data.frame(X = c(0,0,1,1), Y = c(0,0,1,1))
+
+model <- update_model(model, data, refresh = 0) 
+
+model |>
+  query_model("Y[X=1] - Y[X=0]", using = "posteriors")
+```

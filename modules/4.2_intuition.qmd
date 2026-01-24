@@ -22,6 +22,15 @@ source("assets/setup.R")
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## How will we answer questions about populations?
+
+* We need to learn about those $\lambda$'s
+    * About the proportions of the population with different kinds of causal effects
+* We will have a prior belief about those proportions
+* When we see data on lots of cases, we will **update** those beliefs about proportions
+    * From a prior distribution over $\lambda$ to a posterior distribution over $\lambda$
+
+
 
 ## How do we "update" our models?
 
@@ -50,20 +59,12 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 
 ## Large-$N$ estimation of $ATE$: what happens to beliefs over parameters
 
-* We collect data on $I$, $M$, and $D$ for a large number of cases
-* We observe a strong positive correlation 
-* We will think there's a positive average effect
+* Say we only collect data on $I$, $M$, and $D$ for a large number of cases
+* We update on both $\lambda^I$ , $\lambda^M$ and $\lambda^D$ to place more weight on values that are likely to give rise to the pattern of data we see
+* We will come to put more weight on a *joint distribution* of $\lambda^M$ and $\lambda^D$ in line with the data and less posterior weight on all other combinations
 
+**Question**: What would you infer if you saw a very high correlation between $I$ and $D$ and a *low* correlation between $I$ and $M$ or a low correlation between $M$ and $D$?
 
-## Large-$N$ estimation of $ATE$: what happens to beliefs over parameters
-
-* Now, we will update on both $\lambda^I$ , $\lambda^M$ and $\lambda^D$
-* An $I \rightarrow D$ effect can only happen if $I$ affects $M$ and $M$ affects $D$, in specific ways
-* Two possible **combinations** of effects can generate a positive $I \rightarrow D$ effect
-    * $I \rightarrow M$ is positive, $M \rightarrow D$ is positive
-    * $I \rightarrow M$ is negative, $M \rightarrow D$ is negative
-* So we will come to put more weight on a *joint distribution* of $\lambda^M$ and $\lambda^D$ in which there are lots of cases with one of these two combinations
-* ...and less posterior weight on all other combinations of effects
 
 ## General procedure
 
@@ -77,7 +78,7 @@ That, with priors, is enough to update:
 
 $$p(\lambda | D) = \frac{p(D | \lambda)p(\lambda)}{p(D)}$$
 
-## Illustrattion of 'manual' updating
+## Illustration of 'manual' updating
 
 Let's update manually.
 
@@ -87,15 +88,15 @@ Consider this joint distribution with binary $X$ and binary $Y$ from [here](http
 
 |     | Y = 0 | Y = 1 | 
 |-----|-------|-------|
-| **X = 0** | $b/2 + c/2$      |  $a/2 + d/2$     |   
-| **X = 1** | $a/2 + c/2$      |  $b/2 + d/2$     |   
+| **X = 0** | $\lambda_{01}/2 + \lambda_{00}/2$      |  $\lambda_{10}/2 + \lambda_{11}/2$     |   
+| **X = 1** | $\lambda_{10}/2 + \lambda_{00}/2$      |  $\lambda_{01}/2 + \lambda_{11}/2$     |   
 
 
-reminder: $a$ is share with negative effects, $b$ is share with positive effects...
+reminder: $\lambda_{10}$ is share with negative effects, $\lambda_{01}$ is share with positive effects...
 
 ### Causal inference on a grid: strategy
 
-Say we now had (finite) data filling out this table. What posteriors should we form over $a,b,c,d$?
+Say we now had (finite) data filling out this table. What posteriors should we form over $\lambda_{10},\lambda_{01},\lambda_{00},\lambda_{11}$?
 
 
 |     | Y = 0 | Y = 1 | 
@@ -111,12 +112,13 @@ This time we will start with a draw of possible shares and put look for posterio
 ### Causal inference on a grid: likelihood {.smaller}
 
 $$
-\Pr(n_{00}, n_{01}, n_{10}, n_{11} \mid a,b,c,d) =
+\Pr(n_{00}, n_{01}, n_{10}, n_{11} \mid \lambda_{10},\lambda_{01},\lambda_{00},\lambda_{11}) =
 f_{\text{multinomial}}\left( \alpha_{00}, \alpha_{01}, \alpha_{10}, \alpha_{11} \mid \sum n, w \right)
 $$
 where:
 
-$$w = \left(\frac12(b + c),  \frac12(a+d), \frac12(a+c), \frac12(b+d)\right)$$
+$$w = \left(\frac12(\lambda_{01} + \lambda_{00}),  \frac12(\lambda_{10}+\lambda_{11}), \frac12(\lambda_{10}+\lambda_{00}), \frac12(\lambda_{01}+\lambda_{11})\right)$$
+The weights are just the probability of each data type, given $\lambda$.
 
 why multinomial?
 
@@ -126,23 +128,28 @@ prior draw with 10000 possibilities:
 
 ```{r}
 
-x <- gtools::rdirichlet(10000, alpha = c(1,1,1,1)) |> as.data.frame()
+x <- gtools::rdirichlet(10000, alpha = c(1,1,1,1)) |> 
+  as.data.frame()
+
 names(x) <- letters[1:4]
 
 x |> head() |> kable(digits = 3)
 ```
-each row sums to 1; each point (row) lies on a simplex
+
+* we are using $a,b,c,d$ labels for $\lambda_{10}, \lambda_{01}, \lambda_{00}, \lambda_{11}$
+* we are using a handy distribution: the *Dirichlet distribution* 
+* each row sums to 1 (each point (row) lies on a simplex)
 
 ### Causal inference on a grid: execution {.smaller}
 
 
 Imagine we had data (number of units with given values of X and Y):
 
-$n_{00} = 400, n_{01} = 100, n_{10} = 100, n_{11} = 400$
+$$n_{00} = 400, n_{01} = 100, n_{10} = 100, n_{11} = 400$$
 
-Difference in means = .6. 
+Difference in means = 0.6. 
 
-Then:
+Then we update (if we do it manually!) like this:
 
 
 ```{r}
@@ -164,7 +171,7 @@ x <- x |>
 
 ### Causal inference on a grid: execution {.smaller}
 
-```{r}
+```{r, echo = FALSE}
 x |> 
   mutate(likelihood = formatC(likelihood, format = "e", digits = 2),
          posterior = formatC(posterior, format = "e", digits = 2)) |> 
@@ -173,6 +180,8 @@ x |>
 ```
 
 ### Causal inference on a grid: inferences
+
+We calculate queries like this:
 
 ```{r}
 x |> summarize(a = weighted.mean(a, posterior),
@@ -196,8 +205,5 @@ x |> ggplot(aes(b, a, size = posterior)) + geom_point(alpha = .5)
 * For multiple cases, we can learn about effects from the data
 * Large-$N$ data can thus provide probative value for small-$N$ process-tracing
 * All inference is conditional on the model
-
-
-
 
 
