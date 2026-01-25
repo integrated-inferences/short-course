@@ -22,9 +22,9 @@ source("assets/setup.R")
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Basic Setup: Process Tracing with a DAG
 
-
-## Let's start with a DAG: Inequality and Democratization (through Mobilization)
+## Start with a DAG: Inequality and Democratization (through Mobilization)
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -50,7 +50,7 @@ hj_dag(x = c(0, 2, 1),
 
 ```
 
-* This tells us nothing about the *direction* of effects
+* The DAG tells us nothing about the *direction* of effects
 * Inequality might boost or depress mobilization
 * Mobilization might encourage or delay democratization (maybe it just leads to more repression)
 
@@ -72,7 +72,7 @@ hj_dag(x = c(0, 2, 1),
 
 
 
-## How we're conceiving of process tracing
+## Process tracing as collecting *additional* information about a case
 
 * We are focusing on a case
 
@@ -118,10 +118,6 @@ hj_dag(x = c(0, 2, 1),
 
 ```
 
-* We start out knowing $I=1$ and $D=1$
-
-* We ask: did $I=1$ cause $D=1$?
-
 * Let's process trace: observe $M$ in Malawi
     * Was there mass mobilization in Malawi?
 
@@ -147,7 +143,9 @@ hj_dag(x = c(0, 2, 1),
 * NOTHING YET!
 
 
-## Why the DAG is not enough
+# Why the DAG alone is not enough
+
+## What does $M=1$ actually tell us?
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -162,14 +160,12 @@ hj_dag(x = c(0, 2, 1),
 
 * We knew $I=1$, $D=1$
 
-* We then saw $M=1$
-
-* But which is more consistent with $I=1$ causing $D=1$?
+* Which $M$ value is *more* consistent with $I=1$ causing $D=1$?
     * Mobilization occurring? or
     * Mobilization not occurring?
 
 
-## Why the DAG is not enough
+## Maybe $M=0$ is more consistent with causation here
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -191,7 +187,7 @@ hj_dag(x = c(0, 2, 1),
 * Which value of $M$ would be most consistent with $I=1$ causing $D=1$?
     * $M=0$
  
-## Why the DAG is not enough
+## Maybe $M=1$ is more consistent with causation here
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -214,7 +210,7 @@ hj_dag(x = c(0, 2, 1),
     * $M=1$
     
     
-## Why the DAG is not enough
+## Our inference from $M$ depends on "thicker" beliefs about causal effects
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -238,14 +234,26 @@ hj_dag(x = c(0, 2, 1),
 
 * The evidence in process tracing never speaks for itself
 
-* Our inferences from PT evidence always depend on theory
-    * On our beliefs about how the world works
+* Our inferences about a *case* always depend on theory
+    * On our beliefs about how the world works *generally*
     
 * Most process tracing is either silent about these beliefs or expresses them informally
 
 * We can formalize these beliefs
     * Maximize explicitness and analytic transparency
 
+
+# Bayes and process tracing
+
+## Bayesian reasoning: 
+
+* Often there are multiple ways in which some statement could be true
+    * E.g., there are multiple mechanisms through which $I$ could have a positive effect on $D$
+    * Linked positive effects, or
+    * Linked negative effects
+* Those different ways are not equally likely, though
+    * Maybe linked positive effects are much more likely than linked negative effects as ways of making "I has a positive effect on D" a true statement
+* Evidence that we collect will tell us which "ways" are more likely operating in a case
 
 ## An important implication of Bayesian reasoning {.smaller}
 
@@ -265,15 +273,7 @@ An example:
     * Because it supports a very *unlikely* theory of how he'd have done it and undermines a likely theory
 
 
-## An important implication of Bayesian reasoning
 
-* Often there are multiple ways in which some statement could be true
-    * E.g., there are multiple mechanisms through which $I$ could have a positive effect on $D$
-    * Linked positive effects, or
-    * Linked negative effects
-* Those different ways are not equally likely, though
-    * Maybe linked positive effects are much more likely than linked negative effects as ways of making "I has a positive effect on D" a true statement
-* Evidence that we collect will tell us which "ways" are more likely operating in a case
 
 
 ## An important implication of Bayesian reasoning
