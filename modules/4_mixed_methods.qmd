@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-## Population-level causal questions
+## Population-level queries
 
 * **Average causal effects for a population**
     * e.g., What is the average effect of $X$ on $Y$
@@ -34,7 +34,7 @@ knitr::opts_chunk$set(echo = TRUE)
     * For what *share* of treated units with positive outcomes was the outcome *due* to the treatment?
 
 * **Causal pathways**
-    * e.g., How commonly does $X$ affect $Y$ through $M$ (vs. $N$) in the population?
+    * e.g., How commonly does $X$ affect $Y$ through $M$ (vs. through $W$) in the population?
   
 
 
@@ -53,9 +53,9 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2),
 
 
 * What is the average effect of $X$ on $Y$ in the population? 
-    * This is a question about the values in $\lambda^Y$: the *probability* of the different causal types.
-    * Previously these were *parameters* of a causal model.
-    * Key move: we now imagine that we *do not know $\lambda$ and need to learn about it*
+    * This is a question about the values in $\lambda^Y$: the *shares* of the different causal types in the population.
+    * In process tracing, these were fixed *parameters* of a causal model.
+    * Key move: we now posit that we *do not know $\lambda$ and need to learn about it*
 
 
 ## The population-level ATE
@@ -68,7 +68,7 @@ $$ATE = \lambda_{01} - \lambda_{10}$$
 
 
 
-## ATE with a mediator
+## ATE, now with a mediator
 
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
@@ -84,14 +84,14 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 
 Which types define the query depends, again, on the structural model.
 
-For this mediation model we need to:
+To estimate the ATE in this mediation model, we need to:
 
 * Combine two ways of generating positive effects 
 * Combine two ways of generating negative effects
 * Subtract the first from the second
 
 
-## ATE with a mediator
+## ATE, now with a mediator
 
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
@@ -111,7 +111,7 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 * Subtract the first from the second
 
 
-## Positive effects 
+## Share of positive effects 
 
 Query: How *often* does $X$ have a positive effect on $Y$?
 
@@ -130,7 +130,7 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2),
 * Proportion of cases with positive effect = $\lambda^Y_{01}$
 
 
-## Positive effects 
+## Share of positive effects 
 
 Query: How *often* does $X$ have a positive effect on $Y$?
 
@@ -152,7 +152,7 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 
 ## Attribution
 
-Query: How often if $Y=1$ due to $X=1$?
+Query: How often is $Y=1$ *due to* $X=1$?
 
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
@@ -171,7 +171,7 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2),
 $$Attribution = \frac{\lambda^Y_{01}}{\lambda^Y_{01} + \lambda^Y_{11}}$$
 
     
-## Pathway questions
+## Pathways
 
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
