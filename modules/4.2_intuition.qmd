@@ -26,9 +26,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 * We need to learn about those $\lambda$'s
     * About the proportions of the population with different kinds of causal effects
-* We will have a prior belief about those proportions
-* When we see data on lots of cases, we will **update** those beliefs about proportions
-    * From a prior distribution over $\lambda$ to a posterior distribution over $\lambda$
+* We will have *prior* beliefs about those proportions
+* Then, when we see data on lots of cases, we will **update** our beliefs about proportions
+    * From a prior distribution over $\lambda$ $\Rightarrow$ a posterior distribution over $\lambda$
 
 
 
@@ -60,17 +60,17 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 ## Large-$N$ estimation of $ATE$: what happens to beliefs over parameters
 
 * Say we only collect data on $I$, $M$, and $D$ for a large number of cases
-* We update on both $\lambda^I$ , $\lambda^M$ and $\lambda^D$ to place more weight on values that are likely to give rise to the pattern of data we see
+* We update on $\lambda^I$ , $\lambda^M$ and $\lambda^D$ to place more weight on values that are likely to give rise to the pattern of data we see
 * We will come to put more weight on a *joint distribution* of $\lambda^M$ and $\lambda^D$ in line with the data and less posterior weight on all other combinations
 
-**Question**: What would you infer if you saw a very high correlation between $I$ and $D$ and a *low* correlation between $I$ and $M$ or a low correlation between $M$ and $D$?
+**Question**: What would you infer if you saw a very high correlation between $I$ and $D$ and a *low* correlation between $I$ and $M$? Or a low correlation between $M$ and $D$?
 
 
 ## General procedure
 
 Key insight: 
 
-* If we *suppose* a given set of  parameter values we can figure out the likelihood of the data given those values.
+* If we *suppose* a given set of  parameter values, we can figure out the likelihood of the data given those values.
 * We can do this for all possible parameter values and see which ones are more in line with the data
 
 
