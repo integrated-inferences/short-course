@@ -60,7 +60,6 @@ knitr::include_graphics("assets/quantdata.png")
 ## A typical "qualitative" data structure
 
 * Data on exogenous variables and a key outcome plus elements of process for a **small** number of cases
-    * Finite resources mean tradeoffs between extensive and intensive data collection
 
 * E.g., data on inequality ($I$), mass mobilization ($M$), and democracy ($D$) for many cases
 
@@ -79,6 +78,8 @@ knitr::include_graphics("assets/mixeddata.png")
 ```
 
 * A non-rectangular data structure
+
+* Finite resources $\Rightarrow$ we can't always go "deep" on all cases
 
 ## Non-rectangular data
 
