@@ -104,6 +104,8 @@ plot(make_model("Z->X -> Y <- U ->X; Y <-> Z",add_causal_types = FALSE))
 
 ...where dotted lines means that the response types for two nodes are not independent 
 
+# Extra slides
+
 ## Illustration: "Lipids" data {.smaller}
 
 Example of an IV model. What are the principle strata (response types)? What relations of conditional independence are implied by the models? 

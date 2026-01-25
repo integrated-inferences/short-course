@@ -74,5 +74,4 @@ library(ggplot2)
 
 # References
 
-### References
 

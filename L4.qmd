@@ -30,20 +30,21 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-
-# Population parameters
-
 ```{r, child = "modules/4_mixed_methods.qmd"}
 
 ```
 
-# Intuition
+# Updating Models
+
+*Intuition*
 
 ```{r, child = "modules/4.2_intuition.qmd"}
 
 ```
 
 # Mixed methods
+
+Combining *wide* and *deep* data
 
 ```{r, child = "modules/4.3_mixing_methods.qmd"}
 
@@ -56,11 +57,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-## Application
-
-
 # References
 
-### References
 
 

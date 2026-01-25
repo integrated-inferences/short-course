@@ -29,16 +29,16 @@ knitr::opts_chunk$set(echo = TRUE)
     * e.g., What is the average effect of $X$ on $Y$
 
 * **Proportion of different effects in a population**
-    * What share of cases in the population have positive effects?
-    * What share have negative effects?
+    * What *share* of cases in the population have positive effects?
+    * What *share* have negative effects?
+    * For what *share* of treated units with positive outcomes was the outcome *due* to the treatment?
 
 * **Causal pathways**
     * e.g., How commonly does $X$ affect $Y$ through $M$ (vs. $N$) in the population?
   
 
 
-## Causal queries on a DAG: population-level average causal effect
-
+## The population-level ATE
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -53,34 +53,23 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2),
 
 
 * What is the average effect of $X$ on $Y$ in the population? 
-    * This is a question about the values in $\lambda^Y$
+    * This is a question about the values in $\lambda^Y$: the *probability* of the different causal types.
+    * Previously these were *parameters* of a causal model.
+    * Key move: we now imagine that we *do not know $\lambda$ and need to learn about it*
 
 
-## Causal queries on a DAG: population-level average causal effect
+## The population-level ATE
 
 * With binary variables, the average effect is always the difference between
     * The share of cases with a positive effect
     * The share of cases with a negative effect
-* $\lambda_{01} - \lambda_{10}$
+
+$$ATE = \lambda_{01} - \lambda_{10}$$
 
 
-## Causal queries on a DAG: population-level average causal effect
-
-
-```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
-par(mar=c(1,1,1,1))
-hj_dag(x = c(0, 0, 0, 2, 2, 2),
-       y = c(1, 2, 3, 1, 2, 3),
-       names = c("X", expression(theta^X), expression(lambda^X), "Y", expression(theta^Y), expression(lambda^Y)),
-       arcs = cbind( c(3, 2, 1, 5, 6),
-                     c(2, 1, 4, 4, 5)),
-       padding = .4, contraction = .15)
-
-```
-
-$ATE = \lambda^Y_{01} - \lambda^Y_{10}$
 
 ## ATE with a mediator
+
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -92,7 +81,10 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
        padding = .4, contraction = .15)
 
 ```
-We need to
+
+Which types define the query depends, again, on the structural model.
+
+For this mediation model we need to:
 
 * Combine two ways of generating positive effects 
 * Combine two ways of generating negative effects
@@ -101,6 +93,7 @@ We need to
 
 ## ATE with a mediator
 
+
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
 hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
@@ -112,12 +105,15 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 
 ```
 
+
 * Two ways of generating positive effects: $\lambda^M_{01} \times \lambda^Y_{01}$ + $\lambda^M_{10} \times \lambda^Y_{10}$
 * Two ways of generating negative effects: $\lambda^M_{10} \times \lambda^Y_{01}$ + $\lambda^M_{01} \times \lambda^Y_{10}$
 * Subtract the first from the second
 
 
-## Causal queries on a DAG: how often does $X$ have a positive effect on $Y$?
+## Positive effects 
+
+Query: How *often* does $X$ have a positive effect on $Y$?
 
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
@@ -134,7 +130,9 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2),
 * Proportion of cases with positive effect = $\lambda^Y_{01}$
 
 
-## Causal queries on a DAG: how often does $X$ have a positive effect on $Y$?
+## Positive effects 
+
+Query: How *often* does $X$ have a positive effect on $Y$?
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -151,8 +149,29 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 * Proportion of cases with positive effect = $\lambda^M_{01} \times \lambda^Y_{01}$ + $\lambda^M_{10} \times \lambda^Y_{10}$
 
 
+
+## Attribution
+
+Query: How often if $Y=1$ due to $X=1$?
+
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+par(mar=c(1,1,1,1))
+hj_dag(x = c(0, 0, 0, 2, 2, 2),
+       y = c(1, 2, 3, 1, 2, 3),
+       names = c("X", expression(theta^X), expression(lambda^X), "Y", expression(theta^Y), expression(lambda^Y)),
+       arcs = cbind( c(3, 2, 1, 5, 6),
+                     c(2, 1, 4, 4, 5)),
+       padding = .4, contraction = .15)
+
+```
+
+* Proportion of cases with positive effect among those with $Y=1$, when $X=1$:
+
+$$Attribution = \frac{\lambda^Y_{01}}{\lambda^Y_{01} + \lambda^Y_{11}}$$
+
     
-## Causal queries on a DAG: pathway questions
+## Pathway questions
 
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
@@ -169,15 +188,6 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 * We can also pose the pathway query at population level
     * What is the share of cases for which $X$ has a positive effect on $Y$ through $M$?
 * A question about joint $\lambda^M$ and $\lambda^Y$ distributions
-
-
-## How will we answer questions about populations?
-
-* We need to learn about those $\lambda$'s
-    * About the proportions of the population with different kinds of causal effects
-* We will have a prior belief about those proportions
-* When we see data on lots of cases, we will update those beliefs about proportions
-    * From a prior distribution over $\lambda$ to a posterior distribution over $\lambda$
 
 
 

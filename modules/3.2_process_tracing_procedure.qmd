@@ -48,22 +48,26 @@ And we believe:
 
 ## By hand: Example {.smaller}
 
-What are the types? How likely is each one? Which ones satisfy the following query: $Y = 0$ *because* $X=0$?:
+What are the types? How likely is each one? How likely is each given the data?
 
-| Type                                                     | X | M | Y | prob | Query? |
-|----------------------------------------------------------|---|---|---|------|--------|
-| X = 0, X causes M, M causes Y                             | 0 | 0 | 0 | 1/8  | Yes    |
-| X = 0, X causes M, M does not cause Y                     | 0 | 0 | 0 | 1/8  | No     |
-| X = 0, X does not cause M, M causes Y                     | 0 | 0 | 0 | 1/8  | No     |
-| X = 0, X does not cause M, M does not cause Y             | 0 | 0 | 0 | 1/8  | No     |
-| X = 1, X causes M, M causes Y                             | 1 | 1 | 1 | 1/8  | No     |
-| X = 1, X causes M, M does not cause Y                     | 1 | 1 | 0 | 1/8  | No     |
-| X = 1, X does not cause M, M causes Y                     | 1 | 0 | 0 | 1/8  | No     |
-| X = 1, X does not cause M, M does not cause Y             | 1 | 0 | 0 | 1/8  | No     |
+* Which ones satisfy the following query: $Y = 0$ *because* $X=0$?:
+* Which ones are consistent with data: $X = 0, Y = 0$
+
+| Type                                                     | X | M | Y | prob | Query? | Data ? |
+|--------------------------------------------------------|---|---|---|------|--------|--------|
+| X = 0, X causes M, M causes Y                             | 0 | 0 | 0 | 1/8  | ✓      | ✓      |
+| X = 0, X causes M, M does not cause Y                     | 0 | 0 | 0 | 1/8  |        | ✓      |
+| X = 0, X does not cause M, M causes Y                     | 0 | 0 | 0 | 1/8  |        | ✓      |
+| X = 0, X does not cause M, M does not cause Y             | 0 | 0 | 0 | 1/8  |        | ✓      |
+| X = 1, X causes M, M causes Y                             | 1 | 1 | 1 | 1/8  |        |        |
+| X = 1, X causes M, M does not cause Y                     | 1 | 1 | 0 | 1/8  |        |        |
+| X = 1, X does not cause M, M causes Y                     | 1 | 0 | 0 | 1/8  |        |        |
+| X = 1, X does not cause M, M does not cause Y             | 1 | 0 | 0 | 1/8  |        |        |
 
 
+## With CausalQueries: Step 1
 
-## With CausalQueries
+Define a model
 
 ```{r, echo = TRUE}
 
@@ -72,12 +76,53 @@ model <-
   set_restrictions("M[X = 0] == 1") |>
   set_restrictions("Y[M = 0] == 1")
 
-inspect(model, "causal_types")
+query <- "Y[X=1] > Y[X=0]"
 ```
 
-## With CausalQueries
+## With CausalQueries: Step 2
+
+Get types consistent with query
+
+```{r}
+get_query_types(model, query)
+
+```
+
+## With CausalQueries: Step 3
+
+
+Get mapping from causal types to consistent data types
+
+```{r}
+inspect(model, what = "ambiguities_matrix") 
+```
+
+## With CausalQueries: Step 4
+
+Get prior probabilities of each causal type
+
+```{r}
+CausalQueries:::get_type_prob(model)
+
+```
+
+## Put it all together
+
+```{r}
+model  |>
+  grab(what = "ambiguities_matrix") |>
+  data.frame() |>
+  mutate(
+    in_query = get_query_types(model, query)$types,
+    priors   = CausalQueries:::get_type_prob(model)) |>
+  kable()
+```
+
+## In one go with CausalQueries
 
 ```{r, echo = TRUE}
-query_model(model, "Y[X=1]==1 :|: X==0 & Y == 0")
+query_model(model, query, given = c("X==0 & M ==0 & Y == 0"))
 ```
 
+
+Also try our [shiny app](https://shiny2.wzb.eu/ipi/process_tracing/)
