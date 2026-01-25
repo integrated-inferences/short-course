@@ -29,11 +29,11 @@ knitr::opts_chunk$set(echo = TRUE)
 make_model("I -> M -> D") |> plot(x_coord = 1:3, y_coord = 3:1)
 ```
 
-Simple insight: *If* you believe this model, then seeing $M$ should tell you something about a query regarding the $I$, $D$ relationship.
+Simple insight: *If* you believe this model, then seeing $M$ should tell you something about a query regarding the $I$, $D$ relationship in a case.
 
-*If there was no mobilization then inequality didn't cause the transition*
+For instance, we might have the intuition: *If there was no mobilization in a high-inequality case that democratized, then inequality didn't cause the transition.*
 
-*How do we formalize this insight?*
+*But how do we formalize this strategy?*
 
 ## Process tracing with a DAG
 
@@ -61,7 +61,7 @@ make_model("I -> M -> D") |> plot(x_coord = 1:3, y_coord = 3:1)
 * Great as this is, the DAG--by itself--tells us nothing about the *direction* of effects
   * Inequality might boost or depress mobilization
   * Mobilization might encourage or delay democratization
-* For this you need an *informative* **causal model**
+* For process-tracing, you need an *informative* **causal model**
 
 <!-- ## Crucial to keep in mind -->
 
