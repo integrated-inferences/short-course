@@ -87,20 +87,18 @@ make_model("I -> M -> D") |> plot(x_coord = 1:3, y_coord = 3:1)
 * We start with two things:
 
   * A background *theory* about how things work in cases like this
-  * Background knowledge about the case: Perhaps the outcome; Perhaps the value of a causal condition or two
+  * Background knowledge about the case: perhaps the outcome; perhaps the value of a causal condition or two
     
 * What we don't know is whether any of those conditions *caused* the outcome
 
 * So we collect *more* information "from other parts of the DAG"  to help figure that out
 
 
-# Example: Democratization in Malawi 
+# Example: Democratization in Malawi (1994)
 
 Let's walk though the intuition
 
-## A case level question
-
-Formulating a case-level question: Malawi (1994)
+## A case-level question: Malawi (1994)
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -133,15 +131,11 @@ hj_dag(x = c(0, 2, 1),
 
 ```
 
-* We start out knowing $I=1$ and $D=1$
-
-* We ask: did $I=1$ cause $D=1$?
-
-* Let's process trace: observe $M$ in Malawi
+* Let's process-trace: observe $M$ in Malawi
     * Was there mass mobilization in Malawi?
 
 
-## New data on Malawi (within case data)
+## New *within-case* data on Malawi
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -185,7 +179,7 @@ hj_dag(x = c(0, 2, 1),
     * Mobilization not occurring?
 
 
-## DAG not enough for inference
+## Why prior theory matters for process tracing
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -207,7 +201,7 @@ hj_dag(x = c(0, 2, 1),
 * Which value of $M$ would be most consistent with $I=1$ causing $D=1$?
     * $M=0$
  
-## Progress from prior beliefs about processes
+## Why prior theory matters for process tracing
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -230,7 +224,7 @@ hj_dag(x = c(0, 2, 1),
     * $M=1$
     
     
-## Progress from prior beliefs about processes
+## Why prior theory matters for process tracing
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -604,7 +598,7 @@ knitr::include_graphics("assets/pimddag.png")
 
 
 * We can figure out from the causal model *which* causal types are consistent with our query
-* We can figure out from the causal model *which* causal types are consistent with our data we observe
+* We can figure out from the causal model *which* causal types are consistent with the data we observe
 * If we have probabilities for each of these we can figure out the probability of the query given the data
 
 
