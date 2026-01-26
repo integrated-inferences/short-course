@@ -42,9 +42,11 @@ Below we update on our beliefs *about a single case* given different data we mig
 ```{r}
 make_model('X -> M -> Y') |>
   set_restrictions(decreasing("X", "M"))|>
+  set_restrictions(decreasing("M", "Y"))|>
   query_model(
     query = "Y[X=1] != Y[X=0]",
-    given = c("X==1 & Y ==1", 
+    given = c("All",
+              "X==1 & Y ==1", 
               "M==0", 
               "M==1",
               "X==1 & Y ==1 & M==0",

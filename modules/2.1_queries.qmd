@@ -31,7 +31,7 @@ A few common causal estimands:
 
 * Case-level causal effects
     * e.g., Did/does $X$ have a positive effect on $Y$ in this case?
-    * e.g., Did $X=1$ cause $Y=1$ in this case with $X=1, Y=1$?
+    * e.g., Did $X=1$ cause $Y=1$ in this case with $X=1, Y=1$? ("causes of effects")
 
 * Causal pathways
     * e.g., Does $X$ affect $Y$ through $M$?
@@ -39,7 +39,7 @@ A few common causal estimands:
         * For population as a whole?
     
 * Average causal effects for a population
-    * e.g., What is the average effect of $X$ on $Y$
+    * e.g., What is the average effect of $X$ on $Y$? ("effects of causes")
 
 
 <!-- ## Estimands (causal questions) -->
@@ -67,21 +67,20 @@ A few common causal estimands:
     * If $X$ had been $0$ in this case, **would $Y$ have been $0$?**
 
 * "Did military defeat cause Argentina's democratization?" means....
-    * If military defeat had not happened, would Argentina's democratization failed to happen?
+    * If military defeat had not happened, would Argentina's democratization have failed to happen?
 
 ## The probability of a case-level causal effect
 
-* We can express case-level causal effects queries as questions about **probabilities**
-    * "Did $X=1$ cause $Y=1$ in this case?" is not a yes/no question
+* Our estimates of case-level causal effects have *uncertainty* 
+    * Our inferences thus take the form of *probabilities* -- as degrees of belief
 
-* We need to ask, what is the **probability** that $X=1$ caused $Y=1$ in this case?
-    * Probability of causation
+* We call this probability of causation
 
-* We always **condition** this question on what we already know about the case
+* We always **condition** case-level queries on what we already know about the case
     * Given that $X=1$ and $Y=1$ in this case, what's the probability that $X=1$ caused $Y=1$?
-    * Given that Argentina experienced military defeat and democratized, what's the probability that former caused the latter?
+    * Given that Argentina experienced military defeat and democratized, what's the probability that the former caused the latter?
 
-## Case-level causal effects and nodal types
+## Case-level causal effects and types
 
 * "Did $X=1$ cause $Y=1$ in this case?" means (in a binary framework)....
     * If $X$ had been $0$ in this case, **would $Y$ have been $0$?**
@@ -125,7 +124,7 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2),
 * Does $X$ have a positive effect on $Y$ in this case? 
     * This is a question about the value of $\theta^Y$
     
-* Does $\theta^Y = \theta^Y_{01}$? (Or what's the probability of that?)
+* Does $\theta^Y = \theta^Y_{01}$? 
 
 
 ## Pathway questions
@@ -140,7 +139,7 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2),
 * Did military defeat cause democratization in Argentina through creating division within the army?
     * Or did military defeat cause democratization in Argentina through generating popular protest?
     
-* Also a question about nodal types 
+* Also a question about types 
 
 
 ## Causal queries on a DAG: pathway questions
@@ -204,19 +203,19 @@ hj_dag(x = c(0, 0, 1, 1, 2, 2),
 We distinguish between:
 
 * the effect of $X$ on $Y$ when $M$ "happens to" take on a given value 
-* the effect of $X$ on $Y$ when $M$ "is set to" a given value 
+* the effect of $X$ on $Y$ when $M$ "is set to" or "fixed at" a given value 
 
-Say we thought that $X$ affects $Y$ through $M$. Going to school increased income via education. 
+Say we think that school attendance (X) increases income (Y) via education (M). 
 
-* we are more convinced that $X$ caused $Y$ if we observed that $M=1$
-* we are expect that $X$ would *not* cause $Y$ if we set $M$ to $1$
+* then we will be more convinced that $X=1$ caused $Y=1$ if we observe that $M=1$, BUT
+* we would not expect $X$ to cause $Y$ if we were to *fix* $M$ to $1$ -- if we were to set education level to some value
 
 
 
-## Why bother? Why define causal questions on a DAG?
+<!-- ## Why bother? Why define causal questions on a DAG? -->
 
-* We are turning our questions into nodes on a graph
-* The key is: **We can learn about nodes if we have information on other nodes they're connected to**
-* If we know $X$, $M$, and $Y$ in a case, we can draw inferences about $\theta^M$ and $\theta^Y$ for this case
-* This is, at an intuitive level, what `CausalQueries` does
+<!-- * We are turning our questions into nodes on a graph -->
+<!-- * The key is: **We can learn about nodes if we have information on other nodes they're connected to** -->
+<!-- * If we know $X$, $M$, and $Y$ in a case, we can draw inferences about $\theta^M$ and $\theta^Y$ for this case -->
+<!-- * This is, at an intuitive level, what `CausalQueries` does -->
 

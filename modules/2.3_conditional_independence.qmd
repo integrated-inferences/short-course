@@ -22,30 +22,30 @@ source("assets/setup.R")
 
 ```
 
-## Key insight linking DAGs to Bayes
+## Key insight linking Causal Models to Bayes
 
-The key insight that connects a DAG representation of a causal model and Bayesian updating is this:
+The key insight that connects a causal model to Bayesian updating is this:
 
-* the DAG can tell you how to update on one feature given informmation on another
+* a causal model can tell you how to update on one feature given information on another
 
-## Key insight linking DAGs to Bayes
+<!-- ## Key insight linking Causal Models to Bayes -->
 
-Most simple idea. 
+<!-- Most simple idea.  -->
 
-Say we have DAG: $X \rightarrow Y$ and we know:
+<!-- Say we have DAG: $X \rightarrow Y$ and we know: -->
 
-* $Pr(X = 1) = .5$
-* $Pr(Y = 1 | X = 1) = .75$
-* $Pr(Y = 1 | X = 0) = .25$
+<!-- * $\Pr(X = 1) = .5$ -->
+<!-- * $\Pr(Y = 1 | X = 1) = .75$ -->
+<!-- * $\Pr(Y = 1 | X = 0) = .25$ -->
 
-Then we can ask a question like: what is the probability that $X=1$ if indeed $Y=1$:
+<!-- Then we can ask a question like: what is the probability that $X=1$ if indeed $Y=1$: -->
 
-$$\Pr(X = 1 | Y = 1) = \frac{\Pr(Y = 1 | X = 1)\Pr(X=1)}{\Pr(Y=1)} = \frac{0.75 \times 0.5}{0.5} = 0.75$$
+<!-- $$\Pr(X = 1 | Y = 1) = \frac{\Pr(Y = 1 | X = 1)\Pr(X=1)}{\Pr(Y=1)} = \frac{0.75 \times 0.5}{0.5} = 0.75$$ -->
 
 
-So we can *sometimes* learn about one node from others nodes, up and down a graph.
+<!-- So we can *sometimes* learn about one node from others nodes, up and down a graph. -->
 
-Let's figure out *when* we can do this.
+<!-- Let's figure out *when* we can do this. -->
 
 
 ## Conditional independence and graph structure {.smaller}
@@ -53,7 +53,7 @@ Let's figure out *when* we can do this.
 * What DAGs do is tell you when one variable is independent of another variable given some third variable.
 * Intuitively:
   * what variables "shield off" the influence of one variable on another
-  * e.g. If inequality causes revolution *via* discontent, then inequality and  revolution should be related to each other overall, but *not* related to each other *among those* that are content or *among those* that are discontent 
+  * e.g. If inequality causes revolution *via* discontent, then inequality and  revolution should be related to each other overall, but *not* related to each other *among* highly contented cases or *among* discontented cases 
 
 ### Conditional independence
 
@@ -64,7 +64,7 @@ $$\Pr(A = a | C = c) = \Pr(A = a | B = b, C = c)$$
 Informally; given $C$, knowing $B$ tells you nothing more about $A$.
 
 
-### Conditional independence  on paths  graphs
+### Three elemental structures for thinking about conditional independence
 
 ```{r HJ-F-2-4, echo = FALSE, fig.width = 6, fig.height = 4,  fig.align="center", out.width='70%', fig.cap = "Three elemental relations of conditional independence."}
 p1 <- hj_ggdag(x = c(-1, 0, 1), y = c(1,1,1), names = c( "A", "B", "C" ),
@@ -89,11 +89,11 @@ plot_grid(plotlist = list(p1,p2,p3),ncol=1)
 
 $A$ and $B$ are *conditionally independent*, given $C$ if on *every* path between $A$ and $B$:
 
--   there is some chain ($\bullet\rightarrow \bullet\rightarrow\bullet$ or $\bullet\leftarrow \bullet\leftarrow\bullet$) or fork ($\bullet\leftarrow \bullet\rightarrow\bullet$) with the central element in $C$,
+-   there is some chain ($\bullet\rightarrow \bullet\rightarrow\bullet$ or $\bullet\leftarrow \bullet\leftarrow\bullet$) or fork ($\bullet\leftarrow \bullet\rightarrow\bullet$) with the central element in $C$ (i.e., all dependencies are blocked by $C$),
 
 or
 
--   there is an inverted fork ($\bullet\rightarrow \bullet\leftarrow\bullet$) with the central element (and its descendants) *not* in $C$
+-   there is an inverted fork ($\bullet\rightarrow \bullet\leftarrow\bullet$) with the central element (and its descendants) *not* in $C$ (i.e., no dependencies are opened by $C$)
 
 Notes:
 
@@ -123,12 +123,13 @@ Are A and D unconditionally independent:
 
 Key insight for process tracing: 
 
-* If $K$ is *not* conditionally independent of $Q$ then $K$ *is* informative for $Q$.
-* If $K$ *is* conditionally independent of $Q$ then $K$ is *not* for $Q$.
+* Informativeness of a node hinges on conditional independence
+* If $K$ is *not* conditionally independent of $\theta$ then $K$ *is* informative for $\theta$.
+* If $K$ *is* conditionally independent of $\theta$ then $K$ is *not* for $\theta$.
 
 ```{r, echo = FALSE}
 
-make_model( "X-> M-> Y <- Q; K -> M") |> plot(x_coord = c(2, 2.5, 1, 1.5, 2 ), y_coord = c(2,1,2,1, 0))
+make_model( "X-> M-> Y <- Q; K -> M") |> plot(x_coord = c(2, 2.5, 1, 1.5, 2 ), y_coord = c(2,1,2,1, 0), parse=TRUE, labels=c("K","theta","X","M","Y"))
 ```
 
 

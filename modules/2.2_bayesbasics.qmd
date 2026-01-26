@@ -71,7 +71,13 @@ What if I said it was a face card and a spade.
 
 These answers are applications of Bayes' rule.
 
-In each case the answer is derived by assessing what is possible, given the new information, and then assessing how likely the outcome of interest among the states that are possible. In all the cases you calculate:
+In each case the answer is derived by:
+
+* assessing what is possible...
+* given the new information, and then
+* assessing how likely the outcome of interest is among the states that are possible. 
+
+In each case, you calculate:
 
 $$\text{Prob Jack of Spades | Info} = \frac{\text{Is Jack of Spades Consistent w/ Info?}}{\text{How many cards are consistent w/ Info?}} $$
 
@@ -124,7 +130,7 @@ $$\text{Prob You have the Disease | Pos} = \frac{\text{How many have the disease
 
 ### Two Child Problem {.smaller}
 
-Consider last an old puzzle described in @gardner1961second.
+Consider last an old puzzle described in Gardner (1961).
 
 -   Mr Smith has two children, $A$ and $B$.
 -   At least one of them is a boy.
@@ -144,7 +150,7 @@ $$\text{Prob both boys | Not both girls} = \frac{\text{Prob both boys}}{\text{Pr
 
 ### Bayes Rule {.smaller}
 
-Formally, all of these equations are applications of Bayes' rule which is a simple and powerful formula for deriving updated beliefs from new data.
+Formally, all of these equations are applications of Bayes' rule, which is a simple and powerful formula for deriving updated beliefs from new data.
 
 The formula is given as:
 
@@ -162,7 +168,7 @@ $$p(\theta|\mathcal{D})=\frac{p(\mathcal{D}|\theta)p(\theta)}{\int_{\theta'}p(\m
 
 ### Illustration of continuous distributions {.smaller}
 
-Consider **the share of people in a population that voted** or **the share of people for which there is a positive treatment effect* 
+Consider **the share of people in a population that voted** or **the share of people for which there is a positive treatment effect** 
 
 * This is a quantity between 0 and 1.
 
