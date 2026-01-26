@@ -37,6 +37,24 @@ Examples:
 * $Y[X=1, M = 1] - Y[X=0, M=1]$ is the effect of $X$ on $Y$ when $M$ is *set* to 1
 * $Y[X=1] - Y[X=0]$ `given` $M==1$ is the effect of $X$ on $Y$ when $M$ happens to be  1
 
+## Conditioning in `CausalQueries`
+
+You can query using multiple queries, and asking for queries based on parameters, priors, or posteriors.
+
+What are each of these?
+
+```{r, eval = FALSE}
+model <- make_model("X -> M -> Y")
+
+model |> query_model("Y[X=1] - Y[X=0]")
+
+model |> query_model("Y[X=1, M=1] - Y[X=0, M=1]")
+
+model |> query_model("Y[X=1] - Y[X=0]", given = "M==1")
+
+model |> query_model("Y[X=1] - Y[X=0]", using = "posteriors")
+
+```
 
 ## From statements to types
 
@@ -55,24 +73,9 @@ make_model("X->Y") |>
   get_query_types("Y[X=1] == Y[X=0]")
 ```
 
-## Conditioning in `CausalQueries`
 
-You can query using multiple queries, and asking for queries based on parameters, priors, or posteriors.
 
-```{r, eval = FALSE}
-model <- make_model("X -> M -> Y")
-
-model |> query_model("Y[X=1] - Y[X=0]")
-
-model |> query_model("Y[X=1, M=1] - Y[X=0, M=1]")
-
-model |> query_model("Y[X=1] - Y[X=0]", given = "M==1")
-
-model |> query_model("Y[X=1] - Y[X=0]", using = "posteriors")
-
-```
-
-## Lotsa queries {.smaller}
+## Lotsa queries {.smaller} (see handout)
 
 ```{r}
 #| echo: false

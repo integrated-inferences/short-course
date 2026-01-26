@@ -1420,18 +1420,14 @@ font-size: medium;
 <li><p>To get the definition off the ground, manipulation must be imaginable (whether practical or not)</p></li>
 <li><p>This renders thinking about effects of race and gender difficult</p></li>
 <li><p><strong>Compare</strong>: What does it mean to say that Southern counties voted for Brexit because they have many old people?</p></li>
-<li><p>More uncomfortably: What does it mean to say that the tides are caused by the moon? What exactly do we have to imagine…</p></li>
+<li><p>What does it mean to say that Trump won because he is a white man? What exactly do we have to imagine…</p></li>
 </ul>
-</section>
-<section id="causal-claims-causal-claims-are-everywhere" class="slide level3" data-number="2.1.10">
-<h3><span class="header-section-number">2.1.10</span> Causal claims: Causal claims are everywhere</h3>
-<ul>
-<li><p>Jack exploited Jill</p></li>
-<li><p>It’s Jill’s fault that bucket fell</p></li>
-<li><p>Jack is the most obstructionist member of Congress</p></li>
-<li><p>Melania Trump stole from Michelle Obama’s speech</p></li>
-<li><p>Activists need causal claims</p></li>
-</ul>
+<!-- ### Causal claims: Causal claims are everywhere -->
+<!-- -   Jack exploited Jill -->
+<!-- -   It's Jill's fault that bucket fell -->
+<!-- -   Jack is the most obstructionist member of Congress -->
+<!-- -   Melania Trump stole from Michelle Obama's speech -->
+<!-- -   Activists need causal claims -->
 </section>
 </section>
 <section>
@@ -1510,8 +1506,10 @@ font-size: medium;
 <!-- $$X \rightarrow Y \leftarrow T \leftarrow \lambda$$ -->
 </section>
 
-<section id="elements-of-a-directed-acyclic-graph-dag" class="title-slide slide level2 center" data-number="3.2">
-<h2><span class="header-section-number">3.2</span> Elements of a Directed Acyclic Graph (DAG)</h2>
+<section id="causal-structure" class="title-slide slide level2 center" data-number="3.2">
+<h2><span class="header-section-number">3.2</span> Causal structure</h2>
+<p>Causal structures—the first component of a causal model—can be represented with Directed Acyclic Graphs (DAGs)</p>
+<p>Let’s walk through the parts of a DAG</p>
 
 <img role="img" data-src="data:image/png;base64,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" class="quarto-figure quarto-figure-center r-stretch"></section>
 
@@ -1686,21 +1684,21 @@ font-size: medium;
 <section>
 <section id="functional-relations-and-causal-types" class="title-slide slide level1 center" data-number="4">
 <h1><span class="header-section-number">4</span> Functional relations and causal types</h1>
-
+<p><em>Moving from DAGs to causal models</em></p>
 </section>
 <section id="functional-relations" class="title-slide slide level2 center" data-number="4.1">
 <h2><span class="header-section-number">4.1</span> Functional relations</h2>
-<p>A specific causal process through which things might work in a case could look like:</p>
+<p>A <strong>specific causal process</strong> through which things might work in a case could look like:</p>
 <blockquote>
 <p>socioeconomic pressures <em>put</em> issues on the agenda; being on the agenda and having an opportunity to avoid blame were individually necessary and jointly sufficient for retrenchment</p>
 </blockquote>
 <p>Note:</p>
 <ul>
 <li>Now we are talking about <em>functional relations</em> between nodes</li>
-<li>Formally, this involves a specification of the <span class="math inline">\(\theta\)</span>’s</li>
-<li>The <span class="math inline">\(\theta\)</span>’s indicate how a node <em>responds</em> to its “parents”</li>
+<li>The <span class="math inline">\(\theta\)</span>’s can capture these relations by indicating how a node <em>responds</em> to its “parents”</li>
 <li>Process tracing is: figuring out what the <span class="math inline">\(\theta\)</span>’s are for a case.</li>
 </ul>
+<p>We are now squarely beyond DAG territory and in the world of causal models</p>
 </section>
 
 <section id="causal-types-as-functional-relations" class="title-slide slide level2 center" data-number="4.2">

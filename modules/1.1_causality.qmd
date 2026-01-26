@@ -111,19 +111,19 @@ What caused $Y$? Which cause was most important?
 -   This renders thinking about effects of race and gender difficult
 -   **Compare**: What does it mean to say that Southern counties voted for Brexit because they have many old people?
 
-- More uncomfortably: What does it mean to say that the tides are caused by the moon? What exactly do we have to imagine...
+- What does it mean to say that Trump won because he is a white man? What exactly do we have to imagine...
 
-### Causal claims: Causal claims are everywhere
+<!-- ### Causal claims: Causal claims are everywhere -->
 
--   Jack exploited Jill
+<!-- -   Jack exploited Jill -->
 
--   It's Jill's fault that bucket fell
+<!-- -   It's Jill's fault that bucket fell -->
 
--   Jack is the most obstructionist member of Congress
+<!-- -   Jack is the most obstructionist member of Congress -->
 
--   Melania Trump stole from Michelle Obama's speech
+<!-- -   Melania Trump stole from Michelle Obama's speech -->
 
--   Activists need causal claims
+<!-- -   Activists need causal claims -->
 
 
 

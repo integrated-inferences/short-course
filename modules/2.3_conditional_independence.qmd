@@ -129,7 +129,7 @@ Key insight for process tracing:
 
 ```{r, echo = FALSE}
 
-make_model( "X-> M-> Y <- Q; K -> M") |> plot(x_coord = c(2, 2.5, 1, 1.5, 2 ), y_coord = c(2,1,2,1, 0), parse=TRUE, labels=c("K","theta","X","M","Y"), nodecol ="white", nodetext = "black")
+make_model( "X-> M-> Y <- Q; K -> M") |> plot(x_coord = c(2, 2.5, 1, 1.5, 2 ), y_coord = c(2,1,2,1, 0), parse=TRUE, labels=c("K","theta","X","M","Y"), nodecol ="white", textcol = "black")
 ```
 
 

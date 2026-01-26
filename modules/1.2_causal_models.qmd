@@ -128,8 +128,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-## Elements of a Directed Acyclic Graph (DAG)
+## Causal structure
 
+Causal structures---the first component of a causal model---can be represented with Directed Acyclic Graphs (DAGs)
+
+Let's walk through the parts of a DAG
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
 par(mar=c(1,1,1,1))
@@ -552,18 +555,21 @@ No argument here -- just potentially causal connections
 
 # Functional relations and causal types
 
+*Moving from DAGs to causal models*
+
 ## Functional relations
 
-A specific causal process through which things might work in a case could look like: 
+A **specific causal process** through which things might work in a case could look like: 
 
 > socioeconomic pressures *put* issues on the agenda; being on the agenda and having an opportunity to avoid blame were individually necessary and jointly sufficient for retrenchment
 
 Note:
 
 * Now we are talking about *functional relations* between nodes
-* Formally, this involves a specification of the $\theta$'s
-* The $\theta$'s indicate how a node *responds* to its "parents"
+* The $\theta$'s can capture these relations by indicating how a node *responds* to its "parents"
 * Process tracing is: figuring out what the $\theta$'s are for a case.
+
+We are now squarely beyond DAG territory and in the world of causal models
 
 ## Causal types as functional relations
 

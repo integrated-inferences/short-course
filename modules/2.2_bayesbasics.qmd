@@ -128,6 +128,9 @@ As an equation this might be written:
 
 $$\text{Prob You have the Disease | Pos} = \frac{\text{How many have the disease and test pos?}}{\text{How many people test pos?}}$$
 
+$$\frac{0.01 \times 10000 \times 0.99}{0.01 \times 10000 \times 0.99 + 0.99 \times 10000 \times 0.01} =\frac12 $$
+
+
 ### Two Child Problem {.smaller}
 
 Consider last an old puzzle described in Gardner (1961).
@@ -180,12 +183,12 @@ What's the probability that $Y=1$ is due to $X=1$?
 &=&\frac{\Pr(X=1)\Pr(\theta^Y_{01})}{\Pr(X=1)\Pr(\theta^Y_{01})+ \Pr(X=1)\Pr(\theta^Y_{11})}
 \end{eqnarray*}
 
-So:
+So:^[we assumed here that the assignment of $X$ is independent of potential outcomes: $\Pr(X=1, Y=1|\theta^Y_{01}) = \Pr(Y=1|\theta^Y_{01}, X=1)\Pr(X=1 | \theta^Y_{01})=\Pr(X=1 | \theta^Y_{01})$]
 
 $$
 \Pr(\theta^Y_{01} | X=1, Y=1)=\frac{\Pr(\theta^Y_{01})}{\Pr(\theta^Y_{01})+ \Pr(\theta^Y_{11})}
 $$
-note: we assumed here that the assignment of $X$ is independent of potential outcomes; can you see where?^[here: $\Pr(X=1, Y=1|\theta^Y_{01}) = \Pr(Y=1|\theta^Y_{01}, X=1)\Pr(X=1 | \theta^Y_{01})=\Pr(X=1 | \theta^Y_{01})$]
+
 
 
 ### Causal Problem {.smaller}
