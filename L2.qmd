@@ -18,7 +18,9 @@ bibliography: assets/bib.bib
 ---
 
 
-# Queries (Alan)
+# Queries 
+
+(Alan)
 
 
 
@@ -54,13 +56,17 @@ library(ggplot2)
 
 ```
 
-# Queries in `CausalQueries` (Macartan)
+# Queries in `CausalQueries` 
+
+(Macartan)
 
 ```{r, child = "modules/2.1_CQ_queries.qmd"}
 
 ```
 
-# Bayesian updating (Macartan)
+# Bayesian updating 
+
+(Macartan)
 
 
 *Updating on causal quantities*
@@ -70,7 +76,9 @@ library(ggplot2)
 
 ```
 
-# Conditional independence (Alan)
+# Conditional independence 
+
+(Alan)
 
 *Figuring out when A tells you something about B*
 
@@ -79,6 +87,8 @@ library(ggplot2)
 ```
 
 # Updating in `CausalQueries`
+
+(Macartan)
 
 *`CausalQueries` brings these elements together*
 

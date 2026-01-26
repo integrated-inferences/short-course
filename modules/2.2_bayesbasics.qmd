@@ -152,15 +152,57 @@ $$\text{Prob both boys | Not both girls} = \frac{\text{Prob both boys}}{\text{Pr
 
 Formally, all of these equations are applications of Bayes' rule, which is a simple and powerful formula for deriving updated beliefs from new data.
 
-The formula is given as:
+The formula is:
 
-$$\Pr(H|\mathcal{D})=\frac{\Pr(\mathcal{D}|H)\Pr(H)}{\Pr(\mathcal{D})}\\
-                  =\frac{\Pr(\mathcal{D}|H)\Pr(H)}{\sum_{H'}\Pr(\mathcal{D}|H')\Pr(H'))}$$
+$$
+\Pr(H|\mathcal{D})= \frac{\Pr(\mathcal{D}, H)}{\Pr(\mathcal{D})}
+$$
+
+Equivalently:
+
+$$
+\Pr(H|\mathcal{D})= \frac{\Pr(\mathcal{D}|H)\Pr(H)}{\Pr(\mathcal{D})}\\
+$$  
+
+or:
+
+$$
+\Pr(H|\mathcal{D})= \frac{\Pr(\mathcal{D}|H)\Pr(H)}{\sum_{H'}\Pr(\mathcal{D}|H')\Pr(H'))}
+$$
                 
 
-### Bayes Rule
+### Causal Problem {.smaller}
 
-Formally, all of these equations are applications of Bayes' rule which is a simple and powerful formula for deriving updated beliefs from new data.
+What's the probability that $Y=1$ is due to $X=1$?
+
+\begin{eqnarray*}
+\Pr(\theta^Y =  \theta^Y_{01} | X=1, Y=1)&=&\frac{\Pr(X=1, Y=1|\theta^Y_{01})\Pr(\theta^Y_{01})}{\Pr(X=1, Y=1)}\\
+&=&\frac{\Pr(X=1)\Pr(\theta^Y_{01})}{\Pr(X=1)\Pr(\theta^Y_{01})+ \Pr(X=1)\Pr(\theta^Y_{11})}
+\end{eqnarray*}
+
+So:
+
+$$
+\Pr(\theta^Y_{01} | X=1, Y=1)=\frac{\Pr(\theta^Y_{01})}{\Pr(\theta^Y_{01})+ \Pr(\theta^Y_{11})}
+$$
+note: we assumed here that the assignment of $X$ is independent of potential outcomes; can you see where?^[here: $\Pr(X=1, Y=1|\theta^Y_{01}) = \Pr(Y=1|\theta^Y_{01}, X=1)\Pr(X=1 | \theta^Y_{01})=\Pr(X=1 | \theta^Y_{01})$]
+
+
+### Causal Problem {.smaller}
+
+
+More generally
+
+$$\Pr(Q) = \sum_{\theta \in Q} \Pr(\theta | D)=\sum_{\theta \in Q}\frac{\Pr(D,\theta)}{\Pr(D)}=\frac{\sum_{\theta \in Q}\Pr(D,\theta)}{\Pr(D)}=\frac{\sum_{\theta \in Q \cap D}\Pr(\theta)}{\sum_{\theta\in D}\Pr(\theta)}$$
+
+so:
+
+$$
+\frac{\text{Type consistent with the data and the query}}{\text{Type consistent with the data}}
+$$
+
+## Continuous distributions 
+
 
 For continuous distributions and parameter vector $\theta$:
 

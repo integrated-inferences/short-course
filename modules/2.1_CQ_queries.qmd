@@ -26,13 +26,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Defining queries in `CausalQueries`
 
-* We use $[]$ to describe conditions that are set
-* we use "given" arguments to describe conditions that happen to hold
+* We use `[condition]` to describe conditions that are set
+* we use "`given = condition`" arguments to describe conditions that happen to hold
+
+
+Examples:
 
 * $Y[X=1]$ is the value of $Y$ when $X$ is *set* to 1. (`do`$(X=1)$, or $X \leftarrow 1$)
 * $Y[X=1] - Y[X=0]$ is the effect of $X$ on $Y$
 * $Y[X=1, M = 1] - Y[X=0, M=1]$ is the effect of $X$ on $Y$ when $M$ is *set* to 1
 * $Y[X=1] - Y[X=0]$ `given` $M==1$ is the effect of $X$ on $Y$ when $M$ happens to be  1
+
 
 ## From statements to types
 
@@ -89,9 +93,9 @@ types <- sapply(1:nrow(q), function(j) {
 q <- q |> mutate(Types = types)
 q |> kable()  |> 
           kableExtra::column_spec(1, width = "7em")  |> 
-          kableExtra::column_spec(2, width = "10em")  |> 
-          kableExtra::column_spec(3, width = "7em")  |> 
-          kableExtra::column_spec(4, width = "10em")  |> 
+          kableExtra::column_spec(2, width = "7em")  |> 
+          kableExtra::column_spec(3, width = "5em")  |> 
+          kableExtra::column_spec(4, width = "15em")  |> 
           kableExtra::column_spec(5, width = "10em") |>
   kableExtra::kable_styling(latex_options="scale_down")
 

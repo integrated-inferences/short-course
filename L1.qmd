@@ -17,7 +17,9 @@ author: "Macartan Humphreys and Alan Jacobs"
 bibliography: assets/bib.bib
 ---
 
-#  Motivation (Alan)
+#  Motivation 
+
+(Alan)
 
 
 ```{css}
@@ -53,19 +55,25 @@ library(ggplot2)
 ```
 
 
-#  Causality (Macartan)
+#  Causality 
+
+(Macartan)
 
 ```{r, child = "modules/1.1_causality.qmd"}
 
 ```
 
-#  Causal models (Alan)
+#  Causal models 
+
+(Alan)
 
 ```{r, child = "modules/1.2_causal_models.qmd"}
 
 ```
 
-# Making and plotting models in `CausalQueries` (Macartan)
+# Making and plotting models in `CausalQueries` 
+
+(Macartan)
 
 ```{r, child = "modules/1.3_CQ.qmd"}
 

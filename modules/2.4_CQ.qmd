@@ -50,10 +50,7 @@ make_model('X -> M -> Y') |>
               "M==0", 
               "M==1",
               "X==1 & Y ==1 & M==0",
-              "X==1 & Y ==1 & M==1"),
-    using = "parameters"
-) 
-
+              "X==1 & Y ==1 & M==1")) 
 ```
 ## Illustration of 3
 

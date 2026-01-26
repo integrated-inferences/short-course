@@ -43,7 +43,35 @@ Day 2:
   * [queries and types handout](queries_handout.pdf)
   * [`CausalQueries` cheatsheet](cheatsheet.pdf)
 
-## About
+## Learning objectives
+
+### Lecture 1 + Exercise 1
+
+After the first sessions you should have an understanding of:
+
+* the limits of design-based inference
+* the limits of non-explicit qualitative inference
+* what a potential outcome is
+* what a causal effect is (under the potential outcomes model)
+* what a causal model is
+* what a DAG is
+* what an arrow or its absence means in a DAG
+* what a “causal type” is
+* how to construct a model in `CausalQueries`
+
+### Lecture 2 + Exercise 2
+
+After the first sessions you should have an understanding of:
+
+* the difference between case-level and population-level queries
+* causal queries as questions about a case’s causal type (i.e., about theta’s)
+* how to write a query in `CausalQueries`
+* what Bayes’ rule is and how it works for discrete and continuous queries
+* what conditional independence is and how to read it from a causal graph
+* how conditional independence relates to the informativeness of clues for understanding queries: we hope you will start being able to see queries and clues as nodes on a DAG and understand when a clue is informative for a theory
+
+
+## Prep
 
 ### Advance watching and reading
 

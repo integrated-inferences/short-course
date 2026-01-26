@@ -1292,6 +1292,7 @@ Macartan Humphreys and Alan Jacobs
 <section>
 <section id="queries" class="title-slide slide level1 center" data-number="1">
 <h1><span class="header-section-number">1</span> Queries</h1>
+<p>(Alan)</p>
 <div class="cell">
 <style type="text/css">
 ##| echo: false
@@ -1310,7 +1311,7 @@ font-size: medium;
 <li>Case-level causal effects
 <ul>
 <li>e.g., Did/does <span class="math inline">\(X\)</span> have a positive effect on <span class="math inline">\(Y\)</span> in this case?</li>
-<li>e.g., Did <span class="math inline">\(X=1\)</span> cause <span class="math inline">\(Y=1\)</span> in this case with <span class="math inline">\(X=1, Y=1\)</span>?</li>
+<li>e.g., Did <span class="math inline">\(X=1\)</span> cause <span class="math inline">\(Y=1\)</span> in this case with <span class="math inline">\(X=1, Y=1\)</span>? (“causes of effects”)</li>
 </ul></li>
 <li>Causal pathways
 <ul>
@@ -1322,7 +1323,7 @@ font-size: medium;
 </ul></li>
 <li>Average causal effects for a population
 <ul>
-<li>e.g., What is the average effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span></li>
+<li>e.g., What is the average effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span>? (“effects of causes”)</li>
 </ul></li>
 </ul>
 <!-- ## Estimands (causal questions) -->
@@ -1351,7 +1352,7 @@ font-size: medium;
 </ul></li>
 <li>“Did military defeat cause Argentina’s democratization?” means….
 <ul>
-<li>If military defeat had not happened, would Argentina’s democratization failed to happen?</li>
+<li>If military defeat had not happened, would Argentina’s democratization have failed to happen?</li>
 </ul></li>
 </ul>
 </section>
@@ -1359,24 +1360,21 @@ font-size: medium;
 <section id="the-probability-of-a-case-level-causal-effect" class="title-slide slide level2 center" data-number="1.3">
 <h2><span class="header-section-number">1.3</span> The probability of a case-level causal effect</h2>
 <ul>
-<li>We can express case-level causal effects queries as questions about <strong>probabilities</strong>
+<li><p>Our estimates of case-level causal effects have <em>uncertainty</em></p>
 <ul>
-<li>“Did <span class="math inline">\(X=1\)</span> cause <span class="math inline">\(Y=1\)</span> in this case?” is not a yes/no question</li>
+<li>Our inferences thus take the form of <em>probabilities</em> – as degrees of belief</li>
 </ul></li>
-<li>We need to ask, what is the <strong>probability</strong> that <span class="math inline">\(X=1\)</span> caused <span class="math inline">\(Y=1\)</span> in this case?
-<ul>
-<li>Probability of causation</li>
-</ul></li>
-<li>We always <strong>condition</strong> this question on what we already know about the case
+<li><p>We call this probability of causation</p></li>
+<li><p>We always <strong>condition</strong> case-level queries on what we already know about the case</p>
 <ul>
 <li>Given that <span class="math inline">\(X=1\)</span> and <span class="math inline">\(Y=1\)</span> in this case, what’s the probability that <span class="math inline">\(X=1\)</span> caused <span class="math inline">\(Y=1\)</span>?</li>
-<li>Given that Argentina experienced military defeat and democratized, what’s the probability that former caused the latter?</li>
+<li>Given that Argentina experienced military defeat and democratized, what’s the probability that the former caused the latter?</li>
 </ul></li>
 </ul>
 </section>
 
-<section id="case-level-causal-effects-and-nodal-types" class="title-slide slide level2 center" data-number="1.4">
-<h2><span class="header-section-number">1.4</span> Case-level causal effects and nodal types</h2>
+<section id="case-level-causal-effects-and-types" class="title-slide slide level2 center" data-number="1.4">
+<h2><span class="header-section-number">1.4</span> Case-level causal effects and types</h2>
 <ul>
 <li>“Did <span class="math inline">\(X=1\)</span> cause <span class="math inline">\(Y=1\)</span> in this case?” means (in a binary framework)….
 <ul>
@@ -1412,7 +1410,7 @@ font-size: medium;
 <ul>
 <li>This is a question about the value of <span class="math inline">\(\theta^Y\)</span></li>
 </ul></li>
-<li>Does <span class="math inline">\(\theta^Y = \theta^Y_{01}\)</span>? (Or what’s the probability of that?)</li>
+<li>Does <span class="math inline">\(\theta^Y = \theta^Y_{01}\)</span>?</li>
 </ul>
 </section>
 
@@ -1429,7 +1427,7 @@ font-size: medium;
 <ul>
 <li>Or did military defeat cause democratization in Argentina through generating popular protest?</li>
 </ul></li>
-<li><p>Also a question about nodal types</p></li>
+<li><p>Also a question about types</p></li>
 </ul>
 </section>
 
@@ -1476,39 +1474,37 @@ font-size: medium;
 <p>We distinguish between:</p>
 <ul>
 <li>the effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span> when <span class="math inline">\(M\)</span> “happens to” take on a given value</li>
-<li>the effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span> when <span class="math inline">\(M\)</span> “is set to” a given value</li>
+<li>the effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span> when <span class="math inline">\(M\)</span> “is set to” or “fixed at” a given value</li>
 </ul>
-<p>Say we thought that <span class="math inline">\(X\)</span> affects <span class="math inline">\(Y\)</span> through <span class="math inline">\(M\)</span>. Going to school increased income via education.</p>
+<p>Say we think that school attendance (X) increases income (Y) via education (M).</p>
 <ul>
-<li>we are more convinced that <span class="math inline">\(X\)</span> caused <span class="math inline">\(Y\)</span> if we observed that <span class="math inline">\(M=1\)</span></li>
-<li>we are expect that <span class="math inline">\(X\)</span> would <em>not</em> cause <span class="math inline">\(Y\)</span> if we set <span class="math inline">\(M\)</span> to <span class="math inline">\(1\)</span></li>
+<li>then we will be more convinced that <span class="math inline">\(X=1\)</span> caused <span class="math inline">\(Y=1\)</span> if we observe that <span class="math inline">\(M=1\)</span>, BUT</li>
+<li>we would not expect <span class="math inline">\(X\)</span> to cause <span class="math inline">\(Y\)</span> if we were to <em>fix</em> <span class="math inline">\(M\)</span> to <span class="math inline">\(1\)</span> – if we were to set education level to some value</li>
 </ul>
-</section>
-
-<section id="why-bother-why-define-causal-questions-on-a-dag" class="title-slide slide level2 center" data-number="1.12">
-<h2><span class="header-section-number">1.12</span> Why bother? Why define causal questions on a DAG?</h2>
-<ul>
-<li>We are turning our questions into nodes on a graph</li>
-<li>The key is: <strong>We can learn about nodes if we have information on other nodes they’re connected to</strong></li>
-<li>If we know <span class="math inline">\(X\)</span>, <span class="math inline">\(M\)</span>, and <span class="math inline">\(Y\)</span> in a case, we can draw inferences about <span class="math inline">\(\theta^M\)</span> and <span class="math inline">\(\theta^Y\)</span> for this case</li>
-<li>This is, at an intuitive level, what <code>CausalQueries</code> does</li>
-</ul>
+<!-- ## Why bother? Why define causal questions on a DAG? -->
+<!-- * We are turning our questions into nodes on a graph -->
+<!-- * The key is: **We can learn about nodes if we have information on other nodes they're connected to** -->
+<!-- * If we know $X$, $M$, and $Y$ in a case, we can draw inferences about $\theta^M$ and $\theta^Y$ for this case -->
+<!-- * This is, at an intuitive level, what `CausalQueries` does -->
 </section>
 </section>
 <section>
 <section id="queries-in-causalqueries" class="title-slide slide level1 center" data-number="2">
 <h1><span class="header-section-number">2</span> Queries in <code>CausalQueries</code></h1>
-
+<p>(Macartan)</p>
 </section>
 <section id="defining-queries-in-causalqueries" class="title-slide slide level2 center" data-number="2.1">
 <h2><span class="header-section-number">2.1</span> Defining queries in <code>CausalQueries</code></h2>
 <ul>
-<li><p>We use <span class="math inline">\([]\)</span> to describe conditions that are set</p></li>
-<li><p>we use “given” arguments to describe conditions that happen to hold</p></li>
-<li><p><span class="math inline">\(Y[X=1]\)</span> is the value of <span class="math inline">\(Y\)</span> when <span class="math inline">\(X\)</span> is <em>set</em> to 1. (<code>do</code><span class="math inline">\((X=1)\)</span>, or <span class="math inline">\(X \leftarrow 1\)</span>)</p></li>
-<li><p><span class="math inline">\(Y[X=1] - Y[X=0]\)</span> is the effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span></p></li>
-<li><p><span class="math inline">\(Y[X=1, M = 1] - Y[X=0, M=1]\)</span> is the effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span> when <span class="math inline">\(M\)</span> is <em>set</em> to 1</p></li>
-<li><p><span class="math inline">\(Y[X=1] - Y[X=0]\)</span> <code>given</code> <span class="math inline">\(M==1\)</span> is the effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span> when <span class="math inline">\(M\)</span> happens to be 1</p></li>
+<li>We use <code>[condition]</code> to describe conditions that are set</li>
+<li>we use “<code>given = condition</code>” arguments to describe conditions that happen to hold</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><span class="math inline">\(Y[X=1]\)</span> is the value of <span class="math inline">\(Y\)</span> when <span class="math inline">\(X\)</span> is <em>set</em> to 1. (<code>do</code><span class="math inline">\((X=1)\)</span>, or <span class="math inline">\(X \leftarrow 1\)</span>)</li>
+<li><span class="math inline">\(Y[X=1] - Y[X=0]\)</span> is the effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span></li>
+<li><span class="math inline">\(Y[X=1, M = 1] - Y[X=0, M=1]\)</span> is the effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span> when <span class="math inline">\(M\)</span> is <em>set</em> to 1</li>
+<li><span class="math inline">\(Y[X=1] - Y[X=0]\)</span> <code>given</code> <span class="math inline">\(M==1\)</span> is the effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span> when <span class="math inline">\(M\)</span> happens to be 1</li>
 </ul>
 </section>
 
@@ -1590,65 +1586,65 @@ X0.Y11  X1.Y11
 <tbody>
 <tr class="odd">
 <td style="text-align: left; width: 7em;">X -&gt; Y</td>
-<td style="text-align: left; width: 10em;">Y[X=1] &gt; Y[X=0]</td>
-<td style="text-align: left; width: 7em;"></td>
-<td style="text-align: left; width: 10em;">Probability that X has a positive effect on Y</td>
+<td style="text-align: left; width: 7em;">Y[X=1] &gt; Y[X=0]</td>
+<td style="text-align: left; width: 5em;"></td>
+<td style="text-align: left; width: 15em;">Probability that X has a positive effect on Y</td>
 <td style="text-align: left; width: 10em;">X0.Y01, X1.Y01</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; width: 7em;">X -&gt; Y</td>
-<td style="text-align: left; width: 10em;">Y[X=1] &lt; Y[X=0]</td>
-<td style="text-align: left; width: 7em;">X == 1</td>
-<td style="text-align: left; width: 10em;">Probability that X has a negative effect on Y among those for whom X=1</td>
+<td style="text-align: left; width: 7em;">Y[X=1] &lt; Y[X=0]</td>
+<td style="text-align: left; width: 5em;">X == 1</td>
+<td style="text-align: left; width: 15em;">Probability that X has a negative effect on Y among those for whom X=1</td>
 <td style="text-align: left; width: 10em;">X1.Y10</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; width: 7em;">X -&gt; Y</td>
-<td style="text-align: left; width: 10em;">Y[X=1] &gt; Y[X=0]</td>
-<td style="text-align: left; width: 7em;">X==1 &amp; Y==1</td>
-<td style="text-align: left; width: 10em;">Probability that Y=1 is due to X=1 (Attribution)</td>
+<td style="text-align: left; width: 7em;">Y[X=1] &gt; Y[X=0]</td>
+<td style="text-align: left; width: 5em;">X==1 &amp; Y==1</td>
+<td style="text-align: left; width: 15em;">Probability that Y=1 is due to X=1 (Attribution)</td>
 <td style="text-align: left; width: 10em;">X1.Y01</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; width: 7em;">X -&gt; Y &lt;- W</td>
-<td style="text-align: left; width: 10em;">Y[X=1] &gt; Y[X=0]</td>
-<td style="text-align: left; width: 7em;">W == 1</td>
-<td style="text-align: left; width: 10em;">Probability that X has a positive effect on Y for a case in which W = 1 (where W is possibly defined post treatment)</td>
+<td style="text-align: left; width: 7em;">Y[X=1] &gt; Y[X=0]</td>
+<td style="text-align: left; width: 5em;">W == 1</td>
+<td style="text-align: left; width: 15em;">Probability that X has a positive effect on Y for a case in which W = 1 (where W is possibly defined post treatment)</td>
 <td style="text-align: left; width: 10em;">W1.X0.Y0001, W1.X1.Y0001, W1.X0.Y1001, W1.X1.Y1001, W1.X0.Y0011, W1.X1.Y0011, W1.X0.Y1011, W1.X1.Y1011</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; width: 7em;">X -&gt; Y &lt;- W</td>
-<td style="text-align: left; width: 10em;">Y[X=1, W = 1] &gt; Y[X=0, W = 1]</td>
-<td style="text-align: left; width: 7em;">W==0</td>
-<td style="text-align: left; width: 10em;">Probability that X has a positive effect on Y if W were set to 1 for cases for which in fact W=0</td>
+<td style="text-align: left; width: 7em;">Y[X=1, W = 1] &gt; Y[X=0, W = 1]</td>
+<td style="text-align: left; width: 5em;">W==0</td>
+<td style="text-align: left; width: 15em;">Probability that X has a positive effect on Y if W were set to 1 for cases for which in fact W=0</td>
 <td style="text-align: left; width: 10em;">W0.X0.Y0001, W0.X1.Y0001, W0.X0.Y1001, W0.X1.Y1001, W0.X0.Y0011, W0.X1.Y0011, W0.X0.Y1011, W0.X1.Y1011</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; width: 7em;">X -&gt; Y &lt;- W</td>
-<td style="text-align: left; width: 10em;">Y[X=1] &gt; Y[X=0]</td>
-<td style="text-align: left; width: 7em;">Y[W=1] &gt; Y[W=0]</td>
-<td style="text-align: left; width: 10em;">Probability that X has a positive effect on Y for a case in which W has a positive effect on Y</td>
+<td style="text-align: left; width: 7em;">Y[X=1] &gt; Y[X=0]</td>
+<td style="text-align: left; width: 5em;">Y[W=1] &gt; Y[W=0]</td>
+<td style="text-align: left; width: 15em;">Probability that X has a positive effect on Y for a case in which W has a positive effect on Y</td>
 <td style="text-align: left; width: 10em;">W0.X0.Y0110, W1.X1.Y0001, W1.X1.Y1001, W0.X0.Y0111</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; width: 7em;">X -&gt; Y &lt;- W</td>
-<td style="text-align: left; width: 10em;">(Y[X=1, W = 1] &gt; Y[X=0, W = 1]) &gt; (Y[X=1, W = 0] &gt; Y[X=0, W = 0])</td>
-<td style="text-align: left; width: 7em;">W==1 &amp; X==1</td>
-<td style="text-align: left; width: 10em;">Probability of a positive interaction between W and X for Y; the probability that the effect of X on Y is stronger when W is larger</td>
+<td style="text-align: left; width: 7em;">(Y[X=1, W = 1] &gt; Y[X=0, W = 1]) &gt; (Y[X=1, W = 0] &gt; Y[X=0, W = 0])</td>
+<td style="text-align: left; width: 5em;">W==1 &amp; X==1</td>
+<td style="text-align: left; width: 15em;">Probability of a positive interaction between W and X for Y; the probability that the effect of X on Y is stronger when W is larger</td>
 <td style="text-align: left; width: 10em;">W1.X1.Y0001, W1.X1.Y1001, W1.X1.Y1011</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; width: 7em;">X -&gt; M -&gt; Y &lt;- X</td>
-<td style="text-align: left; width: 10em;">Y[X = 1, M = M[X=1]] &gt; Y[X = 0, M = M[X=1]]</td>
-<td style="text-align: left; width: 7em;">X==1 &amp; M==1 &amp; Y==1</td>
-<td style="text-align: left; width: 10em;">The probability X would have a positive effct on Y if M were controlled to be at the level it would take if X were 1 for units for which in fact M==1</td>
+<td style="text-align: left; width: 7em;">Y[X = 1, M = M[X=1]] &gt; Y[X = 0, M = M[X=1]]</td>
+<td style="text-align: left; width: 5em;">X==1 &amp; M==1 &amp; Y==1</td>
+<td style="text-align: left; width: 15em;">The probability X would have a positive effct on Y if M were controlled to be at the level it would take if X were 1 for units for which in fact M==1</td>
 <td style="text-align: left; width: 10em;">X1.M01.Y0001, X1.M11.Y0001, X1.M01.Y1001, X1.M11.Y1001, X1.M01.Y0101, X1.M11.Y0101, X1.M01.Y1101, X1.M11.Y1101</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; width: 7em;">X -&gt; M -&gt; Y &lt;- X</td>
-<td style="text-align: left; width: 10em;">(Y[M = 1] &gt; Y[M = 0]) &amp; (M[X = 1] &gt; M[X = 0])</td>
-<td style="text-align: left; width: 7em;">Y[X=1] &gt; Y[X=0] &amp; M==1</td>
-<td style="text-align: left; width: 10em;">The probability that X causes M and M causes Y among units for which M = 1 and X causes Y</td>
+<td style="text-align: left; width: 7em;">(Y[M = 1] &gt; Y[M = 0]) &amp; (M[X = 1] &gt; M[X = 0])</td>
+<td style="text-align: left; width: 5em;">Y[X=1] &gt; Y[X=0] &amp; M==1</td>
+<td style="text-align: left; width: 15em;">The probability that X causes M and M causes Y among units for which M = 1 and X causes Y</td>
 <td style="text-align: left; width: 10em;">X1.M01.Y0001, X1.M01.Y0011</td>
 </tr>
 </tbody>
@@ -1661,8 +1657,9 @@ X0.Y11  X1.Y11
 </section>
 </section>
 <section>
-<section id="updating" class="title-slide slide level1 center" data-number="3">
-<h1><span class="header-section-number">3</span> Updating</h1>
+<section id="bayesian-updating" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> Bayesian updating</h1>
+<p>(Macartan)</p>
 <p><em>Updating on causal quantities</em></p>
 </section>
 <section id="outline" class="title-slide slide level2 center" data-number="3.1">
@@ -1712,7 +1709,13 @@ X0.Y11  X1.Y11
 <section id="illustration-1-1" class="slide level3 smaller" data-number="3.2.3">
 <h3><span class="header-section-number">3.2.3</span> Illustration 1</h3>
 <p>These answers are applications of Bayes’ rule.</p>
-<p>In each case the answer is derived by assessing what is possible, given the new information, and then assessing how likely the outcome of interest among the states that are possible. In all the cases you calculate:</p>
+<p>In each case the answer is derived by:</p>
+<ul>
+<li>assessing what is possible…</li>
+<li>given the new information, and then</li>
+<li>assessing how likely the outcome of interest is among the states that are possible.</li>
+</ul>
+<p>In each case, you calculate:</p>
 <p><span class="math display">\[\text{Prob Jack of Spades | Info} = \frac{\text{Is Jack of Spades Consistent w/ Info?}}{\text{How many cards are consistent w/ Info?}} \]</span></p>
 </section>
 <section id="illustration-2-interpreting-your-test-results" class="slide level3 smaller" data-number="3.2.4">
@@ -1744,7 +1747,7 @@ X0.Y11  X1.Y11
 </section>
 <section id="two-child-problem" class="slide level3 smaller" data-number="3.2.8">
 <h3><span class="header-section-number">3.2.8</span> Two Child Problem</h3>
-<p>Consider last an old puzzle described in <span class="citation" data-cites="gardner1961second">(<a href role="doc-biblioref" onclick="return false;"><strong>gardner1961second?</strong></a>)</span>.</p>
+<p>Consider last an old puzzle described in Gardner (1961).</p>
 <ul>
 <li>Mr Smith has two children, <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>.</li>
 <li>At least one of them is a boy.</li>
@@ -1760,27 +1763,57 @@ X0.Y11  X1.Y11
 </section>
 <section id="bayes-rule-1" class="slide level3 smaller" data-number="3.2.10">
 <h3><span class="header-section-number">3.2.10</span> Bayes Rule</h3>
-<p>Formally, all of these equations are applications of Bayes’ rule which is a simple and powerful formula for deriving updated beliefs from new data.</p>
-<p>The formula is given as:</p>
-<p><span class="math display">\[\Pr(H|\mathcal{D})=\frac{\Pr(\mathcal{D}|H)\Pr(H)}{\Pr(\mathcal{D})}\\
-                  =\frac{\Pr(\mathcal{D}|H)\Pr(H)}{\sum_{H&#39;}\Pr(\mathcal{D}|H&#39;)\Pr(H&#39;))}\]</span></p>
+<p>Formally, all of these equations are applications of Bayes’ rule, which is a simple and powerful formula for deriving updated beliefs from new data.</p>
+<p>The formula is:</p>
+<p><span class="math display">\[
+\Pr(H|\mathcal{D})= \frac{\Pr(\mathcal{D}, H)}{\Pr(\mathcal{D})}
+\]</span></p>
+<p>Equivalently:</p>
+<p><span class="math display">\[
+\Pr(H|\mathcal{D})= \frac{\Pr(\mathcal{D}|H)\Pr(H)}{\Pr(\mathcal{D})}\\
+\]</span></p>
+<p>or:</p>
+<p><span class="math display">\[
+\Pr(H|\mathcal{D})= \frac{\Pr(\mathcal{D}|H)\Pr(H)}{\sum_{H&#39;}\Pr(\mathcal{D}|H&#39;)\Pr(H&#39;))}
+\]</span></p>
 </section>
-<section id="bayes-rule-2" class="slide level3" data-number="3.2.11">
-<h3><span class="header-section-number">3.2.11</span> Bayes Rule</h3>
-<p>Formally, all of these equations are applications of Bayes’ rule which is a simple and powerful formula for deriving updated beliefs from new data.</p>
+<section id="causal-problem" class="slide level3 smaller" data-number="3.2.11">
+<h3><span class="header-section-number">3.2.11</span> Causal Problem</h3>
+<p>What’s the probability that <span class="math inline">\(Y=1\)</span> is due to <span class="math inline">\(X=1\)</span>?</p>
+<p><span class="math display">\[\begin{eqnarray*}
+\Pr(\theta^Y =  \theta^Y_{01} | X=1, Y=1)&amp;=&amp;\frac{\Pr(X=1, Y=1|\theta^Y_{01})\Pr(\theta^Y_{01})}{\Pr(X=1, Y=1)}\\
+&amp;=&amp;\frac{\Pr(X=1)\Pr(\theta^Y_{01})}{\Pr(X=1)\Pr(\theta^Y_{01})+ \Pr(X=1)\Pr(\theta^Y_{11})}
+\end{eqnarray*}\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\Pr(\theta^Y_{01} | X=1, Y=1)=\frac{\Pr(\theta^Y_{01})}{\Pr(\theta^Y_{01})+ \Pr(\theta^Y_{11})}
+\]</span> note: we assumed here that the assignment of <span class="math inline">\(X\)</span> is independent of potential outcomes; can you see where?<sup>1</sup></p>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>here: <span class="math inline">\(\Pr(X=1, Y=1|\theta^Y_{01}) = \Pr(Y=1|\theta^Y_{01}, X=1)\Pr(X=1 | \theta^Y_{01})=\Pr(X=1 | \theta^Y_{01})\)</span></p></li></ol></aside></section>
+<section id="causal-problem-1" class="slide level3 smaller" data-number="3.2.12">
+<h3><span class="header-section-number">3.2.12</span> Causal Problem</h3>
+<p>More generally</p>
+<p><span class="math display">\[\Pr(Q) = \sum_{\theta \in Q} \Pr(\theta | D)=\sum_{\theta \in Q}\frac{\Pr(D,\theta)}{\Pr(D)}=\frac{\sum_{\theta \in Q}\Pr(D,\theta)}{\Pr(D)}=\frac{\sum_{\theta \in Q \cap D}\Pr(\theta)}{\sum_{\theta\in D}\Pr(\theta)}\]</span></p>
+<p>so:</p>
+<p><span class="math display">\[
+\frac{\text{Type consistent with the data and the query}}{\text{Type consistent with the data}}
+\]</span></p>
+</section>
+
+<section id="continuous-distributions" class="title-slide slide level2 center" data-number="3.3">
+<h2><span class="header-section-number">3.3</span> Continuous distributions</h2>
 <p>For continuous distributions and parameter vector <span class="math inline">\(\theta\)</span>:</p>
 <p><span class="math display">\[p(\theta|\mathcal{D})=\frac{p(\mathcal{D}|\theta)p(\theta)}{\int_{\theta&#39;}p(\mathcal{D|\theta&#39;})p(\theta&#39;)d\theta}\]</span></p>
 </section>
-<section id="illustration-of-continuous-distributions" class="slide level3 smaller" data-number="3.2.12">
-<h3><span class="header-section-number">3.2.12</span> Illustration of continuous distributions</h3>
-<p>Consider <strong>the share of people in a population that voted</strong> or **the share of people for which there is a positive treatment effect*</p>
+<section id="illustration-of-continuous-distributions" class="slide level3 smaller" data-number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Illustration of continuous distributions</h3>
+<p>Consider <strong>the share of people in a population that voted</strong> or <strong>the share of people for which there is a positive treatment effect</strong></p>
 <ul>
 <li><p>This is a quantity between 0 and 1.</p></li>
 <li><p>It can be represented by a continuous distribution: the beta distribution, with parameters that reflect how much data you have observed</p></li>
 </ul>
 </section>
-<section id="beta" class="slide level3 smaller" data-number="3.2.13">
-<h3><span class="header-section-number">3.2.13</span> Beta</h3>
+<section id="beta" class="slide level3 smaller" data-number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> Beta</h3>
 <ul>
 <li>The Beta distribution is a distribution over the <span class="math inline">\([0,1]\)</span> that is governed by two parameters, <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>.</li>
 <li>In the case in which both <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> are 1, the distribution is uniform – all values are seen as equally likely.</li>
@@ -1790,8 +1823,8 @@ X0.Y11  X1.Y11
 </ul>
 <p>An attractive feature is that if one has a prior Beta(<span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\beta\)</span>) over the probability of some event, and then one observes a positive case, the Bayesian posterior distribution is also a Beta with with parameters <span class="math inline">\(\alpha+1, \beta\)</span>. Thus if people start with uniform priors and build up knowledge on seeing outcomes, their posterior beliefs should be Beta.</p>
 </section>
-<section id="beta-1" class="slide level3 smaller" data-number="3.2.14">
-<h3><span class="header-section-number">3.2.14</span> Beta</h3>
+<section id="beta-1" class="slide level3 smaller" data-number="3.3.3">
+<h3><span class="header-section-number">3.3.3</span> Beta</h3>
 <p>Here is a set of such distributions.</p>
 
 <!-- ## Bayes "by hand" -->
@@ -1832,61 +1865,57 @@ X0.Y11  X1.Y11
 <section>
 <section id="conditional-independence" class="title-slide slide level1 center" data-number="4">
 <h1><span class="header-section-number">4</span> Conditional independence</h1>
+<p>(Alan)</p>
 <p><em>Figuring out when A tells you something about B</em></p>
 </section>
-<section id="key-insight-linking-dags-to-bayes" class="title-slide slide level2 center" data-number="4.1">
-<h2><span class="header-section-number">4.1</span> Key insight linking DAGs to Bayes</h2>
-<p>The key insight that connects a DAG representation of a causal model and Bayesian updating is this:</p>
+<section id="key-insight-linking-causal-models-to-bayes" class="title-slide slide level2 center" data-number="4.1">
+<h2><span class="header-section-number">4.1</span> Key insight linking Causal Models to Bayes</h2>
+<p>The key insight that connects a causal model to Bayesian updating is this:</p>
 <ul>
-<li>the DAG can tell you how to update on one feature given informmation on another</li>
+<li>a causal model can tell you how to update on one feature given information on another</li>
 </ul>
+<!-- ## Key insight linking Causal Models to Bayes -->
+<!-- Most simple idea.  -->
+<!-- Say we have DAG: $X \rightarrow Y$ and we know: -->
+<!-- * $\Pr(X = 1) = .5$ -->
+<!-- * $\Pr(Y = 1 | X = 1) = .75$ -->
+<!-- * $\Pr(Y = 1 | X = 0) = .25$ -->
+<!-- Then we can ask a question like: what is the probability that $X=1$ if indeed $Y=1$: -->
+<!-- $$\Pr(X = 1 | Y = 1) = \frac{\Pr(Y = 1 | X = 1)\Pr(X=1)}{\Pr(Y=1)} = \frac{0.75 \times 0.5}{0.5} = 0.75$$ -->
+<!-- So we can *sometimes* learn about one node from others nodes, up and down a graph. -->
+<!-- Let's figure out *when* we can do this. -->
 </section>
 
-<section id="key-insight-linking-dags-to-bayes-1" class="title-slide slide level2 center" data-number="4.2">
-<h2><span class="header-section-number">4.2</span> Key insight linking DAGs to Bayes</h2>
-<p>Most simple idea.</p>
-<p>Say we have DAG: <span class="math inline">\(X \rightarrow Y\)</span> and we know:</p>
-<ul>
-<li><span class="math inline">\(Pr(X = 1) = .5\)</span></li>
-<li><span class="math inline">\(Pr(Y = 1 | X = 1) = .75\)</span></li>
-<li><span class="math inline">\(Pr(Y = 1 | X = 0) = .25\)</span></li>
-</ul>
-<p>Then we can ask a question like: what is the probability that <span class="math inline">\(X=1\)</span> if indeed <span class="math inline">\(Y=1\)</span>:</p>
-<p><span class="math display">\[\Pr(X = 1 | Y = 1) = \frac{\Pr(Y = 1 | X = 1)\Pr(X=1)}{\Pr(Y=1)} = \frac{0.75 \times 0.5}{0.5} = 0.75\]</span></p>
-<p>So we can <em>sometimes</em> learn about one node from others nodes, up and down a graph.</p>
-<p>Let’s figure out <em>when</em> we can do this.</p>
-</section>
-
-<section id="conditional-independence-and-graph-structure" class="title-slide slide level2 smaller center" data-number="4.3">
-<h2><span class="header-section-number">4.3</span> Conditional independence and graph structure</h2>
+<section id="conditional-independence-and-graph-structure" class="title-slide slide level2 smaller center" data-number="4.2">
+<h2><span class="header-section-number">4.2</span> Conditional independence and graph structure</h2>
 <ul>
 <li>What DAGs do is tell you when one variable is independent of another variable given some third variable.</li>
 <li>Intuitively:
 <ul>
 <li>what variables “shield off” the influence of one variable on another</li>
-<li>e.g. If inequality causes revolution <em>via</em> discontent, then inequality and revolution should be related to each other overall, but <em>not</em> related to each other <em>among those</em> that are content or <em>among those</em> that are discontent</li>
+<li>e.g. If inequality causes revolution <em>via</em> discontent, then inequality and revolution should be related to each other overall, but <em>not</em> related to each other <em>among</em> highly contented cases or <em>among</em> discontented cases</li>
 </ul></li>
 </ul>
 </section>
-<section id="conditional-independence-1" class="slide level3" data-number="4.3.1">
-<h3><span class="header-section-number">4.3.1</span> Conditional independence</h3>
+<section id="conditional-independence-1" class="slide level3" data-number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Conditional independence</h3>
 <p>Variable sets <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> are conditionally independent, given <span class="math inline">\(C\)</span> if for all <span class="math inline">\(a\)</span>, <span class="math inline">\(b\)</span>, <span class="math inline">\(c\)</span>:</p>
 <p><span class="math display">\[\Pr(A = a | C = c) = \Pr(A = a | B = b, C = c)\]</span></p>
 <p>Informally; given <span class="math inline">\(C\)</span>, knowing <span class="math inline">\(B\)</span> tells you nothing more about <span class="math inline">\(A\)</span>.</p>
 </section>
-<section id="conditional-independence-on-paths-graphs" class="slide level3" data-number="4.3.2">
-<h3><span class="header-section-number">4.3.2</span> Conditional independence on paths graphs</h3>
+<section id="three-elemental-structures-for-thinking-about-conditional-independence" class="slide level3" data-number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> Three elemental structures for thinking about conditional independence</h3>
 
 <img role="img" data-src="data:image/png;base64,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" style="width:70.0%" class="r-stretch quarto-figure-center"><p class="caption">Three elemental relations of conditional independence.</p></section>
-<section id="conditional-independence-from-graphs" class="slide level3 smaller" data-number="4.3.3">
-<h3><span class="header-section-number">4.3.3</span> Conditional independence from graphs</h3>
+<section id="conditional-independence-from-graphs" class="slide level3 smaller" data-number="4.2.3">
+<h3><span class="header-section-number">4.2.3</span> Conditional independence from graphs</h3>
 <p><span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> are <em>conditionally independent</em>, given <span class="math inline">\(C\)</span> if on <em>every</em> path between <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>:</p>
 <ul>
-<li>there is some chain (<span class="math inline">\(\bullet\rightarrow \bullet\rightarrow\bullet\)</span> or <span class="math inline">\(\bullet\leftarrow \bullet\leftarrow\bullet\)</span>) or fork (<span class="math inline">\(\bullet\leftarrow \bullet\rightarrow\bullet\)</span>) with the central element in <span class="math inline">\(C\)</span>,</li>
+<li>there is some chain (<span class="math inline">\(\bullet\rightarrow \bullet\rightarrow\bullet\)</span> or <span class="math inline">\(\bullet\leftarrow \bullet\leftarrow\bullet\)</span>) or fork (<span class="math inline">\(\bullet\leftarrow \bullet\rightarrow\bullet\)</span>) with the central element in <span class="math inline">\(C\)</span> (i.e., all dependencies are blocked by <span class="math inline">\(C\)</span>),</li>
 </ul>
 <p>or</p>
 <ul>
-<li>there is an inverted fork (<span class="math inline">\(\bullet\rightarrow \bullet\leftarrow\bullet\)</span>) with the central element (and its descendants) <em>not</em> in <span class="math inline">\(C\)</span></li>
+<li>there is an inverted fork (<span class="math inline">\(\bullet\rightarrow \bullet\leftarrow\bullet\)</span>) with the central element (and its descendants) <em>not</em> in <span class="math inline">\(C\)</span> (i.e., no dependencies are opened by <span class="math inline">\(C\)</span>)</li>
 </ul>
 <p>Notes:</p>
 <ul>
@@ -1895,8 +1924,8 @@ X0.Y11  X1.Y11
 <li>Note that a path can involve arrows pointing any direction <span class="math inline">\(\bullet\rightarrow \bullet\rightarrow \bullet\leftarrow \bullet\rightarrow\bullet\)</span></li>
 </ul>
 </section>
-<section id="test-yourself" class="slide level3 smaller" data-number="4.3.4">
-<h3><span class="header-section-number">4.3.4</span> Test yourself</h3>
+<section id="test-yourself" class="slide level3 smaller" data-number="4.2.4">
+<h3><span class="header-section-number">4.2.4</span> Test yourself</h3>
 
 <img role="img" data-src="data:image/png;base64,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" class="quarto-figure quarto-figure-center r-stretch"><p>Are A and D unconditionally independent:</p>
 <ul>
@@ -1907,23 +1936,29 @@ X0.Y11  X1.Y11
 </ul>
 </section>
 
-<section id="theorem" class="title-slide slide level2 center" data-number="4.4">
-<h2><span class="header-section-number">4.4</span> Theorem</h2>
+<section id="theorem" class="title-slide slide level2 center" data-number="4.3">
+<h2><span class="header-section-number">4.3</span> Theorem</h2>
 <p>Key insight for process tracing:</p>
 <ul>
-<li>If <span class="math inline">\(K\)</span> is <em>not</em> conditionally independent of <span class="math inline">\(Q\)</span> then <span class="math inline">\(K\)</span> <em>is</em> informative for <span class="math inline">\(Q\)</span>.</li>
-<li>If <span class="math inline">\(K\)</span> <em>is</em> conditionally independent of <span class="math inline">\(Q\)</span> then <span class="math inline">\(K\)</span> is <em>not</em> for <span class="math inline">\(Q\)</span>.</li>
+<li>Informativeness of a node hinges on conditional independence</li>
+<li>If <span class="math inline">\(K\)</span> is <em>not</em> conditionally independent of <span class="math inline">\(\theta\)</span> then <span class="math inline">\(K\)</span> <em>is</em> informative for <span class="math inline">\(\theta\)</span>.</li>
+<li>If <span class="math inline">\(K\)</span> <em>is</em> conditionally independent of <span class="math inline">\(\theta\)</span> then <span class="math inline">\(K\)</span> is <em>not</em> for <span class="math inline">\(\theta\)</span>.</li>
 </ul>
-
-<img role="img" data-src="data:image/png;base64,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" width="960" class="r-stretch"></section>
-<section id="next-steps" class="slide level3" data-number="4.4.1">
-<h3><span class="header-section-number">4.4.1</span> Next steps</h3>
+<div class="cell">
+<div class="cell-output cell-output-error">
+<pre><code>Error in plot_model(x, ...): unused argument (nodetext = &quot;black&quot;)</code></pre>
+</div>
+</div>
+</section>
+<section id="next-steps" class="slide level3" data-number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> Next steps</h3>
 <p>When we turn to process tracing we will unpack the usefulness of this result</p>
 </section>
 </section>
 <section>
 <section id="updating-in-causalqueries" class="title-slide slide level1 center" data-number="5">
 <h1><span class="header-section-number">5</span> Updating in <code>CausalQueries</code></h1>
+<p>(Macartan)</p>
 <p><em><code>CausalQueries</code> brings these elements together</em></p>
 </section>
 <section id="big-picture" class="title-slide slide level2 center" data-number="5.1">
@@ -1941,28 +1976,29 @@ X0.Y11  X1.Y11
 <p>When we pose queries <em>given</em> different data we are in fact using Bayesian updating.</p>
 <p>Below we update on our beliefs <em>about a single case</em> given different data we might see. This, essentially, is what process tracing is (in our view).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href></a><span class="fu">make_model</span>(<span class="st">&#39;X -&gt; M -&gt; Y&#39;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb6-2"><a href></a>  <span class="fu">set_restrictions</span>(<span class="fu">decreasing</span>(<span class="st">&quot;X&quot;</span>, <span class="st">&quot;M&quot;</span>))<span class="sc">|&gt;</span></span>
-<span id="cb6-3"><a href></a>  <span class="fu">query_model</span>(</span>
-<span id="cb6-4"><a href></a>    <span class="at">query =</span> <span class="st">&quot;Y[X=1] != Y[X=0]&quot;</span>,</span>
-<span id="cb6-5"><a href></a>    <span class="at">given =</span> <span class="fu">c</span>(<span class="st">&quot;X==1 &amp; Y ==1&quot;</span>, </span>
-<span id="cb6-6"><a href></a>              <span class="st">&quot;M==0&quot;</span>, </span>
-<span id="cb6-7"><a href></a>              <span class="st">&quot;M==1&quot;</span>,</span>
-<span id="cb6-8"><a href></a>              <span class="st">&quot;X==1 &amp; Y ==1 &amp; M==0&quot;</span>,</span>
-<span id="cb6-9"><a href></a>              <span class="st">&quot;X==1 &amp; Y ==1 &amp; M==1&quot;</span>),</span>
-<span id="cb6-10"><a href></a>    <span class="at">using =</span> <span class="st">&quot;parameters&quot;</span></span>
-<span id="cb6-11"><a href></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href></a><span class="fu">make_model</span>(<span class="st">&#39;X -&gt; M -&gt; Y&#39;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href></a>  <span class="fu">set_restrictions</span>(<span class="fu">decreasing</span>(<span class="st">&quot;X&quot;</span>, <span class="st">&quot;M&quot;</span>))<span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href></a>  <span class="fu">set_restrictions</span>(<span class="fu">decreasing</span>(<span class="st">&quot;M&quot;</span>, <span class="st">&quot;Y&quot;</span>))<span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href></a>  <span class="fu">query_model</span>(</span>
+<span id="cb7-5"><a href></a>    <span class="at">query =</span> <span class="st">&quot;Y[X=1] != Y[X=0]&quot;</span>,</span>
+<span id="cb7-6"><a href></a>    <span class="at">given =</span> <span class="fu">c</span>(<span class="st">&quot;All&quot;</span>,</span>
+<span id="cb7-7"><a href></a>              <span class="st">&quot;X==1 &amp; Y ==1&quot;</span>, </span>
+<span id="cb7-8"><a href></a>              <span class="st">&quot;M==0&quot;</span>, </span>
+<span id="cb7-9"><a href></a>              <span class="st">&quot;M==1&quot;</span>,</span>
+<span id="cb7-10"><a href></a>              <span class="st">&quot;X==1 &amp; Y ==1 &amp; M==0&quot;</span>,</span>
+<span id="cb7-11"><a href></a>              <span class="st">&quot;X==1 &amp; Y ==1 &amp; M==1&quot;</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Causal queries generated by query_model (all at population level)
 
-|label                                      |using      |  mean|
-|:------------------------------------------|:----------|-----:|
-|Y[X=1] != Y[X=0] given X==1 &amp; Y ==1        |parameters | 0.167|
-|Y[X=1] != Y[X=0] given M==0                |parameters | 0.167|
-|Y[X=1] != Y[X=0] given M==1                |parameters | 0.167|
-|Y[X=1] != Y[X=0] given X==1 &amp; Y ==1 &amp; M==0 |parameters | 0.000|
-|Y[X=1] != Y[X=0] given X==1 &amp; Y ==1 &amp; M==1 |parameters | 0.250|</code></pre>
+|label                                      |query            |given               |using      |  mean|
+|:------------------------------------------|:----------------|:-------------------|:----------|-----:|
+|Y[X=1] != Y[X=0]                           |Y[X=1] != Y[X=0] |-                   |parameters | 0.111|
+|Y[X=1] != Y[X=0] given X==1 &amp; Y ==1        |Y[X=1] != Y[X=0] |X==1 &amp; Y ==1        |parameters | 0.200|
+|Y[X=1] != Y[X=0] given M==0                |Y[X=1] != Y[X=0] |M==0                |parameters | 0.111|
+|Y[X=1] != Y[X=0] given M==1                |Y[X=1] != Y[X=0] |M==1                |parameters | 0.111|
+|Y[X=1] != Y[X=0] given X==1 &amp; Y ==1 &amp; M==0 |Y[X=1] != Y[X=0] |X==1 &amp; Y ==1 &amp; M==0 |parameters | 0.000|
+|Y[X=1] != Y[X=0] given X==1 &amp; Y ==1 &amp; M==1 |Y[X=1] != Y[X=0] |X==1 &amp; Y ==1 &amp; M==1 |parameters | 0.250|</code></pre>
 </div>
 </div>
 </section>
@@ -1974,11 +2010,11 @@ Causal queries generated by query_model (all at population level)
 <li><code>update_model()</code> lets you update over population <em>parameters</em> not just <em>case types</em></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href></a>model <span class="ot">&lt;-</span> <span class="fu">make_model</span>(<span class="st">&quot;X-&gt;Y&quot;</span>) </span>
-<span id="cb8-2"><a href></a>data  <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">X =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">Y =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>))</span>
-<span id="cb8-3"><a href></a></span>
-<span id="cb8-4"><a href></a>model <span class="ot">&lt;-</span> <span class="fu">update_model</span>(model, data) <span class="sc">|&gt;</span></span>
-<span id="cb8-5"><a href></a>  <span class="fu">query_model</span>(<span class="st">&quot;Y[X=1] - Y[X=0]&quot;</span>, <span class="at">using =</span> <span class="st">&quot;posteriors&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href></a>model <span class="ot">&lt;-</span> <span class="fu">make_model</span>(<span class="st">&quot;X-&gt;Y&quot;</span>) </span>
+<span id="cb9-2"><a href></a>data  <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">X =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">Y =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb9-3"><a href></a></span>
+<span id="cb9-4"><a href></a>model <span class="ot">&lt;-</span> <span class="fu">update_model</span>(model, data) <span class="sc">|&gt;</span></span>
+<span id="cb9-5"><a href></a>  <span class="fu">query_model</span>(<span class="st">&quot;Y[X=1] - Y[X=0]&quot;</span>, <span class="at">using =</span> <span class="st">&quot;posteriors&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
@@ -1993,6 +2029,7 @@ Causal queries generated by query_model (all at population level)
 
 </section>
 </section>
+
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
