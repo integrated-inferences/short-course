@@ -124,8 +124,8 @@ Are A and D unconditionally independent:
 Key insight for process tracing: 
 
 * Informativeness of a node hinges on conditional independence
-* If $K$ is *not* conditionally independent of $\theta$ then $K$ *is* informative for $\theta$.
-* If $K$ *is* conditionally independent of $\theta$ then $K$ is *not* for $\theta$.
+* If $K$ is *not* conditionally independent of $\theta$ then $K$ *is* (possibly) informative for $\theta$.
+* If $K$ *is* conditionally independent of $\theta$ then $K$ is *not* informative for $\theta$.
 
 ```{r, echo = FALSE}
 
