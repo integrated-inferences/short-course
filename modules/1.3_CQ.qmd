@@ -27,9 +27,9 @@ library(CausalQueries)
 
 The key input to model creation is the causal statement:
 
-* "X -> Y"
-* "A -> B -> C <- A <-> C"
-* "A -> B; B <- C"
+* "`X -> Y`"
+* "`A -> B -> C <- A <-> C`"
+* "`A -> B; B <- C`"
 
 Note:
 
@@ -52,10 +52,11 @@ Note:
 * Arrows can go both directions
 * Double headed arrows means confounding
 * Parts of a statement can be separated using `;`
+* See "cheat sheet" for more guidance
 
 ### Inspect {.smaller}
 
-Once a model is made there is a default generation of causal structure, causal types, parameters, priors, and so on.  All elements  can be examined using `inspect`:
+Once a model is made there is a default generation of causal structure, causal types, parameters, priors, and so on.  All elements can be examined using `inspect`:
 
 ```{r, echo = TRUE}
 make_model("X -> Y") |>
@@ -128,7 +129,9 @@ model <- make_model("X -> Y")
 model |> plot_model()
 ```
 
-### ggplot layers
+# Extra slides
+
+### ggplot layers 
 
 The model that is produced is a `ggplot` object and additional layers can be added in the usual way.
 

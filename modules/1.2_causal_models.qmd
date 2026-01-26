@@ -33,11 +33,11 @@ knitr::opts_chunk$set(echo = TRUE)
     
 * Comprised of: 
 
-    * A structure -- indicating qualitative which nodes react to which others; we will represent these graphically
+    1. A structure -- indicating qualitative which nodes react to which others; we will represent these graphically
     
-    * Functional relations between nodes indicating quantitatively how one responds to another
+    2. Functional relations between nodes indicating quantitatively how one responds to another
     
-    * Probability distributions (priors) over exogenous conditions (which we deal with later)
+    3. Probability distributions (priors) over exogenous conditions (which we deal with later)
     
 
 
@@ -231,7 +231,7 @@ hj_dag(x = c(0, 0, 1, 1, 2, 2),
     
     * Only *direct* dependencies are connected
     
-    * **No edge** $\Rightarrow$ **no causal dependency**
+    * **No arrow** $\Rightarrow$ **no causal dependency given other nodes**
 
 
 ## DAG grammar: prohibitions
@@ -399,24 +399,25 @@ hj_dag(x = c(0, 0, 1, 1, 2, 3, 2, 2),
 
 
 
-## Representing confounding
+## Representing unobservable confounding
 
-* We can allow for confounding with double-headed arrows
-* Here, *no* confounding
+* We can allow for unobservable confounding with double-headed arrows
+* Here, *no* unobservable confounding
+* But note: $I$ is an observable counfound!
 
 ```{r, echo = FALSE}
 model <- make_model("I -> M -> D; I -> D <- P")
   model |> plot_model()
 ```
 
-## Representing confounding
+## Representing unobservable confounding
 
 ```{r, echo = FALSE}
 model <- make_model("I -> M -> D; I -> D <- P; I<->D")
   model |> plot_model()
 ```
 
-* Here, the *possibility* of confounding between $I$ and $D$
+* Here, we allow the *possibility* of confounding between $I$ and $D$ by unobservable factors
 
 
 
@@ -549,17 +550,27 @@ No argument here -- just potentially causal connections
 <!-- knitr::include_graphics("assets/Saundersexample.png") -->
 <!-- ``` -->
 
-## Causal types
+# Functional relations and causal types
 
-A specific *argument* about how things work in a case might look go: 
+## Functional relations
+
+A specific causal process through which things might work in a case could look like: 
 
 > socioeconomic pressures *put* issues on the agenda; being on the agenda and having an opportunity to avoid blame were individually necessary and jointly sufficient for retrenchment
 
 Note:
 
+* Now we are talking about *functional relations* between nodes
 * Formally, this involves a specification of the $\theta$'s
 * The $\theta$'s indicate how a node *responds* to its "parents"
-* Process tracing is: figuring out what the theta's are for a case.
+* Process tracing is: figuring out what the $\theta$'s are for a case.
+
+## Causal types as functional relations
+
+* We will call the causal processes operating between nodes in a given case the case's *causal type*
+* If you know a case's causal type, you know all possible causal relations within the case
+* A case's causal type is represented by its $\theta$ terms
+
 
 ## Causal types
 
@@ -575,4 +586,5 @@ Note:
 * For a node with $k$ parents: $\theta$  can take on up to $2^{\left(2^k\right)}$ values! This grows quickly.
 
 * You refine a model by specifiying  which types are possible or which types are *likely*
+
 * Probabilistic process tracing can be thought of as figuring out which types are likely among all those that are possible 

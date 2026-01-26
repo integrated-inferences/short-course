@@ -123,7 +123,7 @@ Simple example:
 * In sum: beliefs about the world will always play a central role in non-randomized inference
 
 
-### Even *with* randomization, soooo many questions we can't answer without models
+### Even *with* randomization, so many questions we can't answer without models
 
 Randomization can give us an $ATE$, but can't address many other causal estimands of interest
 
@@ -139,7 +139,7 @@ Randomization can give us an $ATE$, but can't address many other causal estimand
  
  
 
-## Even *with* randomization, soooo many questions we can't answer without models
+## Even *with* randomization, so many questions we can't answer without models
     
 * Whether and where effects will travel
     * We see effects in Northeastern Kenya
@@ -164,7 +164,7 @@ Randomization can give us an $ATE$, but can't address many other causal estimand
 
 ## Motivation 2: analytically explicit qualitative inference
 
-## Qualitative inference: an ambiguity at the heart of process tracing
+## Qualitative inference: ambiguity at the heart of process tracing
 
 * We have a general intuition about how process tracing works
 
@@ -175,7 +175,7 @@ Randomization can give us an $ATE$, but can't address many other causal estimand
 * If I see Mass Mobilization, I take this as evidence that Inequality caused Democratization in this case
 
 
-## An ambiguity at the heart of process tracing
+## Ambiguity at the heart of process tracing
 
 * But what warrants this conclusion?
 
@@ -188,6 +188,13 @@ Randomization can give us an $ATE$, but can't address many other causal estimand
     * Maybe: if I believe democracy causes Mobilization, which causes Democratization
     * But what if I believe: Inequality *weakens* Mobilization?
     * Then seeing Mobilization would be evidence *against* Inequality's having had an effect
+
+## Ambiguity at the heart of process tracing
+
+In sum, standard process tracing approaches leave us with:
+
+* Lack of clarity about *what kind* of evidence is informative
+* Lack of clarity about how to *justify* inferences from this evidence
 
 
 <!-- ## Motivation 3: Mixing methods -->
@@ -249,6 +256,8 @@ Using causal models can allow us to
 * [Though not in this course] Make research design choices in a way systematically informed by what we already know
 
 * $\Rightarrow$ implications for large-n, small-n, and mixed-method research
+
+A cost: inferences are model-dependent
 
 
     
