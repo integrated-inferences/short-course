@@ -133,8 +133,11 @@ $$p(\lambda | D) = \frac{p(D | \lambda)p(\lambda)}{p(D)}= \frac{p(D | \lambda)p(
 
 ### How qual can inform quant: confounding
 
-```{r echo=FALSE, out.width="300px", fig.align="center", eval = TRUE}
-knitr::include_graphics("assets/confounding.png")
+```{r, echo = FALSE, fig.width = 9, fig.height = 3,  fig.align = "center"}
+model <- make_model("Inequality -> Mobilization -> Democratization; Inequality <-> Democratization")
+  model |> plot_model(nodecol = "white", textcol = "black",
+                      x_coord = 1:3, y_coord = 3:1) +
+  ggplot2::coord_cartesian(clip = "off")
 ```
 
 Remember:
@@ -146,22 +149,24 @@ Remember:
 
 ### How qual can inform quant: confounding
 
-```{r echo=FALSE, out.width="300px", fig.align="center", eval = TRUE}
-knitr::include_graphics("assets/confounding.png")
+```{r, echo = FALSE, fig.width = 9, fig.height = 3,  fig.align = "center"}
+model <- make_model("Inequality -> Mobilization -> Democratization; Inequality <-> Democratization")
+  model |> plot_model(nodecol = "white", textcol = "black",
+                      x_coord = 1:3, y_coord = 3:1) +
+  ggplot2::coord_cartesian(clip = "off")
 ```
 
-Remember
+
 
 * Observing $M$ helps
 * **Process data helps address the deep problem of confounding**
-* Key point: we don't need $M$ for all cases
-    * Can learn from $I$ and $D$ for lots of cases and $M$ for a subset
+* Key point: we don't need $M$ for all cases. Can learn from $I$ and $D$ for lots of cases and $M$ for a subset.
 
 ### How qual can inform quant: observable confounder
 
 * Another example: $M$ as the confound 
 
-```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'}
+```{r, echo = FALSE, fig.width = 4, fig.height = 3,  fig.align = "center"}
 
 make_model("X->Y <-M->X") |> plot()
 ```
@@ -171,7 +176,7 @@ make_model("X->Y <-M->X") |> plot()
 
 * How much can we learn from $M$ data for *some* cases?
 
-```{r echo=FALSE, out.width="300px", fig.align="center", eval = TRUE}
+```{r, echo = FALSE, fig.width = 4, fig.height = 3,  fig.align = "center"}
 knitr::include_graphics("assets/widedeep.png")
 ```
 
@@ -225,6 +230,9 @@ hj_dag(x = c(0, 0, 2, 2, 1, 1),
     * Positive $M \rightarrow D$ effects more likely than negative
 * So **linked positive effects** more common than linked negative effects
 * Meaning that $M=1$ in an $I=1, D=1$ case speaks in favor of $I=1$ causing $D=1$
+
+### How quant can inform qual: getting probative value of a clue from the data
+
 * But now we've now drawn our population-level beliefs **from the data**
 * Now, we can go and process-trace
     * Did high inequality cause democratization in Malawi?
@@ -232,23 +240,28 @@ hj_dag(x = c(0, 0, 2, 2, 1, 1),
 * With conclusions grounded in case-level AND population-level evidence
 
 
-### Application from the book: rule-of-law institutions and long-term growth
+# Example 1: Historical data
 
-```{r, echo = FALSE}
+*Alan*
+
+## Application from the book: rule-of-law institutions and long-term growth
+
+```{r, echo = FALSE, fig.align='center'}
 model <- make_model("Mort -> RoL -> Grth <- Dist; RoL <-> Grth")
-  model |> plot_model()
+  model |> plot_model(labels = c("Distance", "Settler mortality", "Rule of Law", "Growth"), nodecol = "white", textcol = "black",
+                      x_coord = c(1, 2, 2, 2), y_coord= c(1, 3,  2,1))
 ```
 * We start with flat priors over causal types
 * Gather data on all nodes for many cases
 
-### Rule-of-law and growth: process-tracing probative value from large-$N$ data
+## Rule-of-law and growth: process-tracing probative value from large-$N$ data
 
 ```{r echo=FALSE, out.width="300px", fig.align="center", eval = TRUE}
 knitr::include_graphics("assets/mixingappclue")
 ```
 
 
-### Rule-of-law and growth: learning about confounding
+## Rule-of-law and growth: learning about confounding
 
 * We allowed for confounding between rule of law and growth
     * Mortality's effects on institutions may be correlated with institutions' effects on growth
@@ -258,7 +271,7 @@ knitr::include_graphics("assets/mixingappclue")
     * When mortality is low, settlers make institutional choices in anticipation of their growth effects
 
 
-### Rule-of-law and growth: learning about confounding
+## Rule-of-law and growth: learning about confounding
 
 What this looks like in our posteriors over nodal types:
 
@@ -267,3 +280,188 @@ knitr::include_graphics("assets/mixingappconfound")
 ```
 
 A type where RoL has a positive effect on Growth is more common when Mortality has a negative effect on RoL.
+
+# Example 2: Impact evaluation
+
+*Macartan*
+
+## Development Impact Evaluation Example
+
+
+* We (WZB team) are working with GIZ to understand the impact of a development intervention.
+
+* The implementers have a "*theory of change*" for how the intervention should work
+
+* We implement a mixed method approach in which we:
+
+  1. Elicit the theory of change *as a DAG* from practitioners and local experts
+  2. Gather priors on elements of the theory of change
+  3. Coordinate with qualitative researchers to gather information about intermediate nodes on the DAG.
+  4. Combine their insights with survey and administrative data to:
+     * better understand program effects
+     * better understand likely pathways
+ 
+## Development Impact Evaluation Example
+
+```{r}
+#| fig-width: 14
+#| fig-height: 8
+#| echo: false
+
+library(CausalQueries)
+
+model <- make_model(
+   
+   "
+   Marginalization -> Participation; 
+   Marginalization -> Understanding; 
+   Marginalization -> Inclusion; 
+   Marginalization -> Connections; 
+   Invitation -> Participation; 
+   Municipality -> Participation; 
+   Municipality -> Understanding; 
+   Municipality -> Inclusion; 
+   Municipality -> Connections; 
+   Participation -> Understanding; 
+   Participation -> Connections; 
+   Participation -> Inclusion; 
+   Project -> Inclusion; 
+   Project -> Understanding;
+   Inclusion  -> Trust;
+   Understanding  -> Trust;
+   Connections  -> Trust"
+ , add_causal_types = FALSE)
+
+labels <- list(
+  Invitation    = "Invitation\nto intervention",
+  Marginalization  = "Locally\nMarginalized",
+  Municipality  = "Municipality \n quality",
+  Participation = "Participates",
+  Understanding = "Believes municipality\neffective",
+  Connections   = "Is connected \n(has access)",
+  Inclusion     = "Feels\nrepresented",
+  Project   = "Project\nInterruptions",
+  Trust         = "Trust in local government and governance"
+)
+
+# 
+# a check on labels
+labels_vec <- function(model, labels) {
+  nodes   <- model$nodes
+  missing <- setdiff(nodes, names(labels))
+  extra   <- setdiff(names(labels), nodes)
+  if (length(missing)) stop("Fehlende Labels für: ", paste(missing, collapse = ", "))
+  if (length(extra))   warning("Ignoriere nicht verwendete Labels: ", paste(extra, collapse = ", "))
+  unname(labels[match(nodes, names(labels))])
+}
+
+labs_in_order <- labels_vec(model, labels)
+
+dag_coords <- data.frame(
+  node = c(
+    "Invitation",
+    "Marginalization",
+    "Municipality",
+    "Project",
+    "Participation",
+    "Connections",
+    "Inclusion",
+    "Understanding",
+    "Trust"
+  ),
+  y = c(5.2, 5.0, 5.0, 2.5, 4.2, 2.0, 2.0, 2.0, 0.5),
+  x = c(2.0, 1.0, 3.0, 2.5, 2.0, 0.5, 2.0, 3.5, 2.0),
+  stringsAsFactors = FALSE
+)
+
+
+plot(
+  model,
+  x_coord = dag_coords$x,
+  y_coord = dag_coords$y,
+  nodecol = "white",
+  textcol = "black",
+  labels  = labs_in_order
+)
+
+
+```
+
+
+## Use of prior data
+
+Priors are then used to implement four analyses:
+
+
+* causal queries implied by uniform priors  
+* causal queries implied by stakeholder priors  
+* posterior values of causal queries using a model in which data and uniform priors are used
+* posterior values of causal queries using a model in which data and stakeholder priors are used
+
+## Priors form
+
+```{r echo=FALSE, fig.align="center", eval = TRUE}
+knitr::include_graphics("assets/priors_question.jpg")
+```
+
+
+## Qualitative data form
+
+
+```{r echo=FALSE, fig.align="center", eval = TRUE}
+knitr::include_graphics("assets/qual_form.jpg")
+```
+
+
+## Updating on sub-DAGs
+
+
+```{r}
+#| fig-width: 12
+#| fig-height: 9
+#| echo: false
+
+
+model <- make_model(
+   
+   "
+   Marginalization -> Participation; 
+   Marginalization -> Inclusion; 
+   Invitation -> Participation; 
+   Municipality -> Participation; 
+   Municipality -> Inclusion; 
+   Participation -> Inclusion"
+ , add_causal_types = FALSE)
+
+labels <- list(
+  Invitation    = "Invitation\nto intervention",
+  Marginalization  = "Locally\nMarginalized",
+  Municipality  = "Municipality \n quality",
+  Participation = "Participates",
+  Inclusion     = "Feels\nrepresented"
+)
+
+# 
+# a check on labels
+labels_vec <- function(model, labels) {
+  nodes   <- model$nodes
+  missing <- setdiff(nodes, names(labels))
+  extra   <- setdiff(names(labels), nodes)
+  if (length(missing)) stop("Fehlende Labels für: ", paste(missing, collapse = ", "))
+  if (length(extra))   warning("Ignoriere nicht verwendete Labels: ", paste(extra, collapse = ", "))
+  unname(labels[match(nodes, names(labels))])
+}
+
+labs_in_order <- labels_vec(model, labels)
+
+plot(
+  model,
+  x_coord = c(2,1,3,2,2),
+  y_coord = c(3,3,3,2,1),
+  nodecol = "white",
+  textcol = "black",
+  labels  = labs_in_order
+)
+
+
+```

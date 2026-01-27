@@ -47,7 +47,7 @@ Day 2:
 
 ### Lecture 1 + Exercise 1
 
-After the first sessions you should have an understanding of:
+After the first session you should have an understanding of:
 
 * the limits of design-based inference
 * the limits of non-explicit qualitative inference
@@ -61,7 +61,7 @@ After the first sessions you should have an understanding of:
 
 ### Lecture 2 + Exercise 2
 
-After the first sessions you should have an understanding of:
+After the second session you should have an understanding of:
 
 * the difference between case-level and population-level queries
 * causal queries as questions about a case’s causal type (i.e., about theta’s)
@@ -70,6 +70,36 @@ After the first sessions you should have an understanding of:
 * what conditional independence is and how to read it from a causal graph
 * how conditional independence relates to the informativeness of clues for understanding queries: we hope you will start being able to see queries and clues as nodes on a DAG and understand when a clue is informative for a theory
 
+### Lecture 3 + Exercise 3
+
+After the third session you should have an understanding of:
+
+* when process data is potentially information about causal queries
+* clues are not just mediators: they can occupy different spots on a DAG
+* why a model has to have substantive assumptions---beyond the structural assumptions---to allow information inferences from process data
+* a procedure for drawing qualitative inferences
+* the benefits of an explicit strategy for process tracing 
+* how to draw qualitative inferences in `CausalQueries`
+
+### Lecture 4 + Exercise 4
+
+After the fourth session you should have an understanding of:
+
+* what are some key population queries
+* what the parameters of  a mixed methods model are (the $\lambda$s)
+* Bayesian approaches to updating on population queries
+* what mixtures of quantitative and qualitative data look like
+* why, fundamentally, updating procedures are the same whether you update on treatment-outcome data, process data, or mixed data 
+* how qualitative (process) data can help quantitative inferences
+* how quantitative data can help qualitative inferences
+* what data gathering you might use in practice in a mixed methods evaluation
+* how to do all this in `CausalQueries`
+
+
+What we have not covered but you can read more about in the book: 
+
+* how to assess how dependent your inferences are on your model
+* how to assess whether your model is doing more harm than good!
 
 ## Prep
 
@@ -88,7 +118,7 @@ The text is fairly dense, so don’t let yourself get bogged down if there are t
 
 ### Software installation
 
-In class, we will be doing hands-on exercises with the software package through which the approach can be implemented, CausalQueries. You will thus need to have all necessary software installed before the start of class on the first day.
+In class, we will be doing hands-on exercises with the software package through which the approach can be implemented, `CausalQueries`. You will thus need to have all necessary software installed before the start of class on the first day.
 
 Make sure you have an up to date installation of R
 Make sure you have an up to date installation of RStudio

@@ -19,6 +19,10 @@ bibliography: assets/bib.bib
 
 # Population parameters
 
+
+*Alan*
+
+
 ```{r, include = FALSE}
 
 options(future.globals.maxSize = 3 * 1024^3)  # 2GB
@@ -34,15 +38,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-# Updating Models
 
-*Intuition*
+# Updating Models: Intuition
+
+*Alan*
+
 
 ```{r, child = "modules/4.2_intuition.qmd"}
 
 ```
 
 # Mixed methods
+*Alan*
 
 Combining *wide* and *deep* data
 
@@ -52,12 +59,12 @@ Combining *wide* and *deep* data
 
 # Mixed methods in `CausalQueries`
 
+*Macartan*
+
 ```{r, child = "modules/4.4_CQ.qmd"}
 
 ```
 
-
-# References
 
 
 

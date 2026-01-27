@@ -19,6 +19,8 @@ bibliography: assets/bib.bib
 
 # Process Tracing 
 
+*Macartan*
+
 The big picture: Intuition
 
 
@@ -57,10 +59,18 @@ library(ggplot2)
 
 # Procedure for process tracing
 
+*Macartan*
+
 ```{r, child = "modules/3.2_process_tracing_procedure.qmd"}
 
 ```
 
 
-# References
+# Democratization example
 
+*Alan*
+
+
+```{r, child = "modules/3.4_democracy_example.qmd"}
+
+```
