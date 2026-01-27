@@ -196,7 +196,7 @@ $$
 
 More generally
 
-$$\Pr(Q) = \sum_{\theta \in Q} \Pr(\theta | D)=\sum_{\theta \in Q}\frac{\Pr(D,\theta)}{\Pr(D)}=\frac{\sum_{\theta \in Q}\Pr(D,\theta)}{\Pr(D)}=\frac{\sum_{\theta \in Q \cap D}\Pr(\theta)}{\sum_{\theta\in D}\Pr(\theta)}$$
+$$\Pr(Q|D) = \sum_{\theta \in Q} \Pr(\theta | D)=\sum_{\theta \in Q}\frac{\Pr(D,\theta)}{\Pr(D)}=\frac{\sum_{\theta \in Q}\Pr(D,\theta)}{\Pr(D)}=\frac{\sum_{\theta \in Q \cap D}\Pr(\theta)}{\sum_{\theta\in D}\Pr(\theta)}$$
 
 so:
 

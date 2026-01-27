@@ -75,7 +75,7 @@ make_model("X->Y") |>
 
 
 
-## Lotsa queries {.smaller} (see handout)
+## Lotsa queries (see handout) {.smaller} 
 
 ```{r}
 #| echo: false
