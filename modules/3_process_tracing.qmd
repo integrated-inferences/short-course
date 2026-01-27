@@ -404,105 +404,105 @@ hj_dag(x = c(0, 2, 1),
 <!--     * $\lambda^M_{11}$ = 0.1  -->
 
 
-## Two theories of how $I=1$ could cause $D=1$
+<!-- ## Two theories of how $I=1$ could cause $D=1$ -->
 
-* Chain of positive effects 
-    * Inequality *boosts* mobilization
-    * Mobilization *causes* democratization
+<!-- * Chain of positive effects  -->
+<!--     * Inequality *boosts* mobilization -->
+<!--     * Mobilization *causes* democratization -->
+
+<!-- * Chain of negative effects -->
+<!--     * Inequality *depresses* mobilization -->
+<!--     * Mobilization *prevents* democratization -->
     
-* Chain of negative effects
-    * Inequality *depresses* mobilization
-    * Mobilization *prevents* democratization
     
-    
-## Interpretation of PT evidence *depends* on theory
+<!-- ## Interpretation of PT evidence *depends* on theory -->
 
-In particular: beliefs about which mechanism is most likely operating
+<!-- In particular: beliefs about which mechanism is most likely operating -->
 
-If we have already seen $I=1, D=1$    
+<!-- If we have already seen $I=1, D=1$     -->
 
-* Linked positive effects requires us to then see: $M=1$
+<!-- * Linked positive effects requires us to then see: $M=1$ -->
 
-* Linked negative effects requires us to then see: $M=0$
+<!-- * Linked negative effects requires us to then see: $M=0$ -->
 
-* So which $M$ value is more consistent with a positive $I \rightarrow D$ effect depends on **which of these is more common in the world**:
-    * Linked positive effects?
-    * Linked negative effects?
+<!-- * So which $M$ value is more consistent with a positive $I \rightarrow D$ effect depends on **which of these is more common in the world**: -->
+<!--     * Linked positive effects? -->
+<!--     * Linked negative effects? -->
 
-* We need to draw on our theoretical beliefs
-    * about the **distribution** of causal effects in the relevant population
+<!-- * We need to draw on our theoretical beliefs -->
+<!--     * about the **distribution** of causal effects in the relevant population -->
 
-## Combining beliefs across the DAG
+<!-- ## Combining beliefs across the DAG -->
 
-* Suppose we believe that:
-    * $I$ has a positive effect on $M$ 30% of the time (= in 30% of cases)
-    * $I$ has a negative effect on $M$ 10% of the time 
+<!-- * Suppose we believe that: -->
+<!--     * $I$ has a positive effect on $M$ 30% of the time (= in 30% of cases) -->
+<!--     * $I$ has a negative effect on $M$ 10% of the time  -->
 
-* Suppose we believe that:
-    * $M$ has a positive effect on $D$ 60% of the time
-    * $M$ has a negative effect on $D$ 10% of the time
+<!-- * Suppose we believe that: -->
+<!--     * $M$ has a positive effect on $D$ 60% of the time -->
+<!--     * $M$ has a negative effect on $D$ 10% of the time -->
 
-* Then the probability of linked positive effects is simply: $0.3 \times 0.6 = 0.18$
-    
-* Probability of linked negative effects is simply: $0.1 \times 0.1 = 0.01$
-    
-* So we believe linked positive effects are a MUCH more common way of generating a positive $I \rightarrow D$ effect than linked negative effects
+<!-- * Then the probability of linked positive effects is simply: $0.3 \times 0.6 = 0.18$ -->
 
+<!-- * Probability of linked negative effects is simply: $0.1 \times 0.1 = 0.01$ -->
+
+<!-- * So we believe linked positive effects are a MUCH more common way of generating a positive $I \rightarrow D$ effect than linked negative effects -->
 
 
-## From beliefs to the meaning of the evidence
 
-* We believe linked positive effects are a MUCH more common way of generating a positive $I \rightarrow D$ effect than linked negative effects
+<!-- <!-- ## From beliefs to the meaning of the evidence --> -->
 
-* Given $I=1$ and $D=1$, there can only be linked positive effects IF mobilization occurs ($M=1$)
+<!-- <!-- * We believe linked positive effects are a MUCH more common way of generating a positive $I \rightarrow D$ effect than linked negative effects --> -->
 
-* So if we observe $M=1$, we will think it's more likely that high inequality DID cause democratization
-    * Because $M=1$ is consistent with the MORE likely way this effect could have happened
+<!-- <!-- * Given $I=1$ and $D=1$, there can only be linked positive effects IF mobilization occurs ($M=1$) --> -->
 
-* If we observe $M=0$, we think it's less likely that high inequality caused democratization
-    * Because $M=0$ is consistent only with the LESS likely way this effect could have happened
-  
+<!-- <!-- * So if we observe $M=1$, we will think it's more likely that high inequality DID cause democratization --> -->
+<!-- <!--     * Because $M=1$ is consistent with the MORE likely way this effect could have happened --> -->
 
-## How the meaning of the evidence hinges on beliefs
-
-Alternatively...
-
-* Suppose we believe that:
-    * $I$ has a positive effect on $M$ 20% of the time (= in 30% of cases)
-    * $I$ has a negative effect on $M$ 20% of the time 
-
-* Suppose we believe that:
-    * $M$ has a positive effect on $D$ 10% of the time
-    * $M$ has a negative effect on $D$ 60% of the time
-
-* Probability of linked positive effects is:  $0.2 \times 0.1 = 0.02$
-    
-* Probability of linked negative effects is: $0.2 \times 0.6 = 0.12$
-
-* Now linked negative effects are a MUCH more common way of generating a positive $I \rightarrow D$ effect than linked positive effects
-
-* Under these theoretical beliefs, $M=0$ would be more consistent than $M=1$ with a positive $I \rightarrow D$ effect
+<!-- <!-- * If we observe $M=0$, we think it's less likely that high inequality caused democratization --> -->
+<!-- <!--     * Because $M=0$ is consistent only with the LESS likely way this effect could have happened --> -->
 
 
-## Process tracing in Malawi
+<!-- ## How the meaning of the evidence hinges on beliefs -->
 
-To recap:
+<!-- Alternatively... -->
 
-* We want to know if $I=1$ caused $D=1$ in Malawi
+<!-- * Suppose we believe that: -->
+<!--     * $I$ has a positive effect on $M$ 20% of the time (= in 30% of cases) -->
+<!--     * $I$ has a negative effect on $M$ 20% of the time  -->
 
-* Given our DAG, there are two ways to generate a positive effects of $I$ on $D$
-    * Two ways that high inequality could have caused democratization in Malawi
-    * Linked positive effects or linked negative effects
-    
-* When we see $M=1$ in Malawi, what we should conclude about $I$'s effect on $D$ depends on how we think the world works
-    * What kinds of effects do we think are most common at each step
-    
-* This defines what **ways** of generating a positive $I \rightarrow D$ are most/least common
+<!-- * Suppose we believe that: -->
+<!--     * $M$ has a positive effect on $D$ 10% of the time -->
+<!--     * $M$ has a negative effect on $D$ 60% of the time -->
 
-* Which tells us which value of $M$ is most consistent with such an effect
+<!-- * Probability of linked positive effects is:  $0.2 \times 0.1 = 0.02$ -->
+
+<!-- * Probability of linked negative effects is: $0.2 \times 0.6 = 0.12$ -->
+
+<!-- * Now linked negative effects are a MUCH more common way of generating a positive $I \rightarrow D$ effect than linked positive effects -->
+
+<!-- * Under these theoretical beliefs, $M=0$ would be more consistent than $M=1$ with a positive $I \rightarrow D$ effect -->
 
 
-## So: Process tracing is always theory dependent
+<!-- ## Process tracing in Malawi -->
+
+<!-- To recap: -->
+
+<!-- * We want to know if $I=1$ caused $D=1$ in Malawi -->
+
+<!-- * Given our DAG, there are two ways to generate a positive effects of $I$ on $D$ -->
+<!--     * Two ways that high inequality could have caused democratization in Malawi -->
+<!--     * Linked positive effects or linked negative effects -->
+
+<!-- * When we see $M=1$ in Malawi, what we should conclude about $I$'s effect on $D$ depends on how we think the world works -->
+<!--     * What kinds of effects do we think are most common at each step -->
+
+<!-- * This defines what **ways** of generating a positive $I \rightarrow D$ are most/least common -->
+
+<!-- * Which tells us which value of $M$ is most consistent with such an effect -->
+
+
+## Key point: Process tracing is always theory dependent
 
 * The evidence in process tracing never speaks for itself
 
@@ -514,70 +514,22 @@ To recap:
 * We can formalize these beliefs
     * Maximize explicitness and analytic transparency
 
-## In practice: Process tracing in Malawi
+<!-- ## In practice: Process tracing in Malawi -->
 
-* Prior beliefs we use in the book (roughly):
-    * $I$ has positive effect on $M$ 50% of the time (given other data)    
-    * $I$ never has a negative effect on $M$
-    * $M$ has positive effect on $D$ 50% of the time
-    * $M$ never has a negative effect on $D$
+<!-- * Prior beliefs we use in the book (roughly): -->
+<!--     * $I$ has positive effect on $M$ 50% of the time (given other data)     -->
+<!--     * $I$ never has a negative effect on $M$ -->
+<!--     * $M$ has positive effect on $D$ 50% of the time -->
+<!--     * $M$ never has a negative effect on $D$ -->
 
-* We process trace and observe that mobilization occurred: $M=1$
+<!-- * We process trace and observe that mobilization occurred: $M=1$ -->
 
-* Given our priors, this observation **increases** our confidence that $I=1$ caused $D=1$
-
-
-## Where do these prior beliefs come from?
-
-* Literature
-    * We draw on leading works on inequality and democratization (Boix, Acemoglu and Robinson, Ansell and Samuels)
-    
-* Deductive theorization
-    * E.g., a formal model (see Chapter 6.3)
-    
-* Crowd-sourcing
-    * Survey experts
-    
-* Cannot read directly off population-level descriptives
-    * E.g., the number of $I=1, M=1$ cases tells us nothing about how often inequality *causes* mobilization
-
-
-# Democratization example
-
-Process tracing for several cases
-
-```{r, echo = FALSE, out.width = "300px", fig.align = "center", eval = TRUE}
-knitr::include_graphics("assets/pimddag.png")
-```
-
-## Process tracing for several cases
-
-* With different possible clues we could observe
-
-```{r, echo = FALSE, out.width = "300px", fig.align = "center", eval = TRUE}
-knitr::include_graphics("assets/ptmanyex.png")
-```
+<!-- * Given our priors, this observation **increases** our confidence that $I=1$ caused $D=1$ -->
 
 
 
-## Process tracing to answer a pathway question
 
-```{r, echo = FALSE, out.width = "200px", fig.align = "center", eval = TRUE}
-knitr::include_graphics("assets/pimddag.png")
-```
 
-* Similar idea for answering a pathway question
-* Observing $M$ can help us figure out *how* $I$ caused $D$
-* Once we provide population-level beliefs about causal effects
-
-## Other pieces of evidence
-
-```{r, echo = FALSE, out.width = "200px", fig.align = "center", eval = TRUE}
-knitr::include_graphics("assets/pimddag.png")
-```
-
-* $P$ can also be informative about $I$'s effect on $D$
-* Will depend on our population-level beliefs about $P$'s effects on $D$ and interactions with $M$
 
 
 
@@ -655,6 +607,9 @@ knitr::include_graphics("assets/possibly_informative.jpg")
 ## From a full model...
 
 We can say much more... actually making (model dependent) inferences
+
+
+
 
 ## Process tracing with causal models
 
