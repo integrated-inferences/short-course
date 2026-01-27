@@ -48,21 +48,6 @@ make_model("I -> M -> D") |> plot(x_coord = 1:3, y_coord = 3:1)
   * Mobilization might encourage or delay democratization
 * For process-tracing, you need an *informative* **causal model**
 
-## Process tracing as new data for finer inferences
-
-* We are focusing on a case
-
-* We start with:
-
-  1. A background *theory* about how things work in cases like this
-  2. Background knowledge about the case: perhaps the outcome; perhaps the value of a causal condition or two
-    
-* What we don't know is whether any of those conditions *caused* the outcome
-
-* So:
-
-  1. we collect *more* information "from other parts of the DAG"  to help figure that out
-  2. we have a *plan* for what to infer about effects depending on what we find
 
 ## Process tracing with a DAG
 
@@ -106,6 +91,20 @@ model |> plot(x_coord = c(2,1,2,3,4), y_coord = c(2, 1, 1, 1, 0))
 *Alan*
 
 Let's walk though the intuition with a case
+
+## Process tracing as new data for finer inferences
+
+* We start with:
+
+  1. A background *theory* about how things work in cases like this
+  2. Background knowledge about the case: perhaps the outcome; perhaps the value of a causal condition or two
+    
+* What we don't know is whether any of those conditions *caused* the outcome
+
+* So:
+
+  1. we collect *more* information "from other parts of the DAG"  to help figure that out
+  2. we want to have  a *plan* for what to infer about effects depending on what we find
 
 ## A case-level question: Malawi (1994)
 
