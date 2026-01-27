@@ -66,7 +66,11 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 **Question**: What would you infer if you saw a very high correlation between $I$ and $D$ and a *low* correlation between $I$ and $M$? Or a low correlation between $M$ and $D$?
 
 
-## General procedure
+# General procedure
+
+*Macartan*
+
+## Bayes rule again
 
 Key insight: 
 
@@ -78,11 +82,7 @@ That, with priors, is enough to update:
 
 $$p(\lambda | D) = \frac{p(D | \lambda)p(\lambda)}{p(D)}$$
 
-## Illustration of 'manual' updating
-
-Let's update manually.
-
-### Causal inference on a grid
+## Illustration:  Causal inference on a grid
 
 Consider this joint distribution with binary $X$ and binary $Y$ from [here](https://macartan.github.io/ci/ci_2025.html#/example-without-identification-2)
 

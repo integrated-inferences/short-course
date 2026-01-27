@@ -1,0 +1,86 @@
+---
+title: "Process Tracing with a Causal Model"
+subtitle: "Procedure"
+format: 
+   revealjs:
+      embed-resources: true
+      theme: serif
+      slide-level: 3
+      slide-number: true
+      toc-depth: 2
+      show-slide-number: all
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+      smaller: true
+---
+
+```{r, include = FALSE}
+set.seed(1)
+library(knitr)
+library(CausalQueries)
+source("assets/setup.R")
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Application
+
+* We take a problem over which there is substantial theoretical debate and in which scholars have sought explicitly to apply process tracing strategies.
+
+
+```{r, echo = FALSE, out.width = "300px", fig.align = "center", eval = TRUE}
+knitr::include_graphics("assets/pimddag.png")
+```
+
+## Setting restrictions
+
+* Monotonicity of $I$'s effect on $M$: no negative effect
+* Monotonicity of $I$'s direct effect on $D$: no positive effect
+* Monotonicity of $M$’s effect on $D$: no negative effect
+* Monotonicity of $P$’s effect on $D$: no negative effect
+
+## Where do these prior beliefs come from?
+
+* Literature
+    * We draw on leading works on inequality and democratization (Boix, Acemoglu and Robinson, Ansell and Samuels)
+
+Could also come from:
+    
+* Deductive theorization
+    * E.g., a formal model (see Chapter 6.3)
+    
+* Crowd-sourcing
+    * Survey experts
+    
+* Important: we cannot read causal beliefs directly off population-level descriptives
+    * E.g., the number of $I=1, M=1$ cases tells us nothing about how often inequality *causes* mobilization
+
+## Process tracing results for several cases
+
+* With different possible clues we could observe
+
+```{r, echo = FALSE, out.width = "300px", fig.align = "center", eval = TRUE}
+knitr::include_graphics("assets/ptmanyex.png")
+```
+
+
+
+## Process tracing to answer a pathway question
+
+```{r, echo = FALSE, out.width = "200px", fig.align = "center", eval = TRUE}
+knitr::include_graphics("assets/pimddag.png")
+```
+
+* Similar idea for answering a pathway question
+* Observing $M$ can help us figure out *how* $I$ caused $D$
+* Once we provide population-level beliefs about causal effects
+
+## Other pieces of evidence
+
+```{r, echo = FALSE, out.width = "200px", fig.align = "center", eval = TRUE}
+knitr::include_graphics("assets/pimddag.png")
+```
+
+* $P$ can also be informative about $I$'s effect on $D$
+* Will depend on our population-level beliefs about $P$'s effects on $D$ and interactions with $M$
+

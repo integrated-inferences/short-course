@@ -24,6 +24,57 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
+## General strategy 
+
+*for process tracing with causal models*
+
+* We can figure out from the causal model *which* causal types are consistent with our query
+* We can figure out from the causal model *which* causal types are consistent with the data we observe
+* If we have probabilities for each of these we can figure out the probability of the query given the data
+
+
+## Key Bayesian insight
+
+
+```{r}
+#| label: fig-HJ-F-7-1
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+#| fig-cap: "Logic of simple updating on arbitrary queries."
+#| fig.align :  "center"
+#| out.width :  "50%"
+
+par(mar = c(.1,.1,.1,.1))
+frame()
+mycols <- c(
+  rgb(0, 0, 255, max = 255, alpha = 125, names = "blue50"),
+  rgb(255, 0, 0, max = 255, alpha = 125, names = "c2"),
+  rgb(0, 255, 0, max = 255, alpha = 125, names = "c3"))
+
+mycols <- c(NA, NA, NA)
+plotrix::draw.circle(.35,.35,.3,nv=100,border=NULL,lty=1,density=NULL,
+						angle=45,lwd=1, col = mycols[1])
+plotrix::draw.circle(.65,.35,.3,nv=100,border=NULL,col=mycols[2],lty=1,density=NULL,
+						angle=45,lwd=1)
+plotrix::draw.circle(.5,.65,.3,nv=100,border=NULL,col=mycols[3],lty=1,density=NULL,
+						angle=45,lwd=1)
+text(.5, .8, "Types consistent\nwith query")
+text(.2, .35, "Types consistent\nwith priors")
+text(.8, .35, "Types consistent\nwith data")
+text(.05, .95, expression(Theta))
+text(.15, .95, "Universe of all\ncausal types")
+text(.5, .45, "A")
+text(.32, .55, "B")
+text(.5, .25, "C")
+
+
+box()
+```
+
+
+
+
 
 ## By hand: Procedure
 
@@ -37,7 +88,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Our DAG is:
 
-$X \rightarrow M \rightarrow Y$
+$$X \rightarrow M \rightarrow Y$$
 
 And we believe:
 
@@ -54,7 +105,7 @@ What are the types? How likely is each one? How likely is each given the data?
 * Which ones are consistent with data: $X = 0, Y = 0$
 
 | Type                                                     | X | M | Y | prob | Query? | Data ? |
-|--------------------------------------------------------|---|---|---|------|--------|--------|
+|----------------------------------------------------------|---|---|---|------|--------|--------|
 | X = 0, X causes M, M causes Y                             | 0 | 0 | 0 | 1/8  | ✓      | ✓      |
 | X = 0, X causes M, M does not cause Y                     | 0 | 0 | 0 | 1/8  |        | ✓      |
 | X = 0, X does not cause M, M causes Y                     | 0 | 0 | 0 | 1/8  |        | ✓      |
@@ -65,7 +116,7 @@ What are the types? How likely is each one? How likely is each given the data?
 | X = 1, X does not cause M, M does not cause Y             | 1 | 0 | 0 | 1/8  |        |        |
 
 
-## With CausalQueries: Step 1
+## With `CausalQueries`: Step 1
 
 Define a model
 
@@ -79,7 +130,7 @@ model <-
 query <- "Y[X=1] > Y[X=0]"
 ```
 
-## With CausalQueries: Step 2
+## With `CausalQueries`: Step 2
 
 Get types consistent with query
 
@@ -88,7 +139,7 @@ get_query_types(model, query)
 
 ```
 
-## With CausalQueries: Step 3
+## With `CausalQueries`: Step 3
 
 
 Get mapping from causal types to consistent data types
@@ -97,7 +148,7 @@ Get mapping from causal types to consistent data types
 inspect(model, what = "ambiguities_matrix") 
 ```
 
-## With CausalQueries: Step 4
+## With `CausalQueries`: Step 4
 
 Get prior probabilities of each causal type
 
@@ -118,73 +169,70 @@ model  |>
   kable()
 ```
 
-## In one go with CausalQueries
+## In one go with `CausalQueries`
 
 ```{r, echo = TRUE}
 query_model(model, query, given = c("X==0 & M ==0 & Y == 0"))
 ```
 
 
+## Three clues example
+
+Three clues for figuring out the effect of $X$ on $Y$
+
+```{r, echo = FALSE}
+model <- make_model("X -> K1 -> Y <- K2; Y -> K3; Y <-> K3") 
+model |> plot(x_coord = c(2,1,2,3,4), y_coord = c(2, 1, 1, 1, 0))
+```
+
+
+## Three clues example
+
+Three clues for figuring out the effect of $X$ on $Y$
+
+```{r} 
+observed = c("Y==1 & X==1",
+           "Y==1 & X==1 & K1==1",
+           "Y==1 & X==1 & K2==1",
+           "Y==1 & X==1 & K3==1",
+           "Y==1 & X==1 & K1==1 & K2==1 & K3==1")
+
+query_model(model = model, 
+            query = "Y[X=1] > Y[X=0]",
+            given = observed)
+```
+
+## With information
+
+```{r}
+model |>
+  set_restrictions(decreasing("X", "K1")) |>
+  set_restrictions(decreasing("K1", "Y")) |>
+  set_restrictions(decreasing("K2", "Y")) |>
+  set_restrictions(decreasing("Y", "K3")) |>
+  set_parameters(given = "Y.0001", nodal_type = "11", .9)|>
+  query_model(
+    query = "Y[X=1] > Y[X=0]",
+    given = observed)
+
+```
+
+## In one go with `CausalQueries`
+
 Also try our [shiny app](https://shiny2.wzb.eu/ipi/process_tracing/)
 
-
-# Democratization example
-
-
-
-```{r, echo = FALSE, out.width = "300px", fig.align = "center", eval = TRUE}
-knitr::include_graphics("assets/pimddag.png")
+```{r, echo = FALSE, fig.align = "center", eval = TRUE}
+knitr::include_graphics("assets/shiny.jpg")
 ```
 
-## Setting restrictions
+## Process tracing with causal models
 
-* Monotonicity of $I$'s effect on $M$: no negative effect
-* Monotonicity of $I$'s direct effect on $D$: no positive effect
-* Monotonicity of $M$’s effect on $D$: no negative effect
-* Monotonicity of $P$’s effect on $D$: no negative effect
+Key advantages of using a causal model:
 
-## Where do these prior beliefs come from?
+* Makes clear how process tracing is always theory-dependent
+* Provides a way of systematically integrating background knowledge (theory) into inference
+* Makes highly explicit/transparent how we get from evidence to conclusions
+* Enhances evaluability of findings
+    * If I have different background beliefs from you, I can work out how my conclusions from same evidence would be different
 
-* Literature
-    * We draw on leading works on inequality and democratization (Boix, Acemoglu and Robinson, Ansell and Samuels)
-
-Could also come from:
-    
-* Deductive theorization
-    * E.g., a formal model (see Chapter 6.3)
-    
-* Crowd-sourcing
-    * Survey experts
-    
-* Important: we cannot read causal beliefs directly off population-level descriptives
-    * E.g., the number of $I=1, M=1$ cases tells us nothing about how often inequality *causes* mobilization
-
-## Process tracing results for several cases
-
-* With different possible clues we could observe
-
-```{r, echo = FALSE, out.width = "300px", fig.align = "center", eval = TRUE}
-knitr::include_graphics("assets/ptmanyex.png")
-```
-
-
-
-## Process tracing to answer a pathway question
-
-```{r, echo = FALSE, out.width = "200px", fig.align = "center", eval = TRUE}
-knitr::include_graphics("assets/pimddag.png")
-```
-
-* Similar idea for answering a pathway question
-* Observing $M$ can help us figure out *how* $I$ caused $D$
-* Once we provide population-level beliefs about causal effects
-
-## Other pieces of evidence
-
-```{r, echo = FALSE, out.width = "200px", fig.align = "center", eval = TRUE}
-knitr::include_graphics("assets/pimddag.png")
-```
-
-* $P$ can also be informative about $I$'s effect on $D$
-* Will depend on our population-level beliefs about $P$'s effects on $D$ and interactions with $M$
 

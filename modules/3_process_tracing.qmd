@@ -29,11 +29,40 @@ knitr::opts_chunk$set(echo = TRUE)
 make_model("I -> M -> D") |> plot(x_coord = 1:3, y_coord = 3:1)
 ```
 
-Simple insight: *If* you believe this model, then seeing $M$ should tell you something about a query regarding the $I$, $D$ relationship in a case.
+* Simple insight: *If* you believe this model, then seeing $M$ should tell you something about a query regarding the $I$, $D$ relationship in a case.
 
-For instance, we might have the intuition: *If there was no mobilization in a high-inequality case that democratized, then inequality didn't cause the transition.*
+* For instance, we might have the intuition: *If there was no mobilization in a high-inequality case that democratized, then inequality didn't cause the transition.*
 
 *But how do we formalize this strategy?*
+
+
+## Process tracing with a Causal Model
+
+
+```{r, echo = FALSE}
+make_model("I -> M -> D") |> plot(x_coord = 1:3, y_coord = 3:1)
+```
+
+* Great as this is, the DAG---by itself---tells us nothing about the *direction* of effects
+  * Inequality might boost or depress mobilization
+  * Mobilization might encourage or delay democratization
+* For process-tracing, you need an *informative* **causal model**
+
+## Process tracing as new data for finer inferences
+
+* We are focusing on a case
+
+* We start with:
+
+  1. A background *theory* about how things work in cases like this
+  2. Background knowledge about the case: perhaps the outcome; perhaps the value of a causal condition or two
+    
+* What we don't know is whether any of those conditions *caused* the outcome
+
+* So:
+
+  1. we collect *more* information "from other parts of the DAG"  to help figure that out
+  2. we have a *plan* for what to infer about effects depending on what we find
 
 ## Process tracing with a DAG
 
@@ -51,52 +80,32 @@ make_model("X-> M -> D <- Q2; Q1 -> M") |>
 
 *If* you believe this model, then seeing $M$ should tell you something about the $\theta$s---which are what define the effect of $I$ on $D$. 
 
-## Process tracing with a Causal Model
+## From the DAG alone...
 
+We can tell when some evidence might *potentially* matter
 
-```{r, echo = FALSE}
-make_model("I -> M -> D") |> plot(x_coord = 1:3, y_coord = 3:1)
+```{r, echo = FALSE, fig.align = "center", eval = TRUE}
+knitr::include_graphics("assets/possibly_informative.jpg")
 ```
 
-* Great as this is, the DAG--by itself--tells us nothing about the *direction* of effects
-  * Inequality might boost or depress mobilization
-  * Mobilization might encourage or delay democratization
-* For process-tracing, you need an *informative* **causal model**
-
-<!-- ## Crucial to keep in mind -->
-
-<!-- ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'} -->
-<!-- par(mar=c(1,1,1,1)) -->
-<!-- hj_dag(x = c(0, 0, 2, 2, 1, 1), -->
-<!--        y = c(1, 2, 1, 2, 1, 2), -->
-<!--        names = c("I", expression(theta^I), "D", expression(theta^D), "M", expression(theta^M)),  -->
-<!--        arcs = cbind( c(2, 1, 4, 6, 5), -->
-<!--                      c(1, 5, 3, 5, 3)), -->
-<!--        padding = .4, contraction = .15) -->
-
-<!-- ``` -->
-
-<!-- * Put differently, we haven't said anything about the $\theta$ values -->
 
 
+## Principle: Clues can lie in many places
 
-## Process tracing as new data for finer inferences
+Three clues for figuring out the effect of $X$ on $Y$
 
-* We are focusing on a case
+```{r, echo = FALSE}
+model <- make_model("X -> K1 -> Y <- K2; Y -> K3; Y <-> K3") 
 
-* We start with two things:
+model |> plot(x_coord = c(2,1,2,3,4), y_coord = c(2, 1, 1, 1, 0))
 
-  * A background *theory* about how things work in cases like this
-  * Background knowledge about the case: perhaps the outcome; perhaps the value of a causal condition or two
-    
-* What we don't know is whether any of those conditions *caused* the outcome
-
-* So we collect *more* information "from other parts of the DAG"  to help figure that out
-
+```
 
 # Example: Democratization in Malawi (1994)
 
-Let's walk though the intuition
+*Alan*
+
+Let's walk though the intuition with a case
 
 ## A case-level question: Malawi (1994)
 
@@ -246,262 +255,6 @@ hj_dag(x = c(0, 2, 1),
 
 
 
-<!-- ## Process tracing is distinguishing among theories {.smaller} -->
-
-<!-- An example: -->
-
-<!-- * The Lord of the Manor has been shot. Did the butler do it? -->
-<!-- * Two theories of how he might have done so -->
-<!--     * Theory 1: He might have shot the Lord himself -->
-<!--         * We start out thinking this is a *likely* mechanism -->
-<!--     * Theory 2: He might have hired an assassin -->
-<!--         * We start out thinking this is an *unlikely* mechanism -->
-
-<!-- ## Distinguishing theories {.smaller} -->
-
-<!-- * We find a piece of evidence -->
-<!--     * The bullet is from a Beretta 92FS -->
-<!--     * Commonly used by professional killers -- rarely used by general population -->
-<!-- * This strengthens belief in Theory 2, weakens belief in Theory 1 -- *if the butler did it* -->
-<!-- * But overall this evidence makes us *less* confident the butler did it at all! -->
-<!--     * Because it supports a very *unlikely* theory of how he'd have done it and undermines a likely theory -->
-
-
-<!-- ## Distinguishing theories -->
-
-<!-- * Often there are multiple ways in which some statement could be true -->
-<!--     * E.g., there are multiple mechanisms through which $I$ could have a positive effect on $D$ -->
-<!--     * Linked positive effects, or -->
-<!--     * Linked negative effects -->
-<!-- * Those different ways are not equally likely, though -->
-<!--     * Maybe linked positive effects are much more likely than linked negative effects as ways of making "I has a positive effect on D" a true statement -->
-<!-- * Evidence that we collect will tell us which "ways" are more likely operating in a case -->
-
-
-<!-- ## Distinguishing theories -->
-
-<!-- * When the evidence shifts our beliefs toward thinking that a *likely* theory/mechanism for some cause is operating, that makes it more likely that the cause is operating -->
-<!-- * When evidence shifts our beliefs away from thinking that a *likely* theory/mechanism for some cause is operating and toward thinking an *unlikely* theory/pathway is operating, that makes it **less likely** that the cause is operating -->
-<!-- * **We "lose" more by undermining the likely mechanism than we gain by boosting the unlikely mechanism** -->
-<!-- * So it matters how likely we think the different possible mechanisms are -->
-<!--     * Will affect how we interpret the evidence -->
-<!-- * These are "priors" -->
-    
-
-<!-- ## Cases sit within populations -->
-
-<!-- ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.9\\textwidth'} -->
-<!-- par(mar=c(1,1,1,1)) -->
-<!-- hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1), -->
-<!--        y = c(1, 2, 3, 1, 2, 3, 1, 2, 3), -->
-<!--        names = c("I", expression(theta^I), expression(lambda^I), "D", expression(theta^D), expression(lambda^D), "M", expression(theta^M), expression(lambda^M)), -->
-<!--        arcs = cbind( c(3, 2, 1, 5, 6, 7, 8, 9), -->
-<!--                      c(2, 1, 7, 4, 5, 4, 7, 8)), -->
-<!--        padding = .4, contraction = .15) -->
-
-<!-- ``` -->
-
-<!-- * Recall that every case and its nodal types ($\theta$s) comes from a population -->
-<!-- * The shares of the population with each nodal type are expressed in the vector $\lambda$ -->
-<!-- * $\lambda$ contains our beliefs about how the world works -->
-
-
-<!-- ## $\lambda$ contains our beliefs about the world: $\lambda^D$ -->
-
-<!-- ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.7\\textwidth'} -->
-<!-- par(mar=c(1,1,1,1)) -->
-<!-- hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1), -->
-<!--        y = c(1, 2, 3, 1, 2, 3, 1, 2, 3), -->
-<!--        names = c("I", expression(theta^I), expression(lambda^I), "D", expression(theta^D), expression(lambda^D), "M", expression(theta^M), expression(lambda^M)), -->
-<!--        arcs = cbind( c(3, 2, 1, 5, 6, 7, 8, 9), -->
-<!--                      c(2, 1, 7, 4, 5, 4, 7, 8)), -->
-<!--        padding = .4, contraction = .15) -->
-
-<!-- ``` -->
-
-<!-- * $\lambda^D$ is a vector: -->
-<!--     * $\lambda^D_{00}, \lambda^D_{01}, \lambda^D_{10}, \lambda^D_{11}$ -->
-<!--     * Which means the population **shares** of each type: $\theta^D_{00}$'s, $\theta^D_{01}$'s, $\theta^D_{10}$'s, $\theta^D_{11}$'s -->
-<!-- * We can express our beliefs about the world by plugging in four numbers -->
-
-<!-- ## $\lambda$ contains our beliefs about the world: $\lambda^D$ -->
-
-<!-- ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.6\\textwidth'} -->
-<!-- par(mar=c(1,1,1,1)) -->
-<!-- hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1), -->
-<!--        y = c(1, 2, 3, 1, 2, 3, 1, 2, 3), -->
-<!--        names = c("I", expression(theta^I), expression(lambda^I), "D", expression(theta^D), expression(lambda^D), "M", expression(theta^M), expression(lambda^M)), -->
-<!--        arcs = cbind( c(3, 2, 1, 5, 6, 7, 8, 9), -->
-<!--                      c(2, 1, 7, 4, 5, 4, 7, 8)), -->
-<!--        padding = .4, contraction = .15) -->
-
-<!-- ``` -->
-
-<!-- * For instance, if we think mobilization **usually has a positive effect** on democratization, and **rarely a negative effect**, we might plug in: -->
-<!--     * $\lambda^D_{00}$ = 0.15 -->
-<!--     * $\lambda^D_{01}$ = 0.6 -->
-<!--     * $\lambda^D_{10}$ = 0.1 -->
-<!--     * $\lambda^D_{11}$ = 0.15 -->
-
-
-<!-- ## $\lambda$ contains our beliefs about the world: $\lambda^D$ -->
-
-<!-- ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.6\\textwidth'} -->
-<!-- par(mar=c(1,1,1,1)) -->
-<!-- hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1), -->
-<!--        y = c(1, 2, 3, 1, 2, 3, 1, 2, 3), -->
-<!--        names = c("I", expression(theta^I), expression(lambda^I), "D", expression(theta^D), expression(lambda^D), "M", expression(theta^M), expression(lambda^M)), -->
-<!--        arcs = cbind( c(3, 2, 1, 5, 6, 7, 8, 9), -->
-<!--                      c(2, 1, 7, 4, 5, 4, 7, 8)), -->
-<!--        padding = .4, contraction = .15) -->
-
-<!-- ``` -->
-
-<!-- * But if we think mobilization **usually has no effect** on democratization, and **occasionally positive effect**, we might plug in: -->
-<!--     * $\lambda^D_{00}$ = 0.4 -->
-<!--     * $\lambda^D_{01}$ = 0.15 -->
-<!--     * $\lambda^D_{10}$ = 0.05 -->
-<!--     * $\lambda^D_{11}$ = 0.4  -->
-
-
-<!-- ## $\lambda$ contains our beliefs about the world: $\lambda^M$ -->
-
-<!-- ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.6\\textwidth'} -->
-<!-- par(mar=c(1,1,1,1)) -->
-<!-- hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1), -->
-<!--        y = c(1, 2, 3, 1, 2, 3, 1, 2, 3), -->
-<!--        names = c("I", expression(theta^I), expression(lambda^I), "D", expression(theta^D), expression(lambda^D), "M", expression(theta^M), expression(lambda^M)), -->
-<!--        arcs = cbind( c(3, 2, 1, 5, 6, 7, 8, 9), -->
-<!--                      c(2, 1, 7, 4, 5, 4, 7, 8)), -->
-<!--        padding = .4, contraction = .15) -->
-
-<!-- ``` -->
-
-<!-- * Same idea for our beliefs about $I$'s effect on $M$ $\rightarrow$ $\lambda^M$ -->
-<!-- * For instance, we might believe: -->
-<!--     * $\lambda^M_{00}$ = 0.4 -->
-<!--     * $\lambda^M_{01}$ = 0.05 -->
-<!--     * $\lambda^M_{10}$ = 0.15 -->
-<!--     * $\lambda^M_{11}$ = 0.4  -->
-
-<!-- ## $\lambda$ contains our beliefs about the world: $\lambda^M$ -->
-
-<!-- ```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align = "center", out.width='.6\\textwidth'} -->
-<!-- par(mar=c(1,1,1,1)) -->
-<!-- hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1), -->
-<!--        y = c(1, 2, 3, 1, 2, 3, 1, 2, 3), -->
-<!--        names = c("I", expression(theta^I), expression(lambda^I), "D", expression(theta^D), expression(lambda^D), "M", expression(theta^M), expression(lambda^M)), -->
-<!--        arcs = cbind( c(3, 2, 1, 5, 6, 7, 8, 9), -->
-<!--                      c(2, 1, 7, 4, 5, 4, 7, 8)), -->
-<!--        padding = .4, contraction = .15) -->
-
-<!-- ``` -->
-
-<!-- * Or, we might believe: -->
-<!--     * $\lambda^M_{00}$ = 0.5 -->
-<!--     * $\lambda^M_{01}$ = 0.3 -->
-<!--     * $\lambda^M_{10}$ = 0.1 -->
-<!--     * $\lambda^M_{11}$ = 0.1  -->
-
-
-<!-- ## Two theories of how $I=1$ could cause $D=1$ -->
-
-<!-- * Chain of positive effects  -->
-<!--     * Inequality *boosts* mobilization -->
-<!--     * Mobilization *causes* democratization -->
-
-<!-- * Chain of negative effects -->
-<!--     * Inequality *depresses* mobilization -->
-<!--     * Mobilization *prevents* democratization -->
-    
-    
-<!-- ## Interpretation of PT evidence *depends* on theory -->
-
-<!-- In particular: beliefs about which mechanism is most likely operating -->
-
-<!-- If we have already seen $I=1, D=1$     -->
-
-<!-- * Linked positive effects requires us to then see: $M=1$ -->
-
-<!-- * Linked negative effects requires us to then see: $M=0$ -->
-
-<!-- * So which $M$ value is more consistent with a positive $I \rightarrow D$ effect depends on **which of these is more common in the world**: -->
-<!--     * Linked positive effects? -->
-<!--     * Linked negative effects? -->
-
-<!-- * We need to draw on our theoretical beliefs -->
-<!--     * about the **distribution** of causal effects in the relevant population -->
-
-<!-- ## Combining beliefs across the DAG -->
-
-<!-- * Suppose we believe that: -->
-<!--     * $I$ has a positive effect on $M$ 30% of the time (= in 30% of cases) -->
-<!--     * $I$ has a negative effect on $M$ 10% of the time  -->
-
-<!-- * Suppose we believe that: -->
-<!--     * $M$ has a positive effect on $D$ 60% of the time -->
-<!--     * $M$ has a negative effect on $D$ 10% of the time -->
-
-<!-- * Then the probability of linked positive effects is simply: $0.3 \times 0.6 = 0.18$ -->
-
-<!-- * Probability of linked negative effects is simply: $0.1 \times 0.1 = 0.01$ -->
-
-<!-- * So we believe linked positive effects are a MUCH more common way of generating a positive $I \rightarrow D$ effect than linked negative effects -->
-
-
-
-<!-- <!-- ## From beliefs to the meaning of the evidence --> -->
-
-<!-- <!-- * We believe linked positive effects are a MUCH more common way of generating a positive $I \rightarrow D$ effect than linked negative effects --> -->
-
-<!-- <!-- * Given $I=1$ and $D=1$, there can only be linked positive effects IF mobilization occurs ($M=1$) --> -->
-
-<!-- <!-- * So if we observe $M=1$, we will think it's more likely that high inequality DID cause democratization --> -->
-<!-- <!--     * Because $M=1$ is consistent with the MORE likely way this effect could have happened --> -->
-
-<!-- <!-- * If we observe $M=0$, we think it's less likely that high inequality caused democratization --> -->
-<!-- <!--     * Because $M=0$ is consistent only with the LESS likely way this effect could have happened --> -->
-
-
-<!-- ## How the meaning of the evidence hinges on beliefs -->
-
-<!-- Alternatively... -->
-
-<!-- * Suppose we believe that: -->
-<!--     * $I$ has a positive effect on $M$ 20% of the time (= in 30% of cases) -->
-<!--     * $I$ has a negative effect on $M$ 20% of the time  -->
-
-<!-- * Suppose we believe that: -->
-<!--     * $M$ has a positive effect on $D$ 10% of the time -->
-<!--     * $M$ has a negative effect on $D$ 60% of the time -->
-
-<!-- * Probability of linked positive effects is:  $0.2 \times 0.1 = 0.02$ -->
-
-<!-- * Probability of linked negative effects is: $0.2 \times 0.6 = 0.12$ -->
-
-<!-- * Now linked negative effects are a MUCH more common way of generating a positive $I \rightarrow D$ effect than linked positive effects -->
-
-<!-- * Under these theoretical beliefs, $M=0$ would be more consistent than $M=1$ with a positive $I \rightarrow D$ effect -->
-
-
-<!-- ## Process tracing in Malawi -->
-
-<!-- To recap: -->
-
-<!-- * We want to know if $I=1$ caused $D=1$ in Malawi -->
-
-<!-- * Given our DAG, there are two ways to generate a positive effects of $I$ on $D$ -->
-<!--     * Two ways that high inequality could have caused democratization in Malawi -->
-<!--     * Linked positive effects or linked negative effects -->
-
-<!-- * When we see $M=1$ in Malawi, what we should conclude about $I$'s effect on $D$ depends on how we think the world works -->
-<!--     * What kinds of effects do we think are most common at each step -->
-
-<!-- * This defines what **ways** of generating a positive $I \rightarrow D$ are most/least common -->
-
-<!-- * Which tells us which value of $M$ is most consistent with such an effect -->
-
-
 ## Key point: Process tracing is always theory dependent
 
 * The evidence in process tracing never speaks for itself
@@ -525,128 +278,6 @@ hj_dag(x = c(0, 2, 1),
 <!-- * We process trace and observe that mobilization occurred: $M=1$ -->
 
 <!-- * Given our priors, this observation **increases** our confidence that $I=1$ caused $D=1$ -->
-
-
-
-
-
-
-
-
-# General strategy for process tracing with causal models
-
-<!-- ## Where the model helps -->
-
-<!-- * The DAG tells us what we can possibly observe -->
-<!-- * We will have seen some nodes before we process trace (e.g., outcome, possible causes) -->
-<!-- * We can then observe any other node on the DAG -->
-<!-- * What we learn about the **case** from observing a node depends on our beliefs about how things work in the **population** -->
-<!--     * What kinds of effects are most and least common? -->
-<!-- * How strongly our beliefs shift depends on how different those probabilities are -->
-<!--     * How *much* more common are linked positive effects than linked negative effects, for instance? -->
-
-
-<!-- ## More formally -->
-
-
-* We can figure out from the causal model *which* causal types are consistent with our query
-* We can figure out from the causal model *which* causal types are consistent with the data we observe
-* If we have probabilities for each of these we can figure out the probability of the query given the data
-
-
-## Key Bayesian insight
-
-
-```{r}
-#| label: fig-HJ-F-7-1
-#| echo: false
-#| fig-width: 6
-#| fig-height: 6
-#| fig-cap: "Logic of simple updating on arbitrary queries."
-#| fig.align :  "center"
-#| out.width :  "50%"
-
-par(mar = c(.1,.1,.1,.1))
-frame()
-mycols <- c(
-  rgb(0, 0, 255, max = 255, alpha = 125, names = "blue50"),
-  rgb(255, 0, 0, max = 255, alpha = 125, names = "c2"),
-  rgb(0, 255, 0, max = 255, alpha = 125, names = "c3"))
-
-mycols <- c(NA, NA, NA)
-plotrix::draw.circle(.35,.35,.3,nv=100,border=NULL,lty=1,density=NULL,
-						angle=45,lwd=1, col = mycols[1])
-plotrix::draw.circle(.65,.35,.3,nv=100,border=NULL,col=mycols[2],lty=1,density=NULL,
-						angle=45,lwd=1)
-plotrix::draw.circle(.5,.65,.3,nv=100,border=NULL,col=mycols[3],lty=1,density=NULL,
-						angle=45,lwd=1)
-text(.5, .8, "Types consistent\nwith query")
-text(.2, .35, "Types consistent\nwith priors")
-text(.8, .35, "Types consistent\nwith data")
-text(.05, .95, expression(Theta))
-text(.15, .95, "Universe of all\ncausal types")
-text(.5, .45, "A")
-text(.32, .55, "B")
-text(.5, .25, "C")
-
-
-box()
-```
-
-## From the DAG alone...
-
-We can tell when some evidence might *potentially* matter
-
-```{r, echo = FALSE, fig.align = "center", eval = TRUE}
-knitr::include_graphics("assets/possibly_informative.jpg")
-```
-
-
-
-
-## From a full model...
-
-We can say much more... actually making (model dependent) inferences
-
-
-
-
-## Process tracing with causal models
-
-Key advantages of using a causal model:
-
-* Makes clear how process tracing is always theory-dependent
-* Provides a way of systematically integrating background knowledge (theory) into inference
-* Makes highly explicit/transparent how we get from evidence to conclusions
-* Enhances evaluability of findings
-    * If I have different background beliefs from you, I can work out how my conclusions from same evidence would be different
-
-
-
-<!-- ## Think of process tracing as **updating** -->
-
-<!-- We start with a set of beliefs:  -->
-
-<!-- * For $M$ that: -->
-<!--     * $\lambda^M_{00}$ = 0.5 -->
-<!--     * $\lambda^M_{01}$ = 0.3 -->
-<!--     * $\lambda^M_{10}$ = 0.1 -->
-<!--     * $\lambda^M_{11}$ = 0.1  -->
-
-<!-- * For $D$ that: -->
-<!--     * $\lambda^D_{00}$ = 0.15 -->
-<!--     * $\lambda^D_{01}$ = 0.6 -->
-<!--     * $\lambda^D_{10}$ = 0.1 -->
-<!--     * $\lambda^D_{11}$ = 0.15 -->
-
-<!-- * Probability of linked positive effects = $0.18$ -->
-
-<!-- * Probability of linked negative effects = $0.01$ -->
-
-<!-- * Probability of ANY positive $I \rightarrow D$ effect = $0.18 + 0.01 = 0.19$  -->
-
-
-
 
 
 

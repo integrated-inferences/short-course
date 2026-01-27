@@ -31,9 +31,9 @@ run <- FALSE
 
 `CausalQueries` brings these elements together by allowing users to:
 
-1. Make model: Specify a DAG: `CausalQueries` figures out all principal strata and places a prior on these
+1. **Make model**: Specify a DAG: `CausalQueries` figures out all principal strata and places a prior on these
 2. **Update model**: Provide data to the DAG:  `CausalQueries`  writes a `stan` model and updates on all parameters
-3. Query model: `CausalQueries` figures out which parameters correspond to a given causal query
+3. **Query *updated* model**: `CausalQueries` figures out which parameters correspond to a given causal query
 
 ## Illustration $X \rightarrow Y$ model
 
@@ -50,12 +50,16 @@ where $X$ is randomized, both $X$, $Y$ binary
 ## Model, update, query
 
 ```{r, echo = TRUE}
+model <- make_model("X -> Y")
+
 data = fabricate(
   N = 1000, 
   X = rbinom(N, 1, prob = .5),  
   Y = rbinom(N, 1, prob = .2 + .4*X))
 
-model <- make_model("X -> Y") |> update_model(data)
+data |> collapse_data(model) |> head()
+
+model <- model |> update_model(data)
 ```
 
 ## Model, update, query
