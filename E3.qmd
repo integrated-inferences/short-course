@@ -85,15 +85,16 @@ Specifically, we go into the study believing the following about how each node d
 
 We now want you to “do” process tracing on a hypothetical case using this model.
 
-**Prior case observation:** Y = 1 (the government was replaced) and X = 1 (there is a free press)  
-**Query:** What is the probability that the existence of a free press was a cause of government replacement in this case?
+**Prior case observation:** Y = 0 (the government was not replaced)
+
+**Query:** What is the probability that a free press would have caused  government replacement in this case?
 
 Now, imagine different process-tracing strategies you might pursue—that is, different combinations of other nodes you might choose to observe. We want to think through what inference you will draw on the query depending on what you see.
 
 
 ## Your task
 
-Figure out what you would conclude—what is the probability that X = 1 is a cause of Y = 1 in this case—if you observe each of the following:
+Figure out what you would conclude—what is the probability that X = 1 would cause  Y = 1 in this case—if you observe each of the following:
 
 **Prior (no additional observations)**
 
