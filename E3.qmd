@@ -139,7 +139,10 @@ Figure out what you would conclude—what is the probability that X = 1 would ca
 
 **Final question:** How would you think about which of the above process-tracing strategies are most and least worth pursuing?
 
+See [solutions](solutions.html) 
+
 **(15 minutes) Feedback**
+
 
 ---
 
@@ -162,4 +165,4 @@ Make a table showing what you would conclude about your query given each pattern
 
 # Additional (if you have extra time!)
 
-Look at our [shiny app](https://shiny2.wzb.eu/ipi/process_tracing/) and work through Part  1 again using the app. 
+Look at our [shiny app](https://shiny2.wzb.eu/ipi/process_tracing/) and work through Part  1 again using the app for the cases with *complete* data.

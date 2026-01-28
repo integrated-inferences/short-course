@@ -1,0 +1,87 @@
+---
+title: "solution"
+format: 
+  html:
+    embed-resources: true
+---
+```{r, include = FALSE}
+library(CausalQueries)
+library(knitr)
+library(tidyverse)
+
+data_consistent <- function(my_table, seen = c("S1", "Y0")) {
+  for(j in seen){
+    my_table <- 
+    my_table[c(names(my_table)[grepl(j,  names(my_table))], "in_query",   "priors")]
+  }
+
+  my_table <- my_table |> filter(
+    my_table |> select(-in_query, -priors) |> apply(1, sum) > 0)
+
+  
+  my_table |> select(-in_query, -priors)
+  
+  pDQ <- my_table |> filter(in_query) |> pull(priors) |> sum()
+  pD  <- my_table |> pull(priors) |> sum()
+  print(c("prob_DQ:", pDQ))
+  print(c("prob_D:", pD))
+  print(c("prob_Q|D:", pDQ/pD))
+  
+  print(my_table)
+
+}  
+
+```
+
+```{r}
+
+model <- 
+  make_model("S -> C -> Y <- R <- X; X -> C -> R") |>
+  set_restrictions(labels = list(C = c('1110', '1111'), 
+                                 R = c('0000', '0001'), 
+                                 Y = '0001'),
+                 keep = TRUE)
+
+query <- "Y[X=1] > Y[X=0]"
+
+model$parameters_df |> kable()
+
+my_table <-
+  model  |>
+  grab(what = "ambiguities_matrix") |>
+  data.frame() |>
+  mutate(
+    in_query = get_query_types(model, query)$types,
+    priors   = CausalQueries:::get_type_prob(model)) 
+
+
+
+```
+
+
+
+```{r}
+my_table |> kable()
+```
+
+# Examples of inferences 
+
+(using a helper funciton to display the subset of the data we care about)
+
+An inference:
+
+
+## I observe $S=0, Y=0$ only:
+
+```{r}
+  data_consistent(my_table, seen = c("S0", "Y0"))
+```
+
+
+
+## I observe $S = 1, X = 1, C = 0$
+
+```{r}
+
+data_consistent(my_table, seen = c("S1", "X1", "C0"))
+```
