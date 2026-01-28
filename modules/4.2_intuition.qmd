@@ -63,7 +63,9 @@ hj_dag(x = c(0, 0, 0, 2, 2, 2, 1, 1, 1),
 * We update on $\lambda^I$ , $\lambda^M$ and $\lambda^D$ to place more weight on values that are likely to give rise to the pattern of data we see
 * We will come to put more weight on a *joint distribution* of $\lambda^M$ and $\lambda^D$ in line with the data and less posterior weight on all other combinations
 
-**Question**: What would you infer if you saw a very high correlation between $I$ and $D$ and a *low* correlation between $I$ and $M$? Or a low correlation between $M$ and $D$?
+**Question**: What would you infer if you saw a very high correlation between $I$ and $D$? 
+
+Or a low correlation between $M$ and $D$?
 
 
 # General procedure
