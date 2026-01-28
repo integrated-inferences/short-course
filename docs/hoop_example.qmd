@@ -1,0 +1,32 @@
+---
+title: "a hoop test"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r, include = FALSE}
+library(CausalQueries)
+library(tidyverse)
+```
+```{r}
+
+model <- make_model("X -> M -> Y")
+
+model |> plot() 
+
+model |> 
+  query_model("Y[X=1] - Y[X=0]",
+            given = c("X ==1 & Y==1", "X ==1 & Y==1 & M==0", "X ==1 & Y==1 & M==1"),
+            using = c("priors"))
+
+data <- data.frame(X = 0:1, M = 0:1, Y=0:1) |> uncount(10)
+
+updated_model <-  update_model(model, data)
+
+updated_model |> grab("posterior_distribution") |> ggplot(aes(M.01, M.10)) + geom_point()
+
+updated_model |> query_model("Y[X=1] - Y[X=0]", 
+                     given = c("X ==1 & Y==1", "X ==1 & Y==1 & M==0", "X ==1 & Y==1 & M==1"),
+                     using = c("priors", "posteriors"))
+```

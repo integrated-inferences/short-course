@@ -33,6 +33,7 @@ Choose your exercise. If you brought your own data, now please try to Part 1 A o
 3. Compute a query using posteriors and compare to inferences based on priors
 4. Figure out what inferences you might draw for a case conditional on different within case observations you might observe
 
+see [hoop_example](hoop_example.html)
 
 **OR:**
 
