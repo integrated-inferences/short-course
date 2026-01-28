@@ -5,28 +5,72 @@ format:
     embed-resources: true
 ---
 
-```{r, include = FALSE}
+```{r, message = FALSE, warning = FALSE}
 library(CausalQueries)
 library(tidyverse)
 ```
+
+Examples of learning probative value of a clue from three models, varying in how strong their assumptions are.
+
+::: panel-tabset
+
+## With a strong model (complete mediation)
+
 ```{r}
 
 model <- make_model("X -> M -> Y")
 
-model |> plot() 
+model |> plot(x_coord = c(1,2,1), y_coord = 3:1) 
 
-model |> 
-  query_model("Y[X=1] - Y[X=0]",
-            given = c("X ==1 & Y==1", "X ==1 & Y==1 & M==0", "X ==1 & Y==1 & M==1"),
-            using = c("priors"))
-
+givens <- c("X ==1 & Y==1", "X ==1 & Y==1 & M==0", "X ==1 & Y==1 & M==1")
 data <- data.frame(X = 0:1, M = 0:1, Y=0:1) |> uncount(10)
 
-updated_model <-  update_model(model, data)
 
-updated_model |> grab("posterior_distribution") |> ggplot(aes(M.01, M.10)) + geom_point()
+model |> query_model("Y[X=1] - Y[X=0]", given = "X ==1 & Y==1", using = c("priors"))
+
+updated_model <-  update_model(model, data, refresh = 0, iter = 3000)
+
 
 updated_model |> query_model("Y[X=1] - Y[X=0]", 
-                     given = c("X ==1 & Y==1", "X ==1 & Y==1 & M==0", "X ==1 & Y==1 & M==1"),
-                     using = c("priors", "posteriors"))
+                     given = givens,
+                     using = c("posteriors"))
+
+updated_model |> grab("posterior_distribution") |> ggplot(aes(M.01, M.10)) + geom_point(alpha = .15) + theme_bw()
+
 ```
+
+## With a weaker model
+
+```{r}
+
+model_2 <- make_model("X -> M -> Y <- X")
+
+model_2 |> plot(x_coord = c(1,2,1), y_coord = 3:1) 
+
+model_2 |> query_model("Y[X=1] - Y[X=0]", given = "X ==1 & Y==1", using = c("priors"))
+
+updated_model_2 <-  update_model(model_2, data, refresh = 0, iter = 3000)
+
+updated_model_2 |> query_model("Y[X=1] - Y[X=0]", 
+                     given = givens,
+                     using = c("posteriors"))
+```
+
+
+## Still  weaker model
+
+```{r}
+
+model_3 <- make_model("X -> M -> Y <- X ; M <->Y")
+
+model_3 |> plot(x_coord = c(1,2,1), y_coord = 3:1) 
+
+model_3 |>  query_model("Y[X=1] - Y[X=0]", given = "X ==1 & Y==1", using = c("priors"))
+
+updated_model_3 <-  update_model(model_3, data, refresh = 0, iter = 3000)
+
+updated_model_3 |> query_model("Y[X=1] - Y[X=0]", given = givens,
+                     using = c("posteriors"))
+```
+
+:::
