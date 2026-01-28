@@ -72,7 +72,7 @@ Or a low correlation between $M$ and $D$?
 
 *Macartan*
 
-## Bayes rule again
+## Bayes' rule again
 
 Key insight: 
 
