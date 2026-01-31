@@ -8,8 +8,34 @@ cq_call <- function(name, ...) {
   fn(...)
 }
 
+build_event_label <- function(nodes, values) {
+  parts <- mapply(function(node, value) {
+    if (is.na(value)) {
+      return(NULL)
+    }
+    paste0(node, value)
+  }, nodes, values, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  label <- paste(Filter(Negate(is.null), parts), collapse = "")
+  if (label == "") {
+    return(NA_character_)
+  }
+  label
+}
+
 by_hand <- function(model, data, query) {
-  data_type <- cq_call("data_type_names", model, data)
+  nodes <- model$nodes
+  values <- as.numeric(data[1, nodes, drop = TRUE])
+  event_label <- build_event_label(nodes, values)
+  if (is.na(event_label)) {
+    stop("Please provide at least one observed value (not all NA).")
+  }
+
+  mapping <- cq_call("get_data_families", model, mapping_only = TRUE) |>
+    data.frame()
+  if (!(event_label %in% rownames(mapping))) {
+    stop("Provided data pattern does not match any known data family.")
+  }
+
   amb <- grab(model, what = "ambiguities_matrix")
 
   result <- amb |>
@@ -17,9 +43,14 @@ by_hand <- function(model, data, query) {
     dplyr::mutate(
       type = rownames(amb),
       in_query = get_query_types(model, query)$types,
-      priors = cq_call("get_type_prob", model),
-      in_data = .data[[data_type]] == 1
+      priors = cq_call("get_type_prob", model)
     )
+
+  consistent_types <- colnames(mapping)[mapping[event_label, , drop = TRUE] == 1]
+  if (length(consistent_types) == 0) {
+    stop("No complete data types are consistent with the provided data.")
+  }
+  result$in_data <- rowSums(result[, consistent_types, drop = FALSE]) > 0
 
   denominator <- sum(result$priors[result$in_data])
   if (is.na(denominator) || denominator <= 0) {
@@ -33,7 +64,7 @@ by_hand <- function(model, data, query) {
     denominator = denominator,
     numerator = numerator,
     posterior = posterior,
-    data_type_name = data_type
+    data_type_name = event_label
   )
 }
 
@@ -43,6 +74,7 @@ server <- function(input, output, session) {
   restrictions_reactive <- reactiveVal(list())
   nl_restrictions_reactive <- reactiveVal(list())
   parameters_reactive <- reactiveVal(list())
+  updated_model_reactive <- reactiveVal(NULL)
 
   notify_error <- function(message) {
     showNotification(message, type = "error")
@@ -152,6 +184,84 @@ server <- function(input, output, session) {
       return(character(0))
     }
     unique(as.character(dag$v[dag$w == node]))
+  }
+
+  format_event_label <- function(types_df, event, nodes) {
+    row <- types_df[types_df$event == event, nodes, drop = FALSE]
+    if (nrow(row) == 0) {
+      return(event)
+    }
+    parts <- mapply(function(node, value) {
+      if (is.na(value)) {
+        return(NULL)
+      }
+      paste0(node, "=", value)
+    }, nodes, as.list(row[1, ]), SIMPLIFY = FALSE, USE.NAMES = FALSE)
+    paste(Filter(Negate(is.null), parts), collapse = ", ")
+  }
+
+  data_types_for_model <- function(model) {
+    all_types <- cq_call("get_all_data_types", model)
+    types_df <- data.frame(all_types, stringsAsFactors = FALSE)
+    if (!("event" %in% names(types_df))) {
+      types_df$event <- rownames(types_df)
+    }
+    nodes <- model$nodes
+    types_df$strategy <- apply(types_df[, nodes, drop = FALSE], 1, function(values) {
+      observed <- nodes[!is.na(values)]
+      paste(observed, collapse = "")
+    })
+    types_df
+  }
+
+  compact_data_from_inputs <- function(types_df, full_strategy, partial_strategies) {
+    full_rows <- types_df[types_df$strategy == full_strategy, , drop = FALSE]
+    full_events <- full_rows$event
+    full_counts <- sapply(full_events, function(event) {
+      input_id <- paste0("full_count_", event)
+      value <- input[[input_id]]
+      if (is.null(value) || is.na(value)) 0 else as.numeric(value)
+    })
+
+    compact_df <- data.frame(
+      event = full_events,
+      strategy = full_rows$strategy,
+      count = as.numeric(full_counts),
+      stringsAsFactors = FALSE
+    )
+
+    if (length(partial_strategies) == 0) {
+      return(compact_df)
+    }
+
+    partial_rows <- lapply(partial_strategies, function(strategy_value) {
+      strategy_rows <- types_df[types_df$strategy == strategy_value, , drop = FALSE]
+      if (nrow(strategy_rows) == 0) {
+        return(NULL)
+      }
+      event_counts <- sapply(strategy_rows$event, function(event) {
+        input_id <- paste0("partial_count_", strategy_value, "_", event)
+        value <- input[[input_id]]
+        if (is.null(value) || is.na(value)) 0 else as.numeric(value)
+      })
+      data.frame(
+        event = strategy_rows$event,
+        strategy = strategy_value,
+        count = as.numeric(event_counts),
+        stringsAsFactors = FALSE
+      )
+    })
+
+    partial_rows <- Filter(Negate(is.null), partial_rows)
+    if (length(partial_rows) == 0) {
+      return(compact_df)
+    }
+
+    partial_df <- do.call(rbind, partial_rows)
+    combined <- rbind(compact_df, partial_df)
+    combined |>
+      dplyr::group_by(event, strategy) |>
+      dplyr::summarize(count = sum(count), .groups = "drop")
   }
 
   build_nl_choices <- function(node, parents) {
@@ -269,6 +379,7 @@ server <- function(input, output, session) {
       restrictions_reactive(list())
       nl_restrictions_reactive(list())
       parameters_reactive(list())
+      updated_model_reactive(NULL)
       model_reactive(model)
 
       nodes <- model$nodes
@@ -286,6 +397,7 @@ server <- function(input, output, session) {
       restrictions_reactive(list())
       nl_restrictions_reactive(list())
       parameters_reactive(list())
+      updated_model_reactive(NULL)
     })
   })
 
@@ -706,13 +818,175 @@ server <- function(input, output, session) {
       radioButtons(
         inputId = paste0("data_", node),
         label = node,
-        choices = list("0" = 0, "1" = 1),
-        selected = 0,
+        choices = list("0" = "0", "1" = "1", "NA" = "NA"),
+        selected = "0",
         inline = TRUE
       )
     })
 
     do.call(tagList, inputs)
+  })
+
+  update_types <- reactive({
+    model <- model_reactive()
+    if (is.null(model)) {
+      return(NULL)
+    }
+    data_types_for_model(model)
+  })
+
+  observeEvent(update_types(), {
+    model <- model_reactive()
+    types_df <- update_types()
+    if (is.null(model) || is.null(types_df)) {
+      return()
+    }
+    full_strategy <- paste(model$nodes, collapse = "")
+    strategies <- sort(unique(types_df$strategy))
+    strategies <- strategies[strategies != full_strategy]
+    if (length(strategies) == 0) {
+      updateCheckboxGroupInput(session, "partial_strategies", choices = character(0), selected = character(0))
+      return()
+    }
+    strategy_labels <- vapply(strategies, function(strategy) {
+      paste0("data on ", paste(strsplit(strategy, "")[[1]], collapse = " and "), " only")
+    }, character(1))
+    updateCheckboxGroupInput(
+      session,
+      "partial_strategies",
+      choices = setNames(strategies, strategy_labels),
+      selected = intersect(input$partial_strategies, strategies)
+    )
+  }, ignoreInit = TRUE)
+
+  output$full_data_inputs <- renderUI({
+    model <- model_reactive()
+    types_df <- update_types()
+    if (is.null(model) || is.null(types_df)) {
+      return(p("Please create a model first"))
+    }
+
+    full_strategy <- paste(model$nodes, collapse = "")
+    full_rows <- types_df[types_df$strategy == full_strategy, , drop = FALSE]
+    if (nrow(full_rows) == 0) {
+      return(p("No complete data types available for this model"))
+    }
+
+    inputs <- lapply(full_rows$event, function(event) {
+      label <- format_event_label(types_df, event, model$nodes)
+      div(
+        style = "display: flex; align-items: center; gap: 8px; margin-bottom: 6px;",
+        tags$span(style = "min-width: 140px;", label),
+        numericInput(
+          inputId = paste0("full_count_", event),
+          label = NULL,
+          value = 0,
+          min = 0,
+          step = 1,
+          width = "100px"
+        )
+      )
+    })
+
+    do.call(tagList, inputs)
+  })
+
+  output$partial_strategy_inputs <- renderUI({
+    model <- model_reactive()
+    types_df <- update_types()
+    if (is.null(model) || is.null(types_df)) {
+      return(NULL)
+    }
+
+    full_strategy <- paste(model$nodes, collapse = "")
+    strategies <- sort(unique(types_df$strategy))
+    strategies <- strategies[strategies != full_strategy]
+    if (length(strategies) == 0) {
+      return(p("No partial strategies available for this model"))
+    }
+
+    strategy_labels <- vapply(strategies, function(strategy) {
+      paste0("data on ", paste(strsplit(strategy, "")[[1]], collapse = " and "), " only")
+    }, character(1))
+
+    selected_strategies <- input$partial_strategies
+    if (is.null(selected_strategies) || length(selected_strategies) == 0) {
+      return(p("Select a strategy to enter partial data"))
+    }
+
+    inputs <- lapply(selected_strategies, function(strategy_value) {
+      strategy_rows <- types_df[types_df$strategy == strategy_value, , drop = FALSE]
+      if (nrow(strategy_rows) == 0) {
+        return(NULL)
+      }
+
+      event_labels <- setNames(
+        vapply(strategy_rows$event, function(event) {
+          format_event_label(types_df, event, model$nodes)
+        }, character(1)),
+        strategy_rows$event
+      )
+
+      entry_rows <- lapply(strategy_rows$event, function(event) {
+        label <- event_labels[[event]]
+        div(
+          style = "display: flex; align-items: center; gap: 8px; margin-bottom: 6px;",
+          tags$span(style = "min-width: 140px;", label),
+          numericInput(
+            inputId = paste0("partial_count_", strategy_value, "_", event),
+            label = NULL,
+            value = 0,
+            min = 0,
+            step = 1,
+            width = "100px"
+          )
+        )
+      })
+
+      tagList(
+        h5(paste0("Strategy: ", strategy_labels[[which(strategies == strategy_value)[1]]])),
+        do.call(tagList, entry_rows)
+      )
+    })
+
+    do.call(tagList, Filter(Negate(is.null), inputs))
+  })
+
+  observeEvent(input$update_model, {
+    model <- model_reactive()
+    if (is.null(model)) {
+      notify_warn("Please create a model first")
+      return()
+    }
+
+    types_df <- update_types()
+    if (is.null(types_df)) {
+      notify_error("Unable to determine data types for this model")
+      return()
+    }
+
+    showNotification("Updating model... this may take a moment.", type = "message", duration = 10)
+    full_strategy <- paste(model$nodes, collapse = "")
+    compact_data <- compact_data_from_inputs(
+      types_df,
+      full_strategy,
+      input$partial_strategies
+    )
+
+    tryCatch({
+      options(mc.cores = parallel::detectCores())
+      rstan::rstan_options(auto_write = TRUE)
+      updated <- update_model(
+        model,
+        data = compact_data,
+        refresh = input$update_refresh,
+        iter = input$update_iter
+      )
+      updated_model_reactive(updated)
+      notify_ok("Model updated successfully!")
+    }, error = function(e) {
+      notify_error(paste("Error updating model:", e$message))
+    })
   })
 
   results <- eventReactive(input$calculate, {
@@ -724,10 +998,14 @@ server <- function(input, output, session) {
     nodes <- model$nodes
     data_list <- lapply(nodes, function(node) {
       input_id <- paste0("data_", node)
-      if (is.null(input[[input_id]])) {
+      value <- input[[input_id]]
+      if (is.null(value)) {
         return(0)
       }
-      as.numeric(input[[input_id]])
+      if (value == "NA") {
+        return(NA_real_)
+      }
+      as.numeric(value)
     })
     names(data_list) <- nodes
     data <- data.frame(data_list)
@@ -817,6 +1095,79 @@ server <- function(input, output, session) {
         "in_query",
         backgroundColor = styleEqual("Yes", "lightgreen")
       )
+  })
+
+  output$update_summary <- renderPrint({
+    updated_model <- updated_model_reactive()
+    if (is.null(updated_model)) {
+      return("No updated model yet")
+    }
+    inspect(updated_model, "stan_summary")
+  })
+
+  query_rows <- reactiveVal(c(1))
+
+  observeEvent(input$add_query_row, {
+    ids <- query_rows()
+    query_rows(c(ids, max(ids) + 1))
+  })
+
+  observeEvent(input$clear_query_rows, {
+    query_rows(c(1))
+    updateTextInput(session, "query_text_1", value = "")
+  })
+
+  output$query_inputs <- renderUI({
+    ids <- query_rows()
+    inputs <- lapply(ids, function(id) {
+      textInput(
+        inputId = paste0("query_text_", id),
+        label = if (id == 1) "Queries" else NULL,
+        value = "",
+        placeholder = "e.g. Y[X=1] == Y[X=0]"
+      )
+    })
+    do.call(tagList, inputs)
+  })
+
+  query_results <- eventReactive(input$compute_queries, {
+    base_model <- if (!is.null(updated_model_reactive())) updated_model_reactive() else model_reactive()
+    if (is.null(base_model)) {
+      notify_warn("Please create a model first")
+      return(NULL)
+    }
+
+    ids <- query_rows()
+    queries <- vapply(ids, function(id) {
+      input[[paste0("query_text_", id)]]
+    }, character(1))
+    queries <- queries[queries != ""]
+    if (length(queries) == 0) {
+      notify_warn("Please enter at least one query")
+      return(NULL)
+    }
+
+    use_choices <- input$query_use
+    using <- if (is.null(use_choices)) character(0) else use_choices
+
+    given_text <- input$query_given
+    given_text <- if (!is.null(given_text) && given_text != "") given_text else NULL
+
+    query_model(
+      base_model,
+      query = queries,
+      given = given_text,
+      using = using,
+      expand_grid = TRUE
+    )
+  })
+
+  output$query_plot <- renderPlot({
+    qm <- query_results()
+    if (is.null(qm)) {
+      return(NULL)
+    }
+    plot(qm)
   })
 }
 

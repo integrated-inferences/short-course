@@ -1,0 +1,317 @@
+---
+title: "Build, update, and query causal models with `CausalQueries`: Cheat Sheet"
+format:
+  pdf:
+    documentclass: article
+    geometry: "a3paper,landscape,margin=0.5in"
+    fontsize: 10pt
+    number-sections: false
+    toc: false
+header-includes:
+  - \usepackage{multicol}
+  - \usepackage[scaled=0.95]{helvet}
+  - \usepackage{fancyhdr}
+  - \usepackage{titling}
+  - \usepackage{sfmath}
+  - \usepackage{tcolorbox}
+  - \tcbuselibrary{skins,breakable}
+  - \usepackage{fontspec}
+  - \renewcommand{\familydefault}{\sfdefault}
+  - \renewcommand{\rmdefault}{phv}
+  - \renewcommand{\sfdefault}{phv}
+  - \setmainfont{TeX Gyre Heros}
+  - \setsansfont{TeX Gyre Heros}
+  - \setlength{\droptitle}{-6em}
+  - \pretitle{\begin{center}\Huge\bfseries}
+  - \posttitle{\par\end{center}\vspace{-1.6em}}
+  - \pagestyle{fancy}
+  - \fancyhf{}
+  - \pagenumbering{gobble}
+  - \renewcommand{\headrulewidth}{0pt}
+  - \renewcommand{\footrulewidth}{0.4pt}
+  - |
+    \makeatletter
+    \renewcommand\section{\@startsection{section}{1}{\z@}{0.6em}{0.3em}{\sffamily\bfseries\Large}}
+    \makeatother
+  - |
+    \definecolor{CalloutBorder}{HTML}{B8B2A6}
+    \definecolor{CalloutBg}{HTML}{F7F6F2}
+    \definecolor{CalloutTipBg}{HTML}{EEF5F0}
+    \definecolor{CalloutTipBorder}{HTML}{7A9B8C}
+    \tcbset{
+      colback=CalloutBg,
+      colframe=CalloutBorder,
+      boxrule=0.3pt,
+      arc=2pt,
+      left=3pt,
+      right=3pt,
+      top=2pt,
+      bottom=2pt
+    }
+    \tcbset{callout-tip/.style={colback=CalloutTipBg,colframe=CalloutTipBorder}}
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+  error: false
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  eval = TRUE,
+  results = "markup",
+  message = FALSE,
+  warning = FALSE
+)
+test <- FALSE
+library(CausalQueries)
+library(knitr)
+library(tidyverse)
+theme_set(
+  theme_bw(base_family = "Helvetica", base_size = 9) +
+    theme(
+      panel.grid.minor = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.2),
+      text = element_text(family = "Helvetica"),
+      axis.text = element_text(size = 7),
+      axis.ticks = element_line(linewidth = 0.2),
+      axis.title = element_text(face = "bold"),
+      plot.title = element_text(face = "bold"),
+      panel.border = element_rect(color = "grey30", linewidth = 0.2, fill = NA)
+    )
+)
+```
+
+```{=latex}
+\begin{multicols}{3}
+```
+## 1. Make your model
+
+`CausalQueries` works with models that assume a causal structure over **binary nodes**.  
+
+::: {.callout-note appearance="simple"}
+### a. Make your model
+
+Provide a causal structure connecting nodes using **dagitty** syntax.
+
+```{r update-model, eval = test}
+model_1 <- make_model("X -> Y; Z -> Y")        # simple
+model_2 <- make_model("Z -> X -> Y; X <-> Y")  # with confounding
+```
+:::
+
+::: {.callout-note appearance="simple"}
+### b. Optionally: refine your model
+
+#### Set restrictions *(to rule out some nodal types)*
+
+```{r, eval = test}
+# naming types
+make_model("X -> M -> Y") |>
+  set_restrictions(labels = list(M = c("10", "11"), Y = "00"))
+
+# using logical statements
+make_model("X -> Y") |>
+  set_restrictions(statement = "Y[X=1] > Y[X=0]")
+
+# natural language helpers
+make_model("X -> Y") |> set_restrictions(decreasing("X", "Y"))
+```
+
+#### Set priors *(to make use of prior knowledge)*
+
+```{r, eval = test}
+make_model("X -> Y") |> set_priors(distribution = "jeffreys")
+
+make_model("X -> Y") |>
+  set_priors(statement = "Y[X=1] > Y[X=0]", alphas = .25)
+```
+
+#### Set parameters *(to imagine a particular world)*
+
+```{r, eval = test}
+make_model("X -> Y") |>
+  set_parameters(statement  = "Y[X=1] > Y[X=0]", parameters = .5)
+```
+:::
+
+::: {.callout-note appearance="simple"}
+### c. Graph your model
+
+```{r plotting, eval = FALSE}
+make_model("X -> M -> Y <- X; X <-> Y") |> plot()
+```
+
+```{r , echo = FALSE, fig.height = 2, fig.width = 8}
+make_model("X -> M -> Y <- X; X <-> Y") |>  plot(nodecol = "white", textcol = "black")
+```
+
+:::
+
+::: {.callout-note appearance="simple"}
+### d. Inspect your model
+
+```{r, eval = FALSE}
+make_model("X -> Y") |> inspect("nodal_types")
+make_model("X -> Y") |> inspect("causal_types")
+```
+
+:::
+
+ 
+```{=latex}
+\columnbreak
+```
+## 2. Update your model
+
+To update, pass the model and data to `update_model()`. 
+
+::: {.callout-note appearance="simple"}
+Data can be complete or missing at random. 
+```{r, eval = FALSE, fig.height = 4, fig.width = 9}
+model <- make_model("X -> M -> Y")
+data  <- data.frame(X = 0:1, M = 1:0, Y = 0:1) |> uncount(10)
+
+model <- update_model(model, data)
+```
+
+```{r, echo = FALSE, fig.height = 4, fig.width = 9}
+model <- make_model("X -> M -> Y")
+data  <- data.frame(X = 0:1, M = 1:0, Y = 0:1) |> uncount(10)
+
+model <- update_model(model, data = data, refresh = 0)
+```
+
+Posterior distributions on parameters can be accessed directly (via `grab` or `inspect`) or when you query the model.
+
+```{r, fig.height = 3, fig.width = 7}
+model |> grab("posterior_distribution") |> 
+  ggplot(aes(Y.01, Y.10)) + geom_point(alpha = .5)
+```
+:::
+
+::: {.callout-tip appearance="simple"}
+### Use additional Stan arguments to control updating
+
+Other Stan arguments can be passed to `update_model()`:
+
+- `iter` sets the number of iterations (and ultimately posterior draws)
+- `chains` sets the number of chains (parallel chains can speed things up)
+- many other options via `?rstan::stan`
+:::
+
+::: {.callout-tip appearance="simple"}
+### Causal syntax
+
+`CausalQueries uses` a causal syntax that lets you describe arbitrary observational or controlled values of a node.  Square brackets indicate controlled values (implied application of the “do” operator).
+
+**An observational query:** types that produce `Y == 1`.
+
+```{r, eval = FALSE}
+make_model("X -> M -> Y <- X") |>
+  get_query_types("Y==1")
+```
+
+**A simple counterfactual query:** types that produce `Y == 1` when `X` is set to `1`.
+
+```{r, eval = FALSE}
+make_model("X -> Y") |>
+  get_query_types("Y[X=1]==1")
+```
+
+**A complex query:** types for which `Y == 1` when `X=1` and `M` is held constant at the value it would take if `X` were `0`.
+
+```{r, eval = FALSE}
+make_model("X -> M -> Y") |>
+  get_query_types("Y[M=M[X=0], X=1]==1")
+```
+
+We provide helpers for common causal statements (`increasing`, `decreasing`, `interacts`, etc.), which are useful for querying models or setting restrictions.
+:::
+
+ 
+```{=latex}
+\columnbreak
+```
+## 3. Query your model
+
+Formulate a causal query using causal syntax and put the query to the model.
+
+
+::: {.callout-note appearance="simple"}
+Provide:
+
+- causal queries (`queries`)
+- conditions (`given`)
+- which parameters to use (`using`)
+
+```{r query-model}
+model <- make_model("X -> M -> Y")
+
+results <- model |>
+  query_model(
+    queries = list(
+      ATE = "Y[X=1] - Y[X=0]",
+      POS = "Y[X=1] > Y[X=0]"
+    ),
+    given = c(
+      "All",
+      "X==1 & Y==1",
+      "X==1 & Y==1 & M==0"
+    ),
+    using = c("parameters", "priors")
+  )
+```
+:::
+
+::: {.callout-note appearance="simple"}
+## Putting it all together
+
+```{r full-example, eval = FALSE}
+
+results <-
+  make_model("X->M->Y") |>
+  update_model(data) |>
+  query_model(
+    query = "Y[X=1]>Y[X=0]",
+    given = c("All", "X==1 & Y==1", "X==1 & Y==1 & M==1"),
+    using = c("priors", "posteriors")
+  )
+```
+
+```{r, echo = FALSE}
+
+results <-
+  make_model("X->M->Y") |>
+  update_model(data = data, refresh = 0) |>
+  query_model(
+    query = "Y[X=1]>Y[X=0]",
+    given = c("All", "X==1 & Y==1", "X==1 & Y==1 & M==1"),
+    using = c("priors", "posteriors")
+  )
+```
+
+and view as table or plot:
+
+```{r, eval = FALSE}
+plot(results)
+```
+
+```{r, echo = FALSE}
+plot(results) + theme(legend.position = "bottom")
+```
+
+:::
+
+
+```{=latex}
+\end{multicols}
+```
+
+::: {.callout-note appearance="simple"}
+`CausalQueries` makes it easy to make, update, and query causal models defined over binary variables. Model parameters are defined using potential outcomes and updated with `rstan`. For more see [https://integrated-inferences.github.io/](https://integrated-inferences.github.io/) CC BY SA package version 1.4.4 • Updated: 2026-01-25
+:::

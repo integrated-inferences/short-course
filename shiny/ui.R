@@ -3,6 +3,8 @@ library(CausalQueries)
 library(DT)
 library(dplyr)
 
+source("tips.R")
+
 panelBox <- function(title, ..., level = 4) {
   heading <- if (level == 3) h3(title) else h4(title)
   div(
@@ -12,116 +14,57 @@ panelBox <- function(title, ..., level = 4) {
   )
 }
 
+tip_icon <- function(id) {
+  tip_text <- tips[[id]]
+  if (is.null(tip_text)) {
+    return(NULL)
+  }
+  tags$span(
+    title = tip_text,
+    class = "glyphicon glyphicon-question-sign",
+    style = "color: #1f8b4c; font-size: 15px; margin-left: 6px; cursor: help;"
+  )
+}
+
+tip_label <- function(text, id) {
+  tagList(text, tip_icon(id))
+}
+
 about_tab <- function() {
   tabPanel(
     "About",
-    h3("Process Tracing by Hand: A Walkthrough"),
-    HTML("
-      <div style='max-width: 900px; line-height: 1.8; font-size: 14px;'>
-
-      <h4>What is this tool?</h4>
-      <p>This tool helps you perform <strong>process tracing</strong> using causal models. Process tracing involves:</p>
-      <ul>
-        <li>Starting with a causal model (DAG) representing your theory</li>
-        <li>Observing data on a single case (values of nodes in your model)</li>
-        <li>Asking a causal question (query) about that case</li>
-        <li>Calculating the probability that your query is true, given the observed data</li>
-      </ul>
-
-      <h4>The Logic Behind It</h4>
-      <p>The calculation works by:</p>
-      <ol>
-        <li><strong>Identifying causal types</strong>: All possible ways the world could work (combinations of nodal types)</li>
-        <li><strong>Filtering to types consistent with data</strong>: Which types could have generated the observed data?</li>
-        <li><strong>Calculating the denominator</strong>: Total probability of all types consistent with data</li>
-        <li><strong>Calculating the numerator</strong>: Probability of types consistent with data <em>and</em> the query</li>
-        <li><strong>Computing the posterior</strong>: Numerator / Denominator = probability query is true given the data</li>
-      </ol>
-
-      <hr>
-
-      <h4>Example Walkthrough: SXCRY Model</h4>
-      <p>Let's work through an example step by step using the model from the solutions document.</p>
-
-      <h5>Step 1: Define the Model</h5>
-      <p>Enter this model specification:</p>
-      <pre style='background-color: #f5f5f5; padding: 10px; border-radius: 5px;'><code>S -> C -> Y <- R <- X; X -> C -> R</code></pre>
-      <p>This creates a model with 5 nodes: S, C, Y, R, and X, with the following structure:</p>
-      <ul>
-        <li>S → C → Y</li>
-        <li>R ← X (R is caused by X)</li>
-        <li>Y ← R (Y is caused by R)</li>
-        <li>X → C → R (X causes C, which causes R)</li>
-      </ul>
-      <p>Click <strong>\"Create Model\"</strong> to build the model.</p>
-
-      <h5>Step 2: Set Restrictions (Optional)</h5>
-      <p>You can restrict which nodal types are allowed. For this example, we'll restrict:</p>
-      <ul>
-        <li><strong>C</strong>: Keep types \"1110\" and \"1111\"</li>
-        <li><strong>R</strong>: Keep types \"0001\" and \"0000\"</li>
-        <li><strong>Y</strong>: Keep type \"0001\"</li>
-      </ul>
-      <p>To do this:</p>
-      <ol>
-        <li>Select \"C\" from the node dropdown</li>
-        <li>Choose \"Keep selected types\"</li>
-        <li>Check \"1110\" and \"1111\"</li>
-        <li>Click \"Apply Restriction\"</li>
-        <li>Repeat for R and Y nodes</li>
-      </ol>
-
-      <h5>Step 3: Input Data for One Case</h5>
-      <p>For this example, let's say we observe:</p>
-      <ul>
-        <li>S = 1</li>
-        <li>X = 1</li>
-        <li>C = 0</li>
-        <li>R = 0</li>
-        <li>Y = 0</li>
-      </ul>
-      <p>Set these values using the radio buttons that appear after creating the model.</p>
-
-      <h5>Step 4: Define a Query</h5>
-      <p>Enter a causal query. For example:</p>
-      <pre style='background-color: #f5f5f5; padding: 10px; border-radius: 5px;'><code>Y[S=1] < Y[S=0]</code></pre>
-      <p>This asks: \"Does S=1 cause Y to be lower than it would be if S=0?\"</p>
-      <p>Other example queries you could try:</p>
-      <ul>
-        <li><code>Y[S=1] > Y[S=0]</code> - Does S=1 cause Y to be higher?</li>
-        <li><code>Y[X=1] == Y[X=0]</code> - Does X have no effect on Y?</li>
-      </ul>
-
-      <h5>Step 5: Calculate and Interpret Results</h5>
-      <p>Click <strong>\"Calculate\"</strong> to see the results:</p>
-      <ul>
-        <li><strong>Denominator</strong>: The total probability of all causal types that are consistent with the observed data (S=1, X=1, C=0, R=0, Y=0). This represents all the ways the world could work that would produce this data pattern.</li>
-        <li><strong>Numerator</strong>: The probability of causal types that are consistent with the data <em>and</em> satisfy the query. This represents the ways the world could work that produce the data <em>and</em> make the query true.</li>
-        <li><strong>Posterior</strong>: Numerator / Denominator. This is the probability that your query is true, given the observed data. A value close to 1 means the query is very likely true; close to 0 means it's very unlikely.</li>
-      </ul>
-
-      <h5>Understanding the Detailed Table</h5>
-      <p>The detailed results table shows:</p>
-      <ul>
-        <li>All causal types consistent with the observed data</li>
-        <li>Whether each type satisfies the query (highlighted in green if Yes)</li>
-        <li>The prior probability of each type</li>
-        <li>The rescaled prior (normalized so they sum to 1, conditional on the data)</li>
-      </ul>
-      <p>The posterior is simply the sum of rescaled priors for all types where \"in_query\" is Yes.</p>
-
-      <hr>
-
-      <h4>Key Insights</h4>
-      <ul>
-        <li>Process tracing is <strong>theory-dependent</strong>: The same data can support different conclusions depending on your model and priors</li>
-        <li>The posterior depends on both the <strong>data</strong> and your <strong>prior beliefs</strong> about how the world works</li>
-        <li>Restrictions allow you to incorporate theoretical knowledge about which causal mechanisms are possible</li>
-        <li>The calculation is transparent: you can see exactly which types contribute to the numerator and denominator</li>
-      </ul>
-
-      </div>
-    ")
+    fluidRow(
+      column(
+        width = 6,
+        panelBox(
+          "About the App",
+          HTML("
+            <p>This \"shiny\" app lets you explore the <a href='https://integrated-inferences.github.io/CausalQueries/' target='_blank'><code>CausalQueries</code></a> package. The <a href='https://cran.r-project.org/web/packages/CausalQueries/index.html' target='_blank'><code>CausalQueries</code></a> R package, maintained by <a href='https://github.com/till-tietz' target='_blank'>Till Tietz</a>, lets you declare binary causal models, update beliefs about causal types given data and calculate arbitrary estimands. Model definition is implemented via a dagitty style syntax. Updating is implemented in <a href='https://github.com/stan-dev/rstan/wiki/Rstan-Getting-Started' target='_blank'>Stan</a>.</p>
+          ")
+        ),
+        panelBox(
+          "Authors",
+          HTML("
+            <p><a href='https://macartan.github.io/' target='_blank'>Macartan Humphreys</a> and <a href='https://politics.ubc.ca/profile/alan-jacobs/' target='_blank'>Alan Jacobs</a> are the authors of <em>Integrated Inferences</em>.</p>
+          ")
+        )
+      ),
+      column(
+        width = 6,
+        panelBox(
+          "Background",
+          HTML("
+            <p>For more background see <a href='https://integrated-inferences.github.io/book/' target='_blank'><em>Integrated Inferences</em></a>, which provides an introduction to fundamental principles of causal inference and Bayesian updating and shows how these tools can be used to implement and justify inferences using within-case (process tracing) evidence, correlational patterns across many cases, or a mix of the two.</p>
+          ")
+        ),
+        panelBox(
+          "Resources",
+          HTML("
+            <p>Learn more about <a href='https://integrated-inferences.github.io/CausalQueries/' target='_blank'><code>CausalQueries</code></a> and related resources at <a href='https://integrated-inferences.github.io/' target='_blank'>Integrated Inferences</a>.</p>
+          ")
+        )
+      )
+    )
   )
 }
 
@@ -144,7 +87,15 @@ ui <- fluidPage(
       }
     "))
   ),
-  titlePanel("Process Tracing by Hand"),
+  titlePanel("CausalQueries: Make, update, and query causal models"),
+  div(
+    style = "margin: 6px 0 14px 0;",
+    tags$a(
+      href = "https://integrated-inferences.github.io/",
+      "Resources: https://integrated-inferences.github.io/",
+      target = "_blank"
+    )
+  ),
 
   tabsetPanel(
     id = "main_tabs",
@@ -154,22 +105,22 @@ ui <- fluidPage(
         column(
           width = 4,
           panelBox(
-            "1. Input Model",
+            tip_label("1. Input Model", "model"),
             textInput(
               "model_string",
-              label = "Model (e.g.'S -> C -> Y <- R <- X; X -> C -> R')",
+              label = tip_label("Model (e.g.'S -> C -> Y <- R <- X; X -> C -> R')", "causal_statement"),
               value = "X -> M -> Y",
               placeholder = "Enter model specification"
             ),
             actionButton("create_model", "Create Model", class = "btn-primary")
           ),
           panelBox(
-            "2. Set Restrictions (Optional)",
+            tip_label("2. Set Restrictions (Optional)", "restrictions"),
             uiOutput("restrictions_ui"),
             verbatimTextOutput("current_restrictions")
           ),
           panelBox(
-            "3. Set Parameters (Optional)",
+            tip_label("3. Set Parameters (Optional)", "parameters"),
             uiOutput("parameters_ui"),
             verbatimTextOutput("current_parameters")
           )
@@ -188,7 +139,107 @@ ui <- fluidPage(
       )
     ),
     tabPanel(
-      "Data & Query",
+      "Update Model",
+      fluidRow(
+        column(
+          width = 5,
+          panelBox(
+            tip_label("1. Complete Data Types", "complete_data_type"),
+            p("Enter counts for fully observed data types (default 0)."),
+            uiOutput("full_data_inputs")
+          ),
+          panelBox(
+            tip_label("2. Partial Data Types", "partial_data_type"),
+            p("Select a strategy and enter counts for all implied data types."),
+            checkboxGroupInput(
+              "partial_strategies",
+              label = "Strategies",
+              choices = character(0)
+            ),
+            uiOutput("partial_strategy_inputs")
+          )
+        ),
+        column(
+          width = 7,
+          panelBox(
+            tip_label("3. Update Options", "update_model"),
+            div(
+              style = "display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap;",
+              numericInput(
+                "update_refresh",
+                label = "Refresh",
+                value = 0,
+                min = 0,
+                step = 1,
+                width = "120px"
+              ),
+              numericInput(
+                "update_iter",
+                label = "Iterations",
+                value = 1000,
+                min = 1,
+                step = 100,
+                width = "140px"
+              ),
+              actionButton("update_model", "Update Model", class = "btn-primary")
+            )
+          ),
+          panelBox(
+            "Stan Summary",
+            verbatimTextOutput("update_summary")
+          )
+        )
+      )
+    ),
+    tabPanel(
+      "Query",
+      fluidRow(
+        column(
+          width = 4,
+          panelBox(
+            tip_label("Input Queries", "query"),
+            div(
+              style = "display: flex; gap: 8px; margin-bottom: 8px;",
+              actionButton("add_query_row", "Add query", class = "btn-warning"),
+              actionButton("clear_query_rows", "Clear queries", class = "btn-danger")
+            ),
+            uiOutput("query_inputs"),
+            textInput(
+              "query_given",
+              label = tip_label("Given (optional)", "given"),
+              value = "",
+              placeholder = "e.g. M==1"
+            )
+          ),
+          panelBox(
+            "Options",
+            checkboxGroupInput(
+              "query_use",
+              label = tip_label("Use", "using"),
+              choices = c("priors", "posteriors", "parameters"),
+              selected = c("priors")
+            ),
+            actionButton("compute_queries", "Compute Queries", class = "btn-primary")
+          )
+        ),
+        column(
+          width = 8,
+          panelBox(
+            "Query Plot",
+            plotOutput("query_plot", height = "400px")
+          )
+        )
+      )
+    ),
+    tabPanel(
+      "Intuition",
+      div(
+        style = "margin-bottom: 10px; font-size: 14px;",
+        "This tab gives intuition for how a case-level inference is made (Bayesian process tracing). ",
+        "On the left you input the data you see along with your query; on the right we then show the set of ",
+        "'causal types' that are (a) consistent with the data and (b) consistent with the data and the query. ",
+        "The final inference is the probability of the latter divided by the probability of the former."
+      ),
       fluidRow(
         column(
           width = 4,
