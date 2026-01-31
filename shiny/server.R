@@ -71,10 +71,12 @@ by_hand <- function(model, data, query) {
 server <- function(input, output, session) {
   model_reactive <- reactiveVal(NULL)
   base_model_reactive <- reactiveVal(NULL)
-  restrictions_reactive <- reactiveVal(list())
+  restrictions_reactive <- reactiveVal(list(keep = list(), drop = list()))
   nl_restrictions_reactive <- reactiveVal(list())
   parameters_reactive <- reactiveVal(list())
   updated_model_reactive <- reactiveVal(NULL)
+  compact_data_reactive <- reactiveVal(NULL)
+  query_rows <- reactiveVal(c(1))
 
   notify_error <- function(message) {
     showNotification(message, type = "error")
@@ -86,16 +88,89 @@ server <- function(input, output, session) {
     showNotification(message, type = "message")
   }
 
+  format_given_label <- function(given) {
+    if (is.null(given) || is.na(given) || given == "") {
+      return("")
+    }
+    parts <- strsplit(given, "\\.")[[1]]
+    if (length(parts) < 2) {
+      return(given)
+    }
+    pairs <- split(parts, ceiling(seq_along(parts) / 2))
+    labels <- vapply(pairs, function(pair) {
+      if (length(pair) < 2) {
+        return(pair[1])
+      }
+      paste0(pair[1], "=", pair[2])
+    }, character(1))
+    paste(labels, collapse = ", ")
+  }
+
+  format_param_set_label <- function(param_set) {
+    parts <- strsplit(param_set, "\\.")[[1]]
+    node <- parts[1]
+    if (length(parts) == 1) {
+      return(node)
+    }
+    givens <- parts[-1]
+    pairs <- split(givens, ceiling(seq_along(givens) / 2))
+    labels <- vapply(pairs, function(pair) {
+      if (length(pair) < 2) {
+        return(pair[1])
+      }
+      paste0(pair[1], "=", pair[2])
+    }, character(1))
+    paste0(node, " given ", paste(labels, collapse = ", "))
+  }
+
+  format_param_label <- function(nodal_type, given, prefix = "Prob type") {
+    given_label <- format_given_label(given)
+    if (given_label == "") {
+      return(paste(prefix, nodal_type))
+    }
+    paste(prefix, nodal_type, "when", given_label)
+  }
+
+  format_char_vector <- function(values) {
+    if (length(values) == 1) {
+      return(paste0("'", values, "'"))
+    }
+    paste0("c(", paste0("'", values, "'", collapse = ", "), ")")
+  }
+
+  format_num_vector <- function(values) {
+    if (length(values) == 1) {
+      return(format(values, scientific = FALSE))
+    }
+    paste0("c(", paste(format(values, scientific = FALSE), collapse = ", "), ")")
+  }
+
+  format_labels_list <- function(labels_list) {
+    parts <- vapply(names(labels_list), function(node) {
+      types <- labels_list[[node]]
+      paste0(node, " = ", format_char_vector(types))
+    }, character(1))
+    paste0("list(", paste(parts, collapse = ", "), ")")
+  }
+
   apply_type_restrictions <- function(model, restrictions) {
     if (length(restrictions) == 0) {
       return(model)
     }
-    for (node_name in names(restrictions)) {
-      entry <- restrictions[[node_name]]
+    keep_list <- restrictions$keep
+    drop_list <- restrictions$drop
+    if (length(keep_list) > 0) {
       model <- set_restrictions(
         model,
-        labels = setNames(list(entry$types), node_name),
-        keep = entry$keep
+        labels = keep_list,
+        keep = TRUE
+      )
+    }
+    if (length(drop_list) > 0) {
+      model <- set_restrictions(
+        model,
+        labels = drop_list,
+        keep = FALSE
       )
     }
     model
@@ -140,9 +215,8 @@ server <- function(input, output, session) {
       if (length(node_pars) > 0) {
         model <- set_parameters(
           model,
-          parameters = as.numeric(node_pars),
-          node = node_name,
-          nodal_type = names(node_pars)
+          param_names = names(node_pars),
+          parameters = as.numeric(node_pars)
         )
       }
     }
@@ -259,9 +333,13 @@ server <- function(input, output, session) {
 
     partial_df <- do.call(rbind, partial_rows)
     combined <- rbind(compact_df, partial_df)
-    combined |>
+    combined <- combined[!is.na(combined$event) & combined$event != "", , drop = FALSE]
+    combined <- combined[combined$event %in% types_df$event, , drop = FALSE]
+    combined <- combined |>
       dplyr::group_by(event, strategy) |>
       dplyr::summarize(count = sum(count), .groups = "drop")
+    combined$count <- as.integer(round(combined$count))
+    combined
   }
 
   build_nl_choices <- function(node, parents) {
@@ -369,18 +447,31 @@ server <- function(input, output, session) {
         notify_error("Please provide a model in which each child node has at most 3 parents")
         model_reactive(NULL)
         base_model_reactive(NULL)
-        restrictions_reactive(list())
+        restrictions_reactive(list(keep = list(), drop = list()))
         parameters_reactive(list())
+        updated_model_reactive(NULL)
+        compact_data_reactive(NULL)
+        query_rows(c(1))
+        updateTextInput(session, "query_text_1", value = "")
+        updateTextInput(session, "query_given", value = "")
+        updateCheckboxGroupInput(session, "query_use", selected = c("priors"))
+        updateCheckboxGroupInput(session, "partial_strategies", selected = character(0))
         return(NULL)
       }
 
       model <- make_model(input$model_string)
       base_model_reactive(model)
-      restrictions_reactive(list())
+      restrictions_reactive(list(keep = list(), drop = list()))
       nl_restrictions_reactive(list())
       parameters_reactive(list())
       updated_model_reactive(NULL)
+      compact_data_reactive(NULL)
       model_reactive(model)
+      query_rows(c(1))
+      updateTextInput(session, "query_text_1", value = "")
+      updateTextInput(session, "query_given", value = "")
+      updateCheckboxGroupInput(session, "query_use", selected = c("priors"))
+      updateCheckboxGroupInput(session, "partial_strategies", selected = character(0))
 
       nodes <- model$nodes
       if (length(nodes) >= 1) {
@@ -394,10 +485,16 @@ server <- function(input, output, session) {
       notify_error(paste("Error creating model:", e$message))
       model_reactive(NULL)
       base_model_reactive(NULL)
-      restrictions_reactive(list())
+      restrictions_reactive(list(keep = list(), drop = list()))
       nl_restrictions_reactive(list())
       parameters_reactive(list())
       updated_model_reactive(NULL)
+      compact_data_reactive(NULL)
+      query_rows(c(1))
+      updateTextInput(session, "query_text_1", value = "")
+      updateTextInput(session, "query_given", value = "")
+      updateCheckboxGroupInput(session, "query_use", selected = c("priors"))
+      updateCheckboxGroupInput(session, "partial_strategies", selected = character(0))
     })
   })
 
@@ -564,10 +661,11 @@ server <- function(input, output, session) {
 
     tryCatch({
       current_restrictions <- restrictions_reactive()
-      current_restrictions[[node]] <- list(
-        types = selected_types,
-        keep = (action == "keep")
-      )
+      if (action == "keep") {
+        current_restrictions$keep[[node]] <- selected_types
+      } else {
+        current_restrictions$drop[[node]] <- selected_types
+      }
       restrictions_reactive(current_restrictions)
 
       if (is.null(rebuild_or_notify())) {
@@ -642,7 +740,7 @@ server <- function(input, output, session) {
     if (is.null(base_model_reactive())) {
       return()
     }
-    restrictions_reactive(list())
+    restrictions_reactive(list(keep = list(), drop = list()))
     nl_restrictions_reactive(list())
     if (!is.null(rebuild_or_notify())) {
       notify_ok("All restrictions cleared!")
@@ -652,19 +750,24 @@ server <- function(input, output, session) {
   output$current_restrictions <- renderText({
     restrictions <- restrictions_reactive()
     nl_restrictions <- nl_restrictions_reactive()
-    if (length(restrictions) == 0 && length(nl_restrictions) == 0) {
+    if (length(restrictions$keep) == 0 && length(restrictions$drop) == 0 && length(nl_restrictions) == 0) {
       return("No restrictions applied")
     }
 
     restriction_text <- "Current restrictions:\n"
-    if (length(restrictions) > 0) {
-      restriction_text <- paste0(restriction_text, "Nodal types:\n")
-      for (node in names(restrictions)) {
-        action <- if (restrictions[[node]]$keep) "Keep" else "Drop"
-        types <- paste(restrictions[[node]]$types, collapse = ", ")
-        restriction_text <- paste0(restriction_text,
-                                   node, ": ", action, " [", types, "]\n")
-      }
+    if (length(restrictions$keep) > 0) {
+      keep_parts <- vapply(names(restrictions$keep), function(node) {
+        types <- paste(restrictions$keep[[node]], collapse = ", ")
+        paste0(node, "=[", types, "]")
+      }, character(1))
+      restriction_text <- paste0(restriction_text, "Keep: ", paste(keep_parts, collapse = "; "), "\n")
+    }
+    if (length(restrictions$drop) > 0) {
+      drop_parts <- vapply(names(restrictions$drop), function(node) {
+        types <- paste(restrictions$drop[[node]], collapse = ", ")
+        paste0(node, "=[", types, "]")
+      }, character(1))
+      restriction_text <- paste0(restriction_text, "Drop: ", paste(drop_parts, collapse = "; "), "\n")
     }
 
     if (length(nl_restrictions) > 0) {
@@ -720,19 +823,34 @@ server <- function(input, output, session) {
       return(NULL)
     }
 
-    types <- model$nodal_types[[node]]
-    if (is.null(types) || length(types) == 0) {
-      return(p("No types available for this node"))
+    params_df <- model$parameters_df
+    params_df <- params_df[params_df$node == node, , drop = FALSE]
+    if (nrow(params_df) == 0) {
+      return(p("No parameters available for this node"))
     }
 
-    inputs <- lapply(types, function(t) {
-      numericInput(
-        inputId = paste0("param_", node, "_", t),
-        label = paste0("Probability for type ", t),
-        value = NA,
-        min = 0,
-        max = 1,
-        step = 0.01
+    param_sets <- unique(params_df$param_set)
+    inputs <- lapply(param_sets, function(param_set) {
+      set_rows <- params_df[params_df$param_set == param_set, , drop = FALSE]
+      entries <- lapply(seq_len(nrow(set_rows)), function(i) {
+        label <- format_param_label(set_rows$nodal_type[i], set_rows$given[i])
+        div(
+          style = "display: flex; align-items: center; gap: 8px; margin-bottom: 6px;",
+          tags$span(style = "min-width: 200px;", label),
+          numericInput(
+            inputId = paste0("param_name_", set_rows$param_names[i]),
+            label = NULL,
+            value = NA,
+            min = 0,
+            max = 1,
+            step = 0.01,
+            width = "100px"
+          )
+        )
+      })
+      tagList(
+        h5(format_param_set_label(param_set)),
+        do.call(tagList, entries)
       )
     })
 
@@ -748,14 +866,16 @@ server <- function(input, output, session) {
       return()
     }
 
-    types <- model$nodal_types[[node]]
-    if (is.null(types) || length(types) == 0) {
-      notify_warn("No types available for this node")
+    params_df <- model$parameters_df
+    params_df <- params_df[params_df$node == node, , drop = FALSE]
+    if (nrow(params_df) == 0) {
+      notify_warn("No parameters available for this node")
       return()
     }
 
-    vals <- sapply(types, function(t) {
-      input_id <- paste0("param_", node, "_", t)
+    param_names <- params_df$param_names
+    vals <- sapply(param_names, function(pname) {
+      input_id <- paste0("param_name_", pname)
       v <- input[[input_id]]
       if (is.null(v) || is.na(v)) NA_real_ else as.numeric(v)
     })
@@ -767,7 +887,7 @@ server <- function(input, output, session) {
     }
 
     node_pars <- vals[valid_idx]
-    names(node_pars) <- types[valid_idx]
+    names(node_pars) <- param_names[valid_idx]
 
     current_parameters <- parameters_reactive()
     current_parameters[[node]] <- node_pars
@@ -795,7 +915,7 @@ server <- function(input, output, session) {
       return("No parameters set")
     }
 
-    txt <- "Current parameters (per node and nodal type):\n"
+    txt <- "Current parameters (by param name):\n"
     for (node in names(params)) {
       node_pars <- params[[node]]
       line <- paste0(
@@ -972,6 +1092,11 @@ server <- function(input, output, session) {
       full_strategy,
       input$partial_strategies
     )
+    compact_data_reactive(compact_data)
+    if (nrow(compact_data) == 0) {
+      notify_warn("No valid data rows provided for updating.")
+      return()
+    }
 
     tryCatch({
       options(mc.cores = parallel::detectCores())
@@ -1105,8 +1230,6 @@ server <- function(input, output, session) {
     inspect(updated_model, "stan_summary")
   })
 
-  query_rows <- reactiveVal(c(1))
-
   observeEvent(input$add_query_row, {
     ids <- query_rows()
     query_rows(c(ids, max(ids) + 1))
@@ -1138,9 +1261,14 @@ server <- function(input, output, session) {
     }
 
     ids <- query_rows()
-    queries <- vapply(ids, function(id) {
-      input[[paste0("query_text_", id)]]
-    }, character(1))
+    if (length(ids) == 0) {
+      queries <- character(0)
+    } else {
+      queries <- vapply(ids, function(id) {
+        value <- input[[paste0("query_text_", id)]]
+        if (is.null(value)) "" else value
+      }, character(1))
+    }
     queries <- queries[queries != ""]
     if (length(queries) == 0) {
       notify_warn("Please enter at least one query")
@@ -1168,6 +1296,114 @@ server <- function(input, output, session) {
       return(NULL)
     }
     plot(qm)
+  })
+
+  output$replication_code <- renderUI({
+    model <- model_reactive()
+    if (is.null(model)) {
+      return(tags$pre(tags$code("Create a model to see replication code.")))
+    }
+
+    statement <- model$statement
+    if (is.null(statement) || statement == "") {
+      statement <- input$model_string
+    }
+    if (is.null(statement) || statement == "") {
+      return(tags$pre(tags$code("Create a model to see replication code.")))
+    }
+    lines <- c(paste0("model <- make_model(\"", statement, "\")"))
+
+    restrictions <- restrictions_reactive()
+    nl_restrictions <- nl_restrictions_reactive()
+    merged_keep <- restrictions$keep
+    merged_drop <- restrictions$drop
+    if (length(nl_restrictions) > 0) {
+      for (node in names(nl_restrictions)) {
+        keep_types <- nl_restrictions[[node]]$keep_types
+        drop_types <- nl_restrictions[[node]]$drop_types
+        if (!is.null(keep_types) && length(keep_types) > 0) {
+          merged_keep[[node]] <- unique(c(merged_keep[[node]], keep_types))
+        }
+        if (!is.null(drop_types) && length(drop_types) > 0) {
+          merged_drop[[node]] <- unique(c(merged_drop[[node]], drop_types))
+        }
+      }
+    }
+
+    if (length(merged_keep) > 0) {
+      lines <- c(lines,
+                 paste0("model <- model |> set_restrictions(labels = ",
+                        format_labels_list(merged_keep),
+                        ", keep = TRUE)"))
+    }
+    if (length(merged_drop) > 0) {
+      lines <- c(lines,
+                 paste0("model <- model |> set_restrictions(labels = ",
+                        format_labels_list(merged_drop),
+                        ", keep = FALSE)"))
+    }
+
+    params <- parameters_reactive()
+    if (length(params) > 0) {
+      param_names <- unlist(lapply(params, names), use.names = FALSE)
+      param_values <- unlist(params, use.names = FALSE)
+      if (length(param_names) > 0) {
+        lines <- c(lines,
+                   paste0("model <- model |> set_parameters(param_names = ",
+                          format_char_vector(param_names),
+                          ", parameters = ",
+                          format_num_vector(param_values),
+                          ")"))
+      }
+    }
+
+    compact_data <- compact_data_reactive()
+    if (!is.null(compact_data)) {
+      compact_data <- compact_data[compact_data$count > 0, , drop = FALSE]
+      if (nrow(compact_data) > 0) {
+        data_line <- paste0(
+          "data <- data.frame(event = ",
+          format_char_vector(compact_data$event),
+          ", strategy = ",
+          format_char_vector(compact_data$strategy),
+          ", count = ",
+          format_num_vector(compact_data$count),
+          ")"
+        )
+        lines <- c(lines, data_line, "model <- update_model(model, data)")
+      }
+    }
+
+    ids <- query_rows()
+    queries <- vapply(ids, function(id) {
+      value <- input[[paste0("query_text_", id)]]
+      if (is.null(value)) "" else value
+    }, character(1))
+    queries <- queries[queries != ""]
+    if (length(queries) > 0) {
+      query_line <- paste0("queries <- query_model(model, query = ", format_char_vector(queries))
+      given_text <- input$query_given
+      if (!is.null(given_text) && given_text != "") {
+        query_line <- paste0(query_line, ", given = ", format_char_vector(given_text))
+      }
+      using <- input$query_use
+      if (!is.null(using) && length(using) > 0) {
+        query_line <- paste0(query_line, ", using = ", format_char_vector(using))
+      }
+      query_line <- paste0(query_line, ", expand_grid = TRUE)")
+      lines <- c(lines, query_line, "queries |> plot()")
+    }
+
+    code_text <- paste(lines, collapse = "\n")
+    tagList(
+      tags$pre(
+        tags$code(
+          class = "language-r",
+          htmltools::HTML(code_text)
+        )
+      ),
+      tags$script("if (window.hljs) { hljs.highlightAll(); }")
+    )
   })
 }
 

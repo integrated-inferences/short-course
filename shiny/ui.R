@@ -85,7 +85,20 @@ ui <- fluidPage(
       .panel-box h3 {
         margin-top: 0;
       }
+      pre code.hljs {
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 12.5px;
+      }
     "))
+    ,
+    tags$link(
+      rel = "stylesheet",
+      href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    ),
+    tags$script(
+      src = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
+    )
   ),
   titlePanel("CausalQueries: Make, update, and query causal models"),
   div(
@@ -227,6 +240,19 @@ ui <- fluidPage(
           panelBox(
             "Query Plot",
             plotOutput("query_plot", height = "400px")
+          )
+        )
+      )
+    ),
+    tabPanel(
+      "Replication Code",
+      fluidRow(
+        column(
+          width = 12,
+          panelBox(
+            "Minimal Replication Code",
+            uiOutput("replication_code"),
+            tags$script("if (window.hljs) { hljs.highlightAll(); }")
           )
         )
       )
