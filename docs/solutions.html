@@ -3243,17 +3243,57 @@ window.Quarto = {
 </header>
 
 
+<p>We print out the inference table and then provide a helper function to let you quickly see the conditional inferences.</p>
+<p>You can also see the solutions in <a href="https://integrated-inferences.github.io/book/12-clue-selection.html">Chapter 12</a> or by using the <a href="https://shiny2.wzb.eu/ipi/process_tracing/">shiny</a>.</p>
+<section id="set-up-and-helper-function" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Set up and helper function</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> </span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">make_model</span>(<span class="st">&quot;S -&gt; C -&gt; Y &lt;- R &lt;- X; X -&gt; C -&gt; R&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_restrictions</span>(<span class="at">labels =</span> <span class="fu">list</span>(<span class="at">C =</span> <span class="fu">c</span>(<span class="st">&#39;1110&#39;</span>, <span class="st">&#39;1111&#39;</span>), </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">R =</span> <span class="fu">c</span>(<span class="st">&#39;0000&#39;</span>, <span class="st">&#39;0001&#39;</span>), </span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">Y =</span> <span class="st">&#39;0001&#39;</span>),</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">keep =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="st">&quot;Y[X=1] &gt; Y[X=0]&quot;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>model<span class="sc">$</span>parameters_df <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(CausalQueries)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>data_consistent <span class="ot">&lt;-</span> <span class="cf">function</span>(my_table, <span class="at">seen =</span> <span class="fu">c</span>(<span class="st">&quot;S1&quot;</span>, <span class="st">&quot;Y0&quot;</span>)) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> seen){</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    my_table <span class="ot">&lt;-</span> </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    my_table[<span class="fu">c</span>(<span class="fu">names</span>(my_table)[<span class="fu">grepl</span>(j,  <span class="fu">names</span>(my_table))], <span class="st">&quot;in_query&quot;</span>,   <span class="st">&quot;priors&quot;</span>)]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  my_table <span class="ot">&lt;-</span> my_table <span class="sc">|&gt;</span> <span class="fu">filter</span>(</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    my_table <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>in_query, <span class="sc">-</span>priors) <span class="sc">|&gt;</span> <span class="fu">apply</span>(<span class="dv">1</span>, sum) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  my_table <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>in_query, <span class="sc">-</span>priors)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  pDQ <span class="ot">&lt;-</span> my_table <span class="sc">|&gt;</span> <span class="fu">filter</span>(in_query) <span class="sc">|&gt;</span> <span class="fu">pull</span>(priors) <span class="sc">|&gt;</span> <span class="fu">sum</span>()</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  pD  <span class="ot">&lt;-</span> my_table <span class="sc">|&gt;</span> <span class="fu">pull</span>(priors) <span class="sc">|&gt;</span> <span class="fu">sum</span>()</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">c</span>(<span class="st">&quot;prob of Data and Query:&quot;</span>, pDQ))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">c</span>(<span class="st">&quot;prob of Data:&quot;</span>, pD))</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">c</span>(<span class="st">&quot;prob Query | Data:&quot;</span>, pDQ<span class="sc">/</span>pD))</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(my_table)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>}  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="model-parameters" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Model parameters</h1>
+<p>Check that the model has the parameters we want!</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">make_model</span>(<span class="st">&quot;S -&gt; C -&gt; Y &lt;- R &lt;- X; X -&gt; C -&gt; R&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_restrictions</span>(<span class="at">labels =</span> <span class="fu">list</span>(<span class="at">C =</span> <span class="fu">c</span>(<span class="st">&#39;1110&#39;</span>, <span class="st">&#39;1111&#39;</span>), </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">R =</span> <span class="fu">c</span>(<span class="st">&#39;0000&#39;</span>, <span class="st">&#39;0001&#39;</span>), </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">Y =</span> <span class="st">&#39;0001&#39;</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">keep =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="st">&quot;Y[X=1] &gt; Y[X=0]&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>model<span class="sc">$</span>parameters_df <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -3383,16 +3423,25 @@ window.Quarto = {
 </tbody>
 </table>
 </div>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>my_table <span class="ot">&lt;-</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  model  <span class="sc">|&gt;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grab</span>(<span class="at">what =</span> <span class="st">&quot;ambiguities_matrix&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">in_query =</span> <span class="fu">get_query_types</span>(model, query)<span class="sc">$</span>types,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">priors   =</span> CausalQueries<span class="sc">:::</span><span class="fu">get_type_prob</span>(model)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>my_table <span class="ot">&lt;-</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  model  <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grab</span>(<span class="at">what =</span> <span class="st">&quot;ambiguities_matrix&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">in_query =</span> <span class="fu">get_query_types</span>(model, query)<span class="sc">$</span>types,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">priors   =</span> CausalQueries<span class="sc">:::</span><span class="fu">get_type_prob</span>(model)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
+</section>
+<section id="look-up-table-for-conditional-inferences" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Look up table for conditional inferences</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>my_table <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>my_table <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -3618,18 +3667,22 @@ window.Quarto = {
 </table>
 </div>
 </div>
-<section id="examples-of-inferences" class="level1">
-<h1>Examples of inferences</h1>
+</section>
+<section id="examples-of-conditional-inferences" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Examples of conditional inferences</h1>
 <p>(using a helper funciton to display the subset of the data we care about)</p>
 <p>An inference:</p>
-<section id="i-observe-s0-y0-only" class="level2">
-<h2 class="anchored" data-anchor-id="i-observe-s0-y0-only">I observe <span class="math inline">\(S=0, Y=0\)</span> only:</h2>
+<section id="i-observe-s0-y0-only" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="i-observe-s0-y0-only"><span class="header-section-number">4.1</span> I observe <span class="math inline">\(S=0, Y=0\)</span> only:</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data_consistent</span>(my_table, <span class="at">seen =</span> <span class="fu">c</span>(<span class="st">&quot;S0&quot;</span>, <span class="st">&quot;Y0&quot;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data_consistent</span>(my_table, <span class="at">seen =</span> <span class="fu">c</span>(<span class="st">&quot;S0&quot;</span>, <span class="st">&quot;Y0&quot;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] &quot;prob_DQ:&quot; &quot;0.125&quot;   
-[1] &quot;prob_D:&quot; &quot;0.375&quot;  
-[1] &quot;prob_Q|D:&quot;         &quot;0.333333333333333&quot;
+<pre><code>[1] &quot;prob of Data and Query:&quot; &quot;0.125&quot;                  
+[1] &quot;prob of Data:&quot; &quot;0.375&quot;        
+[1] &quot;prob Query | Data:&quot; &quot;0.333333333333333&quot; 
                     S0X0C1R0Y0 S0X1C1R0Y0 in_query priors
 S0X0C1110R0000Y0001          1          0    FALSE 0.0625
 S0X1C1110R0000Y0001          0          1    FALSE 0.0625
@@ -3640,14 +3693,17 @@ S0X0C1111R0001Y0001          1          0     TRUE 0.0625</code></pre>
 </div>
 </div>
 </section>
-<section id="i-observe-s-1-x-1-c-0" class="level2">
-<h2 class="anchored" data-anchor-id="i-observe-s-1-x-1-c-0">I observe <span class="math inline">\(S = 1, X = 1, C = 0\)</span></h2>
+<section id="i-observe-s-1-x-1-c-0" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="i-observe-s-1-x-1-c-0"><span class="header-section-number">4.2</span> I observe <span class="math inline">\(S = 1, X = 1, C = 0\)</span></h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data_consistent</span>(my_table, <span class="at">seen =</span> <span class="fu">c</span>(<span class="st">&quot;S1&quot;</span>, <span class="st">&quot;X1&quot;</span>, <span class="st">&quot;C0&quot;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data_consistent</span>(my_table, <span class="at">seen =</span> <span class="fu">c</span>(<span class="st">&quot;S1&quot;</span>, <span class="st">&quot;X1&quot;</span>, <span class="st">&quot;C0&quot;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] &quot;prob_DQ:&quot; &quot;0&quot;       
-[1] &quot;prob_D:&quot; &quot;0.125&quot;  
-[1] &quot;prob_Q|D:&quot; &quot;0&quot;        
+<pre><code>[1] &quot;prob of Data and Query:&quot; &quot;0&quot;                      
+[1] &quot;prob of Data:&quot; &quot;0.125&quot;        
+[1] &quot;prob Query | Data:&quot; &quot;0&quot;                 
                     S1X1C0R0Y0 in_query priors
 S1X1C1110R0000Y0001          1    FALSE 0.0625
 S1X1C1110R0001Y0001          1    FALSE 0.0625</code></pre>

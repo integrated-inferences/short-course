@@ -100,15 +100,7 @@ ui <- fluidPage(
       src = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
     )
   ),
-  titlePanel("CausalQueries: Make, update, and query causal models"),
-  div(
-    style = "margin: 6px 0 14px 0;",
-    tags$a(
-      href = "https://integrated-inferences.github.io/",
-      "Resources: https://integrated-inferences.github.io/",
-      target = "_blank"
-    )
-  ),
+  titlePanel(HTML("<code>CausalQueries</code>: Make, update, and query causal models")),
 
   tabsetPanel(
     id = "main_tabs",
@@ -121,8 +113,8 @@ ui <- fluidPage(
             tip_label("1. Input Model", "model"),
             textInput(
               "model_string",
-              label = tip_label("Model (e.g.'S -> C -> Y <- R <- X; X -> C -> R')", "causal_statement"),
-              value = "X -> M -> Y",
+              label = tip_label("Model (e.g. 'X->Y' or 'X -> M -> Y <-> X')", "causal_statement"),
+              value = "X -> M -> Y <-> X",
               placeholder = "Enter model specification"
             ),
             actionButton("create_model", "Create Model", class = "btn-primary")
@@ -205,7 +197,7 @@ ui <- fluidPage(
       )
     ),
     tabPanel(
-      "Query",
+      "Query model",
       fluidRow(
         column(
           width = 4,
@@ -217,12 +209,12 @@ ui <- fluidPage(
               actionButton("clear_query_rows", "Clear queries", class = "btn-danger")
             ),
             uiOutput("query_inputs"),
-            textInput(
-              "query_given",
-              label = tip_label("Given (optional)", "given"),
-              value = "",
-              placeholder = "e.g. M==1"
-            )
+            div(
+              style = "display: flex; gap: 8px; margin: 6px 0 8px 0;",
+              actionButton("add_given_row", "Add given", class = "btn-warning"),
+              actionButton("clear_given_rows", "Clear givens", class = "btn-danger")
+            ),
+            uiOutput("given_inputs")
           ),
           panelBox(
             "Options",
@@ -301,6 +293,15 @@ ui <- fluidPage(
       )
     ),
     about_tab()
+  ),
+  tags$hr(),
+  div(
+    style = "margin: 8px 0 18px 0; font-size: 13px;",
+    HTML(paste0(
+      "For more about <code>CausalQueries</code> and the Integrated Inferences framework see resources at: ",
+      "<a href='https://integrated-inferences.github.io/' target='_blank'>",
+      "Resources: https://integrated-inferences.github.io/</a>."
+    ))
   )
 )
 

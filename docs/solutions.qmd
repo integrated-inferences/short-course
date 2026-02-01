@@ -3,8 +3,17 @@ title: "solution"
 format: 
   html:
     embed-resources: true
+    code-fold: true
+    number-sections: true
 ---
-```{r, include = FALSE}
+
+We print out the inference table and then provide a helper function to let you quickly see the conditional inferences. 
+
+You can also see the solutions in [Chapter 12](https://integrated-inferences.github.io/book/12-clue-selection.html) or by using the [shiny](https://shiny2.wzb.eu/ipi/process_tracing/).
+
+# Set up and helper function
+
+```{r, include = TRUE, message = FALSE, warning = FALSE}
 library(CausalQueries)
 library(knitr)
 library(tidyverse)
@@ -18,20 +27,23 @@ data_consistent <- function(my_table, seen = c("S1", "Y0")) {
   my_table <- my_table |> filter(
     my_table |> select(-in_query, -priors) |> apply(1, sum) > 0)
 
-  
   my_table |> select(-in_query, -priors)
   
   pDQ <- my_table |> filter(in_query) |> pull(priors) |> sum()
   pD  <- my_table |> pull(priors) |> sum()
-  print(c("prob_DQ:", pDQ))
-  print(c("prob_D:", pD))
-  print(c("prob_Q|D:", pDQ/pD))
+  print(c("prob of Data and Query:", pDQ))
+  print(c("prob of Data:", pD))
+  print(c("prob Query | Data:", pDQ/pD))
   
   print(my_table)
 
 }  
 
 ```
+
+# Model parameters
+
+Check that the model has the parameters we want!
 
 ```{r}
 
@@ -59,12 +71,13 @@ my_table <-
 ```
 
 
+# Look up table for conditional inferences
 
 ```{r}
 my_table |> kable()
 ```
 
-# Examples of inferences 
+# Examples of conditional inferences 
 
 (using a helper funciton to display the subset of the data we care about)
 

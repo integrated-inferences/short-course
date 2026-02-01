@@ -145,6 +145,43 @@ server <- function(input, output, session) {
     paste0("c(", paste(format(values, scientific = FALSE), collapse = ", "), ")")
   }
 
+  type_help_ui <- function(node, parents) {
+    parent_count <- length(parents)
+    if (parent_count == 0) {
+      return(tagList(
+        tags$p(paste0(node, " has no parents so its two types are simply:")),
+        tags$ul(
+          tags$li(paste0("0 if ", node, " is 0 (absent any intervention)")),
+          tags$li(paste0("1 if ", node, " is 1 (absent any intervention)"))
+        )
+      ))
+    }
+
+    if (parent_count == 1) {
+      parent <- parents[1]
+      return(tagList(
+        tags$p(paste0(node, " has one parent so its four types are:")),
+        tags$ul(
+          tags$li(paste0("00: ", node, " = 0 regardless of value of ", parent)),
+          tags$li(paste0("01: ", node, " = 0 if ", parent, " = 0 and 1 if ", parent, " = 1")),
+          tags$li(paste0("10: ", node, " = 1 if ", parent, " = 0 and 0 if ", parent, " = 1")),
+          tags$li(paste0("11: ", node, " = 1 regardless of the value of ", parent))
+        )
+      ))
+    }
+
+    value_count <- paste0("2<sup>2<sup>", parent_count, "</sup></sup> = ", 2^(2^parent_count))
+    parent_values <- paste0("2<sup>", parent_count, "</sup> = ", 2^parent_count)
+    tagList(
+      tags$p(HTML(paste0(
+        node, " has ", parent_count,
+        " parents and so ", value_count, " possible values. ",
+        "The guide below shows how to interpret the values ", node,
+        " takes for each of the possible ", parent_values, " values of the parents."
+      )))
+    )
+  }
+
   format_labels_list <- function(labels_list) {
     parts <- vapply(names(labels_list), function(node) {
       types <- labels_list[[node]]
@@ -223,6 +260,16 @@ server <- function(input, output, session) {
     model
   }
 
+  default_query_text <- function(model) {
+    if (is.null(model) || is.null(model$nodes) || length(model$nodes) == 0) {
+      return("Y[X=1] > Y[X=0]")
+    }
+    nodes <- model$nodes
+    x1 <- nodes[1]
+    xn <- nodes[length(nodes)]
+    paste0(xn, "[", x1, "=1] > ", xn, "[", x1, "=0]")
+  }
+
   rebuild_model <- function() {
     base_model <- base_model_reactive()
     if (is.null(base_model)) {
@@ -256,6 +303,9 @@ server <- function(input, output, session) {
     dag <- tryCatch(data.frame(dag), error = function(e) NULL)
     if (is.null(dag) || !all(c("v", "w") %in% names(dag))) {
       return(character(0))
+    }
+    if ("e" %in% names(dag)) {
+      dag <- dag[dag$e == "->", , drop = FALSE]
     }
     unique(as.character(dag$v[dag$w == node]))
   }
@@ -468,8 +518,8 @@ server <- function(input, output, session) {
       compact_data_reactive(NULL)
       model_reactive(model)
       query_rows(c(1))
-      updateTextInput(session, "query_text_1", value = "")
-      updateTextInput(session, "query_given", value = "")
+      updateTextInput(session, "query_text_1", value = default_query_text(model))
+      updateTextInput(session, "given_text_1", value = "")
       updateCheckboxGroupInput(session, "query_use", selected = c("priors"))
       updateCheckboxGroupInput(session, "partial_strategies", selected = character(0))
 
@@ -491,8 +541,8 @@ server <- function(input, output, session) {
       updated_model_reactive(NULL)
       compact_data_reactive(NULL)
       query_rows(c(1))
-      updateTextInput(session, "query_text_1", value = "")
-      updateTextInput(session, "query_given", value = "")
+      updateTextInput(session, "query_text_1", value = default_query_text(NULL))
+      updateTextInput(session, "given_text_1", value = "")
       updateCheckboxGroupInput(session, "query_use", selected = c("priors"))
       updateCheckboxGroupInput(session, "partial_strategies", selected = character(0))
     })
@@ -577,6 +627,17 @@ server <- function(input, output, session) {
     }
 
     tagList(
+      tags$details(
+        tags$summary(
+          tags$span(
+            class = "glyphicon glyphicon-info-sign",
+            style = "color: #1f8b4c; font-size: 15px; margin-right: 6px;"
+          ),
+          "Interpretation of nodal types"
+        ),
+        uiOutput("restriction_type_help_text"),
+        tableOutput("restriction_type_help_table")
+      ),
       radioButtons("restriction_action",
                    label = "Action:",
                    choices = list("Keep selected types" = "keep",
@@ -667,6 +728,9 @@ server <- function(input, output, session) {
         current_restrictions$drop[[node]] <- selected_types
       }
       restrictions_reactive(current_restrictions)
+      parameters_reactive(list())
+      updated_model_reactive(NULL)
+      compact_data_reactive(NULL)
 
       if (is.null(rebuild_or_notify())) {
         return()
@@ -723,6 +787,9 @@ server <- function(input, output, session) {
 
       current_nl[[node]] <- existing
       nl_restrictions_reactive(current_nl)
+      parameters_reactive(list())
+      updated_model_reactive(NULL)
+      compact_data_reactive(NULL)
 
       if (is.null(rebuild_or_notify())) {
         return()
@@ -742,6 +809,9 @@ server <- function(input, output, session) {
     }
     restrictions_reactive(list(keep = list(), drop = list()))
     nl_restrictions_reactive(list())
+    parameters_reactive(list())
+    updated_model_reactive(NULL)
+    compact_data_reactive(NULL)
     if (!is.null(rebuild_or_notify())) {
       notify_ok("All restrictions cleared!")
     }
@@ -854,7 +924,20 @@ server <- function(input, output, session) {
       )
     })
 
-    do.call(tagList, inputs)
+    tagList(
+      tags$details(
+        tags$summary(
+          tags$span(
+            class = "glyphicon glyphicon-info-sign",
+            style = "color: #1f8b4c; font-size: 15px; margin-right: 6px;"
+          ),
+          "Interpretation of nodal types"
+        ),
+        uiOutput("param_type_help_text"),
+        tableOutput("param_type_help_table")
+      ),
+      do.call(tagList, inputs)
+    )
   })
 
   observeEvent(input$apply_parameters, {
@@ -926,6 +1009,60 @@ server <- function(input, output, session) {
     }
     txt
   })
+
+  output$restriction_type_help_text <- renderUI({
+    model <- model_reactive()
+    node <- input$restrict_node
+    if (is.null(model) || node == "" || is.null(node)) {
+      return(NULL)
+    }
+    parents <- get_parents_for_node(model, node)
+    type_help_ui(node, parents)
+  })
+
+  output$restriction_type_help_table <- renderTable({
+    model <- model_reactive()
+    node <- input$restrict_node
+    if (is.null(model) || node == "" || is.null(node)) {
+      return(NULL)
+    }
+    parents <- get_parents_for_node(model, node)
+    if (length(parents) < 2) {
+      return(NULL)
+    }
+    interp <- tryCatch(interpret_type(model, nodes = node)[[node]], error = function(e) NULL)
+    if (is.null(interp)) {
+      return(NULL)
+    }
+    interp
+  }, rownames = FALSE)
+
+  output$param_type_help_text <- renderUI({
+    model <- model_reactive()
+    node <- input$param_node
+    if (is.null(model) || node == "" || is.null(node)) {
+      return(NULL)
+    }
+    parents <- get_parents_for_node(model, node)
+    type_help_ui(node, parents)
+  })
+
+  output$param_type_help_table <- renderTable({
+    model <- model_reactive()
+    node <- input$param_node
+    if (is.null(model) || node == "" || is.null(node)) {
+      return(NULL)
+    }
+    parents <- get_parents_for_node(model, node)
+    if (length(parents) < 2) {
+      return(NULL)
+    }
+    interp <- tryCatch(interpret_type(model, nodes = node)[[node]], error = function(e) NULL)
+    if (is.null(interp)) {
+      return(NULL)
+    }
+    interp
+  }, rownames = FALSE)
 
   output$data_inputs <- renderUI({
     model <- model_reactive()
@@ -1237,17 +1374,44 @@ server <- function(input, output, session) {
 
   observeEvent(input$clear_query_rows, {
     query_rows(c(1))
-    updateTextInput(session, "query_text_1", value = "")
+    updateTextInput(session, "query_text_1", value = default_query_text(model_reactive()))
   })
 
   output$query_inputs <- renderUI({
     ids <- query_rows()
+    model <- model_reactive()
+    default_query <- default_query_text(model)
     inputs <- lapply(ids, function(id) {
       textInput(
         inputId = paste0("query_text_", id),
         label = if (id == 1) "Queries" else NULL,
+        value = if (id == 1) default_query else "",
+        placeholder = "e.g. Y[X=1] > Y[X=0]"
+      )
+    })
+    do.call(tagList, inputs)
+  })
+
+  given_rows <- reactiveVal(c(1))
+
+  observeEvent(input$add_given_row, {
+    ids <- given_rows()
+    given_rows(c(ids, max(ids) + 1))
+  })
+
+  observeEvent(input$clear_given_rows, {
+    given_rows(c(1))
+    updateTextInput(session, "given_text_1", value = "")
+  })
+
+  output$given_inputs <- renderUI({
+    ids <- given_rows()
+    inputs <- lapply(ids, function(id) {
+      textInput(
+        inputId = paste0("given_text_", id),
+        label = if (id == 1) "Given (optional)" else NULL,
         value = "",
-        placeholder = "e.g. Y[X=1] == Y[X=0]"
+        placeholder = "e.g. M==1"
       )
     })
     do.call(tagList, inputs)
@@ -1278,8 +1442,13 @@ server <- function(input, output, session) {
     use_choices <- input$query_use
     using <- if (is.null(use_choices)) character(0) else use_choices
 
-    given_text <- input$query_given
-    given_text <- if (!is.null(given_text) && given_text != "") given_text else NULL
+    given_ids <- given_rows()
+    given_entries <- vapply(given_ids, function(id) {
+      value <- input[[paste0("given_text_", id)]]
+      if (is.null(value)) "" else value
+    }, character(1))
+    given_entries <- given_entries[given_entries != ""]
+    given_text <- if (length(given_entries) == 0) NULL else paste(given_entries, collapse = " & ")
 
     query_model(
       base_model,
@@ -1382,7 +1551,13 @@ server <- function(input, output, session) {
     queries <- queries[queries != ""]
     if (length(queries) > 0) {
       query_line <- paste0("queries <- query_model(model, query = ", format_char_vector(queries))
-      given_text <- input$query_given
+      given_ids <- given_rows()
+      given_entries <- vapply(given_ids, function(id) {
+        value <- input[[paste0("given_text_", id)]]
+        if (is.null(value)) "" else value
+      }, character(1))
+      given_entries <- given_entries[given_entries != ""]
+      given_text <- if (length(given_entries) == 0) NULL else paste(given_entries, collapse = " & ")
       if (!is.null(given_text) && given_text != "") {
         query_line <- paste0(query_line, ", given = ", format_char_vector(given_text))
       }
