@@ -2,6 +2,10 @@ library(shiny)
 library(CausalQueries)
 library(DT)
 library(dplyr)
+if (!requireNamespace("rintrojs", quietly = TRUE)) {
+  install.packages("rintrojs")
+}
+library(rintrojs)
 
 source("tips.R")
 
@@ -62,6 +66,18 @@ about_tab <- function() {
           HTML("
             <p>Learn more about <a href='https://integrated-inferences.github.io/CausalQueries/' target='_blank'><code>CausalQueries</code></a> and related resources at <a href='https://integrated-inferences.github.io/' target='_blank'>Integrated Inferences</a>.</p>
           ")
+        ),
+        div(
+          style = "margin-top: 10px; text-align: center;",
+          div(
+            style = "display: inline-block; background: #ffffff; padding: 6px; border-radius: 8px;",
+            tags$img(
+              src = "causalqueries-hex.png",
+              alt = "CausalQueries logo",
+              height = "140px",
+              style = "display: block;"
+            )
+          )
         )
       )
     )
@@ -69,6 +85,7 @@ about_tab <- function() {
 }
 
 ui <- fluidPage(
+  introjsUI(),
   tags$head(
     tags$style(HTML("
       .panel-box {
@@ -96,11 +113,44 @@ ui <- fluidPage(
       rel = "stylesheet",
       href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
     ),
+    tags$link(
+      rel = "icon",
+      type = "image/png",
+      href = "causalqueries-hex.png"
+    ),
     tags$script(
       src = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
-    )
+    ),
+    tags$script(HTML("
+      Shiny.addCustomMessageHandler('copy_replication', function(message) {
+        var codeNode = document.querySelector('#replication_code_container code');
+        var text = codeNode ? codeNode.textContent : '';
+        if (!text) {
+          Shiny.setInputValue('clipboard_status', { ok: false, msg: 'No replication code to copy.' }, { priority: 'event' });
+          return;
+        }
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+          Shiny.setInputValue('clipboard_status', { ok: false, msg: 'Clipboard access is not available in this browser.' }, { priority: 'event' });
+          return;
+        }
+        navigator.clipboard.writeText(text).then(function() {
+          Shiny.setInputValue('clipboard_status', { ok: true, msg: 'Replication code copied to clipboard.' }, { priority: 'event' });
+        }).catch(function() {
+          Shiny.setInputValue('clipboard_status', { ok: false, msg: 'Could not copy to clipboard.' }, { priority: 'event' });
+        });
+      });
+
+    "))
   ),
   titlePanel(HTML("<code>CausalQueries</code>: Make, update, and query causal models")),
+  div(
+    style = "display: flex; align-items: center; gap: 12px; margin: 6px 0 14px 0;",
+    tags$span(
+      style = "font-size: 13.5px;",
+      "Start by making a model, refine it if needed, update with data if needed, then pose queries."
+    ),
+    actionButton("guide_me", "Guide me", class = "btn-info btn-sm")
+  ),
 
   tabsetPanel(
     id = "main_tabs",
@@ -111,21 +161,24 @@ ui <- fluidPage(
           width = 4,
           panelBox(
             tip_label("1. Input Model", "model"),
+            id = "model_panel",
             textInput(
               "model_string",
               label = tip_label("Model (e.g. 'X->Y' or 'X -> M -> Y <-> X')", "causal_statement"),
-              value = "X -> M -> Y <-> X",
+              value = "X -> M -> Y <- X",
               placeholder = "Enter model specification"
             ),
             actionButton("create_model", "Create Model", class = "btn-primary")
           ),
           panelBox(
             tip_label("2. Set Restrictions (Optional)", "restrictions"),
+            id = "restrictions_panel",
             uiOutput("restrictions_ui"),
             verbatimTextOutput("current_restrictions")
           ),
           panelBox(
             tip_label("3. Set Parameters (Optional)", "parameters"),
+            id = "parameters_panel",
             uiOutput("parameters_ui"),
             verbatimTextOutput("current_parameters")
           )
@@ -168,6 +221,7 @@ ui <- fluidPage(
           width = 7,
           panelBox(
             tip_label("3. Update Options", "update_model"),
+            id = "update_panel",
             div(
               style = "display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap;",
               numericInput(
@@ -186,8 +240,13 @@ ui <- fluidPage(
                 step = 100,
                 width = "140px"
               ),
-              actionButton("update_model", "Update Model", class = "btn-primary")
+              actionButton("update_model", "Update Model", class = "btn-primary"),
+              actionButton("clear_data", "Clear Data", class = "btn-danger")
             )
+          ),
+          panelBox(
+            "Current data",
+            tableOutput("compact_data_preview")
           ),
           panelBox(
             "Stan Summary",
@@ -203,6 +262,7 @@ ui <- fluidPage(
           width = 4,
           panelBox(
             tip_label("Input Queries", "query"),
+            id = "query_panel",
             div(
               style = "display: flex; gap: 8px; margin-bottom: 8px;",
               actionButton("add_query_row", "Add query", class = "btn-warning"),
@@ -231,7 +291,19 @@ ui <- fluidPage(
           width = 8,
           panelBox(
             "Query Plot",
-            plotOutput("query_plot", height = "400px")
+            plotOutput("query_plot", height = "400px"),
+            div(
+              style = "margin-top: 8px;",
+              downloadButton("download_query_plot", "Download PNG", class = "btn-default btn-sm")
+            )
+          ),
+          panelBox(
+            "Query Results",
+            div(
+              style = "margin-bottom: 8px;",
+              downloadButton("download_query_table", "Download CSV", class = "btn-default btn-sm")
+            ),
+            tableOutput("query_table")
           )
         )
       )
@@ -243,7 +315,11 @@ ui <- fluidPage(
           width = 12,
           panelBox(
             "Minimal Replication Code",
-            uiOutput("replication_code"),
+            div(
+              style = "margin-bottom: 8px;",
+              actionButton("copy_replication", "Copy to clipboard", class = "btn-default btn-sm")
+            ),
+            div(id = "replication_code_container", uiOutput("replication_code")),
             tags$script("if (window.hljs) { hljs.highlightAll(); }")
           )
         )
@@ -262,11 +338,11 @@ ui <- fluidPage(
         column(
           width = 4,
           panelBox(
-            "4. Input Data",
+            "Case level data",
             uiOutput("data_inputs")
           ),
           panelBox(
-            "5. Input Query",
+            "Case level query",
             textInput(
               "query",
               label = "Query (e.g., 'Y[X=1] == Y[X=0]' or 'Y[S=1] < Y[S=0]')",
@@ -298,9 +374,8 @@ ui <- fluidPage(
   div(
     style = "margin: 8px 0 18px 0; font-size: 13px;",
     HTML(paste0(
-      "For more about <code>CausalQueries</code> and the Integrated Inferences framework see resources at: ",
-      "<a href='https://integrated-inferences.github.io/' target='_blank'>",
-      "Resources: https://integrated-inferences.github.io/</a>."
+      "For more about <code>CausalQueries</code> and the Integrated Inferences framework see ",
+      "<a href='https://integrated-inferences.github.io/' target='_blank'>resources</a>."
     ))
   )
 )

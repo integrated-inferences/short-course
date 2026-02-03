@@ -2,6 +2,10 @@ library(shiny)
 library(CausalQueries)
 library(DT)
 library(dplyr)
+if (!requireNamespace("rintrojs", quietly = TRUE)) {
+  install.packages("rintrojs")
+}
+library(rintrojs)
 
 cq_call <- function(name, ...) {
   fn <- getFromNamespace(name, "CausalQueries")
@@ -38,11 +42,16 @@ by_hand <- function(model, data, query) {
 
   amb <- grab(model, what = "ambiguities_matrix")
 
+  query_types <- get_query_types(model, query)$types
+  if (!is.logical(query_types)) {
+    stop("Please enter a logical case-level query (e.g. 'Y[X=1] > Y[X=0]').")
+  }
+
   result <- amb |>
     data.frame() |>
     dplyr::mutate(
       type = rownames(amb),
-      in_query = get_query_types(model, query)$types,
+      in_query = query_types,
       priors = cq_call("get_type_prob", model)
     )
 
@@ -86,6 +95,158 @@ server <- function(input, output, session) {
   }
   notify_ok <- function(message) {
     showNotification(message, type = "message")
+  }
+
+  tour_enabled <- reactiveVal(FALSE)
+
+  disable_guidance <- function() {
+    tour_enabled(FALSE)
+    tour_state$model <- TRUE
+    tour_state$restrictions <- TRUE
+    tour_state$parameters <- TRUE
+    tour_state$update <- TRUE
+    tour_state$query <- TRUE
+  }
+
+  start_guided_tour <- function() {
+    tour_enabled(TRUE)
+    tour_state$model <- FALSE
+    tour_state$restrictions <- FALSE
+    tour_state$parameters <- FALSE
+    tour_state$update <- FALSE
+    tour_state$query <- FALSE
+    introjs(
+      session,
+      options = list(
+        steps = c(
+          tour_steps_model,
+          tour_steps_restrictions,
+          tour_steps_parameters,
+          tour_steps_update,
+          tour_steps_query
+        ),
+        showProgress = TRUE,
+        scrollToElement = TRUE
+      )
+    )
+  }
+
+  session$onFlushed(function() {
+    showModal(modalDialog(
+      title = "Welcome",
+      tags$div(
+        style = "text-align: center; margin-bottom: 10px;",
+        tags$div(
+          style = "display: inline-block; background: #ffffff; padding: 6px; border-radius: 8px;",
+          tags$img(src = "causalqueries-hex.png", alt = "CausalQueries logo", height = "120px")
+        )
+      ),
+      p("This app helps you make, refine, update, and query causal models."),
+      p("Choose how you'd like to begin:"),
+      footer = tagList(
+        actionButton("welcome_go", "Go to app", class = "btn-primary"),
+        actionButton("welcome_guide", "Guided walk-through", class = "btn-success")
+      ),
+      easyClose = FALSE
+    ))
+  }, once = TRUE)
+
+  observeEvent(input$welcome_go, {
+    removeModal()
+    disable_guidance()
+  })
+
+  observeEvent(input$welcome_guide, {
+    removeModal()
+    showModal(modalDialog(
+      title = "Guided walk-through",
+      tags$ol(
+        tags$li("Make a model (required)."),
+        tags$li("Optionally refine with restrictions and parameters."),
+        tags$li("Update with data if you want posterior beliefs."),
+        tags$li("Pose queries and plot results."),
+        tags$li("Copy replication code if needed.")
+      ),
+      footer = tagList(
+        actionButton("welcome_start", "Start", class = "btn-primary")
+      ),
+      easyClose = TRUE
+    ))
+  })
+
+  observeEvent(input$welcome_start, {
+    removeModal()
+    updateTabsetPanel(session, "main_tabs", selected = "Make Model")
+    start_guided_tour()
+  })
+
+  observeEvent(input$guide_me, {
+    updateTabsetPanel(session, "main_tabs", selected = "Make Model")
+    start_guided_tour()
+  })
+
+  tour_steps_model <- list(
+    list(
+      element = "#model_panel",
+      intro = "Do this first: enter your model statement.",
+      position = "bottom"
+    )
+  )
+
+  tour_steps_restrictions <- list(
+    list(
+      element = "#restrictions_panel",
+      intro = "If you want, you can now restrict your model. Click Next to see parameters.",
+      position = "bottom"
+    ),
+    list(
+      element = "#parameters_panel",
+      intro = "Optionally, set parameters here. When ready, go to Update Model (or skip straight to Query).",
+      position = "bottom"
+    )
+  )
+
+  tour_steps_parameters <- list(
+    list(
+      element = "#parameters_panel",
+      intro = "Optionally, set parameters here. When ready, go to Update Model (or skip straight to Query).",
+      position = "bottom"
+    )
+  )
+
+  tour_steps_update <- list(
+    list(
+      element = "#update_panel",
+      intro = "When ready to update, set options and click Update Model.",
+      position = "bottom"
+    )
+  )
+
+  tour_steps_query <- list(
+    list(
+      element = "#query_panel",
+      intro = "Enter queries and (optionally) givens, then click Compute Queries.",
+      position = "bottom"
+    )
+  )
+
+  tour_state <- reactiveValues(
+    model = FALSE,
+    restrictions = FALSE,
+    parameters = FALSE,
+    update = FALSE,
+    query = FALSE
+  )
+
+  run_tour <- function(flag, steps) {
+    if (!isolate(tour_enabled())) {
+      return()
+    }
+    if (isolate(tour_state[[flag]])) {
+      return()
+    }
+    introjs(session, options = list(steps = steps, showProgress = TRUE, scrollToElement = TRUE))
+    tour_state[[flag]] <- TRUE
   }
 
   format_given_label <- function(given) {
@@ -388,6 +549,7 @@ server <- function(input, output, session) {
     combined <- combined |>
       dplyr::group_by(event, strategy) |>
       dplyr::summarize(count = sum(count), .groups = "drop")
+    attr(combined, "non_integer") <- any(abs(combined$count - round(combined$count)) > 1e-6)
     combined$count <- as.integer(round(combined$count))
     combined
   }
@@ -503,7 +665,7 @@ server <- function(input, output, session) {
         compact_data_reactive(NULL)
         query_rows(c(1))
         updateTextInput(session, "query_text_1", value = "")
-        updateTextInput(session, "query_given", value = "")
+        updateTextInput(session, "given_text_1", value = "")
         updateCheckboxGroupInput(session, "query_use", selected = c("priors"))
         updateCheckboxGroupInput(session, "partial_strategies", selected = character(0))
         return(NULL)
@@ -531,6 +693,7 @@ server <- function(input, output, session) {
         updateTextInput(session, "query", value = default_query)
       }
       notify_ok("Model created successfully!")
+      run_tour("restrictions", tour_steps_restrictions)
     }, error = function(e) {
       notify_error(paste("Error creating model:", e$message))
       model_reactive(NULL)
@@ -592,7 +755,8 @@ server <- function(input, output, session) {
         div(
           style = "display: flex; gap: 8px; margin-top: 6px;",
           actionButton("apply_nl_restriction", "Apply Restriction", class = "btn-warning"),
-          actionButton("clear_restrictions", "Clear Restrictions", class = "btn-danger")
+          actionButton("clear_restrictions", "Clear Restrictions", class = "btn-danger"),
+          actionButton("restrictions_done", "Done", class = "btn-default")
         )
       )
     } else {
@@ -607,7 +771,8 @@ server <- function(input, output, session) {
         div(
           style = "display: flex; gap: 8px; margin-top: 6px;",
           actionButton("apply_restriction", "Apply Restriction", class = "btn-warning"),
-          actionButton("clear_restrictions", "Clear Restrictions", class = "btn-danger")
+          actionButton("clear_restrictions", "Clear Restrictions", class = "btn-danger"),
+          actionButton("restrictions_done", "Done", class = "btn-default")
         )
       )
     }
@@ -739,6 +904,9 @@ server <- function(input, output, session) {
 
       updateSelectInput(session, "restrict_node", selected = "")
       updateCheckboxGroupInput(session, "selected_types", selected = NULL)
+      if (tour_enabled()) {
+        run_tour("parameters", tour_steps_parameters)
+      }
     }, error = function(e) {
       notify_error(paste("Error applying restriction:", e$message))
     })
@@ -798,6 +966,9 @@ server <- function(input, output, session) {
 
       updateSelectInput(session, "restrict_node_nl", selected = "")
       updateCheckboxGroupInput(session, "nl_selected_restrictions", selected = NULL)
+      if (tour_enabled()) {
+        run_tour("parameters", tour_steps_parameters)
+      }
     }, error = function(e) {
       notify_error(paste("Error applying restriction:", e$message))
     })
@@ -815,6 +986,10 @@ server <- function(input, output, session) {
     if (!is.null(rebuild_or_notify())) {
       notify_ok("All restrictions cleared!")
     }
+  })
+
+  observeEvent(input$restrictions_done, {
+    disable_guidance()
   })
 
   output$current_restrictions <- renderText({
@@ -980,6 +1155,10 @@ server <- function(input, output, session) {
       return()
     }
     notify_ok("Parameters applied successfully!")
+    if (tour_enabled()) {
+      updateTabsetPanel(session, "main_tabs", selected = "Update Model")
+      run_tour("update", tour_steps_update)
+    }
   })
 
   observeEvent(input$clear_parameters, {
@@ -1092,6 +1271,34 @@ server <- function(input, output, session) {
     data_types_for_model(model)
   })
 
+  current_compact_data <- reactive({
+    model <- model_reactive()
+    types_df <- update_types()
+    if (is.null(model) || is.null(types_df)) {
+      return(NULL)
+    }
+    full_strategy <- paste(model$nodes, collapse = "")
+    compact_data <- compact_data_from_inputs(
+      types_df,
+      full_strategy,
+      input$partial_strategies
+    )
+    if (is.null(compact_data)) {
+      return(NULL)
+    }
+    compact_data[compact_data$count > 0, , drop = FALSE]
+  })
+
+  show_preview <- reactiveVal(TRUE)
+
+  observeEvent(input$update_model, {
+    show_preview(FALSE)
+  })
+
+  observeEvent(reactiveValuesToList(input), {
+    show_preview(TRUE)
+  }, ignoreInit = TRUE)
+
   observeEvent(update_types(), {
     model <- model_reactive()
     types_df <- update_types()
@@ -1101,6 +1308,7 @@ server <- function(input, output, session) {
     full_strategy <- paste(model$nodes, collapse = "")
     strategies <- sort(unique(types_df$strategy))
     strategies <- strategies[strategies != full_strategy]
+    strategies <- strategies[strategies != ""]
     if (length(strategies) == 0) {
       updateCheckboxGroupInput(session, "partial_strategies", choices = character(0), selected = character(0))
       return()
@@ -1158,6 +1366,7 @@ server <- function(input, output, session) {
     full_strategy <- paste(model$nodes, collapse = "")
     strategies <- sort(unique(types_df$strategy))
     strategies <- strategies[strategies != full_strategy]
+    strategies <- strategies[strategies != ""]
     if (length(strategies) == 0) {
       return(p("No partial strategies available for this model"))
     }
@@ -1229,6 +1438,11 @@ server <- function(input, output, session) {
       full_strategy,
       input$partial_strategies
     )
+    if (!is.null(attr(compact_data, "non_integer")) && attr(compact_data, "non_integer")) {
+      notify_warn("Some counts were not integers and were rounded to the nearest integer.")
+    }
+    compact_data <- compact_data[compact_data$count > 0, , drop = FALSE]
+    compact_data$count <- as.integer(compact_data$count)
     compact_data_reactive(compact_data)
     if (nrow(compact_data) == 0) {
       notify_warn("No valid data rows provided for updating.")
@@ -1246,9 +1460,49 @@ server <- function(input, output, session) {
       )
       updated_model_reactive(updated)
       notify_ok("Model updated successfully!")
+      if (tour_enabled()) {
+        updateTabsetPanel(session, "main_tabs", selected = "Query model")
+        run_tour("query", tour_steps_query)
+      }
     }, error = function(e) {
       notify_error(paste("Error updating model:", e$message))
     })
+  })
+
+  observeEvent(input$clear_data, {
+    model <- model_reactive()
+    types_df <- update_types()
+    if (is.null(model) || is.null(types_df)) {
+      return()
+    }
+
+    full_strategy <- paste(model$nodes, collapse = "")
+    full_rows <- types_df[types_df$strategy == full_strategy, , drop = FALSE]
+    if (nrow(full_rows) > 0) {
+      for (event in full_rows$event) {
+        updateNumericInput(session, paste0("full_count_", event), value = 0)
+      }
+    }
+
+    strategies <- sort(unique(types_df$strategy))
+    strategies <- strategies[strategies != full_strategy]
+    strategies <- strategies[strategies != ""]
+    if (length(strategies) > 0) {
+      for (strategy_value in strategies) {
+        strategy_rows <- types_df[types_df$strategy == strategy_value, , drop = FALSE]
+        if (nrow(strategy_rows) == 0) {
+          next
+        }
+        for (event in strategy_rows$event) {
+          updateNumericInput(session, paste0("partial_count_", strategy_value, "_", event), value = 0)
+        }
+      }
+    }
+
+    updateCheckboxGroupInput(session, "partial_strategies", selected = character(0))
+    compact_data_reactive(NULL)
+    show_preview(TRUE)
+    notify_ok("All data inputs cleared.")
   })
 
   results <- eventReactive(input$calculate, {
@@ -1282,7 +1536,7 @@ server <- function(input, output, session) {
       result$error <- NULL
       result
     }, error = function(e) {
-      list(error = paste("Error:", e$message))
+      list(error = e$message)
     })
   })
 
@@ -1367,6 +1621,17 @@ server <- function(input, output, session) {
     inspect(updated_model, "stan_summary")
   })
 
+  output$compact_data_preview <- renderTable({
+    if (!show_preview()) {
+      return(NULL)
+    }
+    compact_data <- current_compact_data()
+    if (is.null(compact_data) || nrow(compact_data) == 0) {
+      return(data.frame(Note = "No data entered yet", stringsAsFactors = FALSE))
+    }
+    compact_data
+  })
+
   observeEvent(input$add_query_row, {
     ids <- query_rows()
     query_rows(c(ids, max(ids) + 1))
@@ -1376,6 +1641,18 @@ server <- function(input, output, session) {
     query_rows(c(1))
     updateTextInput(session, "query_text_1", value = default_query_text(model_reactive()))
   })
+
+  observeEvent(input$main_tabs, {
+    if (is.null(input$main_tabs)) {
+      return()
+    }
+    if (input$main_tabs == "Update Model") {
+      run_tour("update", tour_steps_update)
+    }
+    if (input$main_tabs == "Query model") {
+      run_tour("query", tour_steps_query)
+    }
+  }, ignoreInit = TRUE)
 
   output$query_inputs <- renderUI({
     ids <- query_rows()
@@ -1459,12 +1736,95 @@ server <- function(input, output, session) {
     )
   })
 
-  output$query_plot <- renderPlot({
+  make_query_plot <- function() {
     qm <- query_results()
     if (is.null(qm)) {
       return(NULL)
     }
     plot(qm)
+  }
+
+  output$query_plot <- renderPlot({
+    make_query_plot()
+  })
+
+  query_table_data <- reactive({
+    qm <- query_results()
+    if (is.null(qm)) {
+      return(NULL)
+    }
+    table_data <- tryCatch(
+      data.frame(qm, stringsAsFactors = FALSE),
+      error = function(e) NULL
+    )
+    if (is.null(table_data) || nrow(table_data) == 0) {
+      return(NULL)
+    }
+
+    if ("label" %in% names(table_data)) {
+      table_data$label <- NULL
+    }
+    if ("case_level" %in% names(table_data)) {
+      table_data$case_level <- NULL
+    }
+    if ("given" %in% names(table_data)) {
+      table_data$given <- ifelse(is.na(table_data$given) | table_data$given == "", "-", table_data$given)
+    }
+
+    table_data
+  })
+
+  output$query_table <- renderTable({
+    query_table_data()
+  })
+
+  output$download_query_table <- downloadHandler(
+    filename = function() {
+      "query_results.csv"
+    },
+    content = function(file) {
+      table_data <- query_table_data()
+      if (is.null(table_data)) {
+        write.csv(data.frame(), file, row.names = FALSE)
+        return()
+      }
+      write.csv(table_data, file, row.names = FALSE)
+    }
+  )
+
+  observeEvent(input$copy_replication, {
+    session$sendCustomMessage("copy_replication", list())
+  })
+
+  output$download_query_plot <- downloadHandler(
+    filename = function() {
+      "query_plot.png"
+    },
+    content = function(file) {
+      plot_obj <- make_query_plot()
+      if (is.null(plot_obj)) {
+        png(filename = file, width = 1000, height = 700, res = 144)
+        plot.new()
+        text(0.5, 0.5, "No plot available", cex = 1.2)
+        dev.off()
+        return()
+      }
+      png(filename = file, width = 1000, height = 700, res = 144)
+      make_query_plot()
+      dev.off()
+    }
+  )
+
+  observeEvent(input$clipboard_status, {
+    status <- input$clipboard_status
+    if (is.null(status$msg)) {
+      return()
+    }
+    if (isTRUE(status$ok)) {
+      notify_ok(status$msg)
+    } else {
+      notify_warn(status$msg)
+    }
   })
 
   output$replication_code <- renderUI({

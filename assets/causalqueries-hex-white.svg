@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#ffffff"/>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#ffffff"/>
+    </marker>
+  </defs>
+  <polygon points="256,40 420,140 420,330 256,430 92,330 92,140" fill="#0b4f8a"/>
+
+  <line x1="198" y1="236" x2="246" y2="190" stroke="#ffffff" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="266" y1="190" x2="314" y2="236" stroke="#ffffff" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="206" y1="250" x2="308" y2="250" stroke="#ffffff" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="260" y1="320" x2="318" y2="268" stroke="#ffffff" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <circle cx="180" cy="250" r="22" fill="none" stroke="#ffffff" stroke-width="4"/>
+  <text x="180" y="257" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="20" fill="#ffffff">X</text>
+
+  <circle cx="256" cy="170" r="22" fill="none" stroke="#ffffff" stroke-width="4"/>
+  <text x="256" y="177" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="20" fill="#ffffff">K</text>
+
+  <circle cx="332" cy="250" r="22" fill="none" stroke="#ffffff" stroke-width="4"/>
+  <text x="332" y="257" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="20" fill="#ffffff">Y</text>
+
+  <text x="120" y="372" font-family="Helvetica, Arial, sans-serif" font-size="34" fill="#ffffff">Causal</text>
+  <circle cx="256" cy="360" r="18" fill="none" stroke="#ffffff" stroke-width="4"/>
+  <text x="256" y="368" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="20" fill="#ffffff">Q</text>
+  <text x="278" y="372" font-family="Helvetica, Arial, sans-serif" font-size="34" fill="#ffffff">ueries</text>
+</svg>
